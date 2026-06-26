@@ -1,0 +1,274 @@
+/* ══════════════════════════════════════════════════════════════ */
+/* ZAN.IA — Deep Tech Systems                                   */
+/* Global Styles — Design Tokens + Reset + Shared Utilities     */
+/* ══════════════════════════════════════════════════════════════ */
+
+/* ── Design Tokens (Material Design 3 — Dark Mode) ── */
+:root {
+	/* Cores Primárias */
+	--color-primary: #baf2ff;
+	--color-primary-container: #00e0ff;
+	--color-on-primary: #00363f;
+	--color-on-primary-container: #005f6d;
+	--color-primary-fixed: #a5eeff;
+	--color-primary-fixed-dim: #00daf8;
+	--color-inverse-primary: #006877;
+
+	/* Cores de Superfície */
+	--color-surface: #0c1324;
+	--color-surface-dim: #0c1324;
+	--color-surface-container-lowest: #070d1f;
+	--color-surface-container: #191f31;
+	--color-surface-container-high: #23293c;
+	--color-surface-container-highest: #2e3447;
+	--color-background: #0c1324;
+	--color-on-surface: #dce1fb;
+	--color-on-background: #dce1fb;
+
+	/* Cores Secundárias */
+	--color-secondary: #b9c8de;
+	--color-secondary-container: #39485a;
+	--color-on-secondary: #233143;
+	--color-on-secondary-container: #a7b6cc;
+
+	/* Cores Terciárias */
+	--color-tertiary: #e2e8ff;
+	--color-tertiary-container: #c4cce6;
+	--color-on-tertiary-container: #4e566c;
+
+	/* Cores de Erro */
+	--color-error: #ffdad6;
+	--color-on-error: #690005;
+
+	/* Cores de Borda/Outline */
+	--color-outline: #859397;
+	--color-outline-variant: #3b494c;
+
+	/* Cores Funcionais */
+	--color-inverse-surface: #dce1fb;
+	--color-inverse-on-surface: #2a3043;
+	--color-surface-tint: #00daf8;
+
+	/* Tipografia */
+	--font-display: 'Space Grotesk', sans-serif;
+	--font-body: 'Geist', sans-serif;
+	--font-code: 'JetBrains Mono', monospace;
+
+	/* Tamanhos de Fonte */
+	--font-size-display-lg: 64px;
+	--font-size-headline-lg: 40px;
+	--font-size-headline-lg-mobile: 32px;
+	--font-size-headline-md: 24px;
+	--font-size-body-lg: 18px;
+	--font-size-body-md: 16px;
+	--font-size-label-sm: 12px;
+	--font-size-code-md: 14px;
+
+	/* Line Heights */
+	--line-height-display-lg: 1.1;
+	--line-height-headline-lg: 1.2;
+	--line-height-headline-md: 1.3;
+	--line-height-body-lg: 1.6;
+	--line-height-body-md: 1.6;
+	--line-height-code-md: 1.5;
+	--line-height-label-sm: 1;
+
+	/* Letter Spacing */
+	--letter-spacing-display-lg: -0.02em;
+	--letter-spacing-label-sm: 0.05em;
+	--letter-spacing-wide: 0.2em;
+	--letter-spacing-widest: 0.1em;
+	--letter-spacing-tight: -0.02em;
+	--letter-spacing-tighter: -0.05em;
+
+	/* Font Weights */
+	--font-weight-display-lg: 700;
+	--font-weight-headline-lg: 600;
+	--font-weight-headline-md: 500;
+	--font-weight-body-md: 400;
+	--font-weight-body-lg: 400;
+	--font-weight-label-sm: 500;
+	--font-weight-code-md: 400;
+	--font-weight-bold: 700;
+	--font-weight-semibold: 600;
+	--font-weight-medium: 500;
+	--font-weight-regular: 400;
+
+	/* Espaçamentos */
+	--spacing-xs: 4px;
+	--spacing-sm: 8px;
+	--spacing-md: 16px;
+	--spacing-lg: 24px;
+	--spacing-xl: 32px;
+	--spacing-2xl: 48px;
+	--spacing-gutter: 24px;
+	--spacing-margin-mobile: 16px;
+	--spacing-margin-desktop: 64px;
+	--spacing-base: 8px;
+	--spacing-container-max: 1440px;
+
+	/* Border Radius */
+	--radius-sm: 8px;
+	--radius-md: 12px;
+	--radius-lg: 16px;
+	--radius-xl: 24px;
+	--radius-full: 9999px;
+
+	/* Sombras */
+	--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+	--shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
+	--shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.4);
+	--shadow-xl: 0 20px 50px rgba(0, 0, 0, 0.5);
+	--shadow-glow-primary: 0 0 15px rgba(0, 224, 255, 0.4);
+	--shadow-glow-primary-hover: 0 0 25px rgba(0, 224, 255, 0.7);
+	--shadow-whatsapp: 0 10px 15px -3px rgba(37, 211, 102, 0.2), 0 4px 6px -4px rgba(37, 211, 102, 0.2);
+}
+
+/* ── Reset Básico ── */
+*,
+*::before,
+*::after {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+html {
+	scroll-behavior: smooth;
+	background-color: #070d1f;
+	color: #dce1fb;
+}
+
+body {
+	font-family: var(--font-body);
+	font-size: var(--font-size-body-md);
+	line-height: var(--line-height-body-md);
+	background-color: #070d1f;
+	color: var(--color-on-surface);
+	overflow-x: hidden;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-size: inherit;
+	font-weight: inherit;
+}
+
+button, input, select, textarea {
+	font-family: inherit;
+	font-size: 100%;
+	font-weight: inherit;
+	line-height: inherit;
+	color: inherit;
+	margin: 0;
+	padding: 0;
+}
+
+button {
+	cursor: pointer;
+}
+
+a {
+	color: inherit;
+	text-decoration: none;
+}
+
+img {
+	max-width: 100%;
+	height: auto;
+	display: block;
+}
+
+/* ── Glass Panel ── */
+.glass-panel {
+	background: rgba(15, 23, 42, 0.7);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+}
+
+.glass-panel-light {
+	background: rgba(255, 255, 255, 0.03);
+	backdrop-filter: blur(16px);
+	-webkit-backdrop-filter: blur(16px);
+	border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ── Animações ── */
+@keyframes pulse {
+	0% { transform: scale(1); opacity: 1; }
+	100% { transform: scale(3); opacity: 0; }
+}
+
+@keyframes scan {
+	0% { top: 0; }
+	100% { top: 100%; }
+}
+
+@keyframes fade-in-up {
+	from { opacity: 0; transform: translateY(20px); }
+	to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-glow {
+	0%, 100% { opacity: 0.4; }
+	50% { opacity: 0.8; }
+}
+
+@keyframes scan-line {
+	0% { transform: translateY(-100%); }
+	100% { transform: translateY(100%); }
+}
+
+/* ── Scanning Line ── */
+.scanning-line {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	overflow: hidden;
+}
+
+.scanning-line::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: -100%;
+	width: 200%;
+	height: 2px;
+	background: linear-gradient(90deg, transparent, var(--color-primary-container), transparent);
+	animation: scan-line 3s ease-in-out infinite;
+}
+
+/* ── Efeitos ── */
+.electric-glow {
+	box-shadow: var(--shadow-glow-primary);
+}
+
+.electric-glow-hover:hover {
+	box-shadow: var(--shadow-glow-primary-hover);
+}
+
+.animate-pulse-glow {
+	animation: pulse-glow 3s ease-in-out infinite;
+}
+
+/* ── Scrollbar ── */
+.scrollbar-hide {
+	-ms-overflow-style: none;
+	scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+	display: none;
+}
+
+/* ── Responsivo ── */
+@media (min-width: 768px) {
+	.md\:block { display: block; }
+	.md\:hidden { display: none; }
+	.md\:flex { display: flex; }
+}
+
+@media (max-width: 768px) {
+	.hide-mobile { display: none; }
+}
