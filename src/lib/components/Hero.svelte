@@ -1,8 +1,12 @@
+<script lang="ts">
+	import { base } from '$app/paths';
+</script>
+
 <section class="hero">
 	<div class="hero__bg">
 		<div class="hero__overlay"></div>
 		<img
-			src="/assets/images/cover.png"
+			src="{base}/assets/images/cover.png"
 			fetchpriority="high"
 			alt="Hero background - Deep Tech visual abstract"
 			class="hero__image"
