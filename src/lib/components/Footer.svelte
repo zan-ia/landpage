@@ -18,6 +18,11 @@
 			<a class="footer__link" href="#">CONTACT</a>
 		</nav>
 	</div>
+	<div>
+		<p class="footer__version">
+			version 1.0.0
+		</p>
+	</div>
 </footer>
 
 <style>
@@ -86,6 +91,15 @@
 		font-size: var(--font-size-label-sm);
 		color: var(--color-on-surface);
 		opacity: 0.5;
+	}
+
+	.footer__version {
+		opacity: 0.5;
+		margin-top: 16px;
+		text-align: center;
+		font-family: var(--font-code);
+		color: var(--color-on-surface);
+		font-size: var(--font-size-label-sm);
 	}
 
 	.footer__nav {
