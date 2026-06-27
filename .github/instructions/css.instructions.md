@@ -1,18 +1,19 @@
 ---
-applyTo: "build/**/*.css, build/index.html"
+description: "Use when: writing or reviewing CSS in Svelte components, creating new components with scoped styles, or modifying src/lib/app.css. Covers design tokens, scoped CSS conventions, BEM naming, responsive breakpoints, and animation best practices."
+applyTo: "src/**/*.svelte, src/lib/app.css"
 ---
 
-# Regras e Padrões de CSS
+# Regras e Padrões de CSS — SvelteKit
 
 ## 1. Design Tokens (Variáveis CSS)
 
-Sempre use as variáveis CSS definidas em `:root`. Nunca use valores hard-coded para cores, fontes ou espaçamentos.
+Sempre use as variáveis CSS definidas em `src/lib/app.css`. Nunca use valores hard-coded para cores, fontes ou espaçamentos.
 
 ```css
 /* ✅ Correto */
 color: var(--color-on-surface);
 background: var(--color-surface-container);
-font-family: var(--font-geist);
+font-family: var(--font-body);
 
 /* ❌ Errado */
 color: #e0e0e0;
@@ -20,93 +21,139 @@ background: #1e1e2e;
 font-family: 'Geist', sans-serif;
 ```
 
-### Tokens Disponíveis
+### Tokens Disponíveis (Material Design 3 — Dark Mode)
 
 | Categoria | Tokens |
 |-----------|--------|
-| **Cores** | `--color-primary`, `--color-primary-container`, `--color-on-primary`, `--color-secondary`, `--color-surface`, `--color-surface-container`, `--color-on-surface`, `--color-outline` |
-| **Tipografia** | `--font-space-grotesk` (displays), `--font-geist` (corpo), `--font-jetbrains-mono` (código) |
-| **Espaçamento** | `--spacing-xs` (4px), `--spacing-sm` (8px), `--spacing-md` (16px), `--spacing-lg` (24px), `--spacing-xl` (32px), `--spacing-2xl` (48px) |
-| **Bordas** | `--radius-sm` (8px), `--radius-md` (12px), `--radius-lg` (16px), `--radius-xl` (24px) |
-| **Sombras** | `--shadow-sm`, `--shadow-md`, `--shadow-lg`, `--shadow-xl` |
+| **Cores Primárias** | `--color-primary`, `--color-primary-container`, `--color-on-primary`, `--color-on-primary-container` |
+| **Cores de Superfície** | `--color-surface`, `--color-surface-dim`, `--color-surface-container`, `--color-surface-container-lowest`, `--color-background`, `--color-on-surface` |
+| **Cores Secundárias** | `--color-secondary`, `--color-secondary-container`, `--color-on-secondary` |
+| **Cores Terciárias** | `--color-tertiary`, `--color-tertiary-container`, `--color-on-tertiary-container` |
+| **Cores de Erro** | `--color-error`, `--color-on-error` |
+| **Cores de Borda** | `--color-outline`, `--color-outline-variant` |
+| **Tipografia** | `--font-display` (Space Grotesk), `--font-body` (Geist), `--font-code` (JetBrains Mono) |
+| **Tamanhos de Fonte** | `--font-size-display-lg`, `--font-size-headline-lg`, `--font-size-headline-md`, `--font-size-body-lg`, `--font-size-body-md`, `--font-size-label-sm`, `--font-size-code-md` |
+| **Line Heights** | `--line-height-display-lg`, `--line-height-headline-lg`, `--line-height-body-md` |
+| **Espaçamento** | `--spacing-xs` (4px), `--spacing-sm` (8px), `--spacing-md` (16px), `--spacing-lg` (24px), `--spacing-xl` (32px), `--spacing-2xl` (48px), `--spacing-gutter` (24px), `--spacing-margin-mobile` (16px), `--spacing-margin-desktop` (64px) |
+| **Bordas** | `--radius-sm` (8px), `--radius-md` (12px), `--radius-lg` (16px), `--radius-xl` (24px), `--radius-full` (9999px) |
+| **Sombras** | `--shadow-sm`, `--shadow-md`, `--shadow-lg`, `--shadow-xl`, `--shadow-glow-primary`, `--shadow-glow-primary-hover`, `--shadow-whatsapp` |
 
-## 2. Nomenclatura de Classes
+## 2. Scoped CSS (Estilo por Componente)
 
-Use **kebab-case** para classes CSS customizadas. Classes Tailwind são utilitárias e seguem a convenção do framework.
+Cada componente Svelte tem seu próprio `<style>` com escopo automático. **Não** coloque estilos de um componente no arquivo de outro componente.
 
-```css
-/* ✅ Correto */
-.hero-section { }
-.glass-panel { }
-.scanning-line { }
-.animate-fade-in-up { }
+```svelte
+<!-- ✅ Correto — styles dentro do próprio componente -->
+<script lang="ts">
+  // lógica do componente
+</script>
 
-/* ❌ Errado */
-.heroSection { }
-.glassPanel { }
-.scanning_line { }
-```
+<div class="hero">
+  <h1 class="hero__title">Título</h1>
+</div>
 
-### Prefixos Semânticos
-
-| Prefixo | Uso | Exemplo |
-|---------|-----|---------|
-| `.hero-*` | Seção hero principal | `.hero-title`, `.hero-cta` |
-| `.section-*` | Seções genéricas | `.section-header`, `.section-grid` |
-| `.glass-*` | Efeitos glassmorphism | `.glass-panel`, `.glass-nav` |
-| `.animate-*` | Animações | `.animate-fadeInUp`, `.animate-glow` |
-| `.icon-*` | Ícones ou wrappers de ícone | `.icon-wrapper`, `.icon-large` |
-
-## 3. Composição de Estilos
-
-### Classes Utilitárias vs CSS Customizado
-
-```html
-<!-- ✅ Preferir classes Tailwind para layout e espaçamento simples -->
-<section class="relative py-24 px-4 max-w-6xl mx-auto">
-
-<!-- ✅ CSS customizado apenas para efeitos complexos ou reutilizáveis -->
 <style>
-  .glass-panel {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+  .hero {
+    padding: 96px var(--spacing-margin-mobile);
+  }
+  .hero__title {
+    font-family: var(--font-display);
+    font-size: var(--font-size-display-lg);
+    color: var(--color-on-surface);
   }
 </style>
 ```
 
-### Regra de Decisão
+### O que vai em `src/lib/app.css` (global)
+- Design tokens (`:root { ... }`)
+- Reset básico (`*`, `html`, `body`)
+- Classes utilitárias reutilizáveis (`.glass-panel`, animações `@keyframes`)
 
-| Situação | Abordagem |
-|----------|-----------|
-| Layout (flex, grid, padding, margin) | Tailwind CDN |
-| Cores, tipografia | Variáveis CSS via Tailwind ou inline |
-| Efeitos complexos (glass, blur, gradientes) | CSS customizado |
-| Animações / keyframes | CSS customizado |
-| Estado único (hover específico) | Tailwind com `hover:` |
-| Padrão reutilizável em múltiplos elementos | Classe CSS customizada |
+### O que vai no `<style>` do componente
+- Estilos específicos do componente
+- Layout, cores, tipografia daquele componente
+- Animações exclusivas do componente
 
-## 4. Media Queries e Responsividade
+## 3. Nomenclatura de Classes (BEM-like)
+
+Use o padrão **componente__elemento--modificador** com kebab-case.
 
 ```css
-/* ✅ Breakpoint único em 768px para mobile */
-@media (max-width: 768px) {
-  /* ajustes mobile */
-}
+/* ✅ Correto */
+.testimonials__carousel { }
+.testimonial__card { }
+.testimonial__star { }
+.testimonials__dot--active { }
+.hero__title { }
+.solutions__grid { }
 
-/* ✅ Mobile-first sempre que possível */
-.grid-cols-1 md:grid-cols-3 /* Tailwind já faz mobile-first */
+/* ❌ Errado */
+.testimonialsCarousel { }
+.testimonial-card { }
+.heroTitle { }
 ```
 
-- **Breakpoint único:** 768px (mobile)
-- **Mobile-first:** Comece do layout mobile e expanda para desktop
-- **Evite** múltiplos breakpoints customizados — use as classes `md:*` do Tailwind
+### Prefixos por Componente
 
-## 5. Animações
+| Componente | Prefixo | Exemplo |
+|-----------|---------|---------|
+| **Header** | `.header__*` | `.header__nav`, `.header__logo` |
+| **Hero** | `.hero__*` | `.hero__title`, `.hero__cta` |
+| **Solutions** | `.solutions__*` | `.solutions__grid`, `.solutions__card` |
+| **Authority** | `.authority__*` | `.authority__counter` |
+| **Differential** | `.differential__*` | `.differential__item` |
+| **Testimonials** | `.testimonials__*` / `.testimonial__*` | `.testimonial__card` |
+| **CTA** | `.cta__*` | `.cta__button` |
+| **Footer** | `.footer__*` | `.footer__link` |
 
-Defina animações reutilizáveis com `@keyframes`. Prefira animações sutis (300-500ms).
+## 4. Glass Panel (Componente Global)
+
+Definido em `src/lib/app.css`:
 
 ```css
+.glass-panel {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(186, 242, 255, 0.1);
+  border-radius: var(--radius-lg);
+}
+```
+
+Use a classe `.glass-panel` nos componentes Svelte:
+
+```svelte
+<div class="testimonial__card glass-panel">
+  <!-- conteúdo -->
+</div>
+```
+
+## 5. Media Queries e Responsividade
+
+Breakpoint único em **768px** (mobile). Mobile-first: escreva para mobile e use `@media (min-width: 768px)` para desktop.
+
+```css
+/* Mobile (default) */
+.solutions__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-gutter);
+}
+
+/* Desktop */
+@media (min-width: 768px) {
+  .solutions__grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+```
+
+## 6. Animações
+
+Defina `@keyframes` globais em `src/lib/app.css`. Animações específicas no `<style>` do componente.
+
+```css
+/* Em app.css — animações globais */
 @keyframes fade-in-up {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
@@ -116,73 +163,55 @@ Defina animações reutilizáveis com `@keyframes`. Prefira animações sutis (3
   0%, 100% { opacity: 0.4; }
   50% { opacity: 0.8; }
 }
-
-@keyframes scanning-line {
-  0% { top: -10%; }
-  100% { top: 110%; }
-}
-
-.animate-fade-in-up {
-  animation: fade-in-up 0.5s ease-out forwards;
-}
-
-.animate-pulse-glow {
-  animation: pulse-glow 3s ease-in-out infinite;
-}
 ```
 
-### Diretrizes de Animação
-- Duração: 300ms (micro-interações), 500ms (entrada), 3-6s (contínuas)
-- Timing function: `ease-out` para entradas, `ease-in-out` para loops
-- `prefers-reduced-motion`: Sempre respeitar com `@media (prefers-reduced-motion: reduce)`
-- Não animar `width`, `height`, `top`, `left` — prefira `transform` e `opacity`
-
-## 6. Organização de Estilos no HTML
-
-Mantenha os estilos em ordem dentro do `<style>`:
-
-```css
-/* 1. Design Tokens / Variáveis */
-:root { /* ... */ }
-
-/* 2. Estilos Base (body, tipografia) */
-body { /* ... */ }
-
-/* 3. Componentes Reutilizáveis (.glass-panel, .animate-*) */
-.glass-panel { /* ... */ }
-
-/* 4. Seções Específicas (na ordem da página) */
-/* --- Hero --- */
-/* --- Solutions --- */
-/* --- Testimonials --- */
-/* --- Footer --- */
-
-/* 5. Media Queries */
-@media (max-width: 768px) { /* ... */ }
-
-/* 6. Animações */
-@keyframes fade-in-up { /* ... */ }
-```
+### Diretrizes
+- Duração: 300ms (micro), 500ms (entrada), 2-6s (loops)
+- Timing: `ease-out` para entradas, `ease-in-out` para loops
+- **Sempre** respeitar `prefers-reduced-motion`:
+  ```css
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+  ```
+- Animar apenas `transform` e `opacity` (propriedades composited)
+- `will-change` usar com moderação, apenas durante interação ativa
 
 ## 7. Especificidade
 
-Mantenha a especificidade baixa. Prefira classes únicas em vez de seletores aninhados.
+Mantenha especificidade baixa. O scoped CSS do Svelte já adiciona um hash único, evitando conflitos.
 
 ```css
 /* ✅ Correto — classe direta */
-.btn-primary { }
-
-/* ❌ Evitar — alta especificidade */
-section div button.primary { }
+.hero__cta { }
 
 /* ❌ Evitar — aninhamento desnecessário */
-.glass-panel .glass-panel-content .glass-panel-title { }
+section .hero .hero__container .hero__cta { }
 ```
 
-## 8. Validação
+## 8. Ícones (Material Symbols)
+
+```svelte
+<span class="material-symbols-outlined">star</span>
+```
+
+Use `font-variation-settings` para controlar peso/preenchimento:
+```css
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+```
+
+## 9. Validação
 
 - [ ] Sem valores hard-coded de cores (sempre usar `var(--color-*)`)
-- [ ] Sem `!important` (exceto em utilitários de override intencional)
+- [ ] Sem `!important` (exceto em utility overrides)
 - [ ] Animações respeitam `prefers-reduced-motion`
-- [ ] Imagens com `width`/`height` explícitos (evitar CLS)
+- [ ] Imagens com `width`/`height` explícitos
 - [ ] Fontes com `font-display: swap`
+- [ ] Estilos no componente correto (não vazar entre componentes)
+- [ ] `@keyframes` globais apenas em `app.css`

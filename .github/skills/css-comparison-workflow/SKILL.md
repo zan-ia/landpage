@@ -1,107 +1,93 @@
 ---
-context: fork
 name: css-comparison-workflow
-description: "Compara e corrige diferenças visuais entre o build local e o site LIVE (www.zan.ia.br). Use quando: precisar verificar equivalência visual, depurar estilos que divergem entre LOCAL e LIVE, ou garantir que o build local está 100% idêntico ao site de produção."
+description: "Compara e corrige diferenças visuais entre o dev local (localhost:5173) e o site LIVE (www.zan.ia.br). Use quando: precisar verificar equivalência visual, depurar estilos que divergem entre DEV e LIVE, ou garantir que o build local está 100% idêntico ao site de produção."
 argument-hint: "Descreva qual elemento ou seção está diferente (ex: 'sombra do CTA WhatsApp', 'backdrop-filter dos cards')"
 ---
 
-# Skill: CSS Comparison Workflow — Local vs LIVE
+# Skill: CSS Comparison Workflow — DEV vs LIVE (SvelteKit)
 
-Workflow para identificar e corrigir diferenças de estilo computado entre o build local (`file:///home/.../build/index.html`) e o site LIVE (`https://www.zan.ia.br/`).
+Workflow para identificar e corrigir diferenças de estilo computado entre o ambiente de desenvolvimento (`localhost:5173`) e o site LIVE (`https://www.zan.ia.br/`).
 
 ## Quando Usar
-- Após migrar CSS (ex: Tailwind CDN → CSS vanilla)
+- Após modificar CSS em componentes Svelte
 - Quando um elemento visual parece diferente da produção
-- Para verificação regressiva de equivalência visual
-- Antes de fazer deploy
+- Para verificação regressiva antes de deploy
+- Após atualizar `src/lib/app.css`
 
 ## Ferramentas
-- **Playwright** (via VS Code browser tools) — para extrair `getComputedStyle` de ambos os lados
-- **Variáveis CSS** em `build/assets/css/base/variables.css`
+- **Playwright** (via VS Code browser tools) — para extrair `getComputedStyle`
+- **Vite dev server**: `npm run dev` → `localhost:5173`
+- **Preview build**: `npm run build && npm run preview` → `localhost:4173`
 
-## CSS Load Order (CRÍTICO — causa raiz da maioria das divergências)
+## Arquitetura CSS (SvelteKit)
 
 ```
-LOCAL:  tailwind-replacement.css (primeiro) → main.css (segundo, via @imports)
-LIVE:   <style> custom CSS (primeiro) → Tailwind CDN utilities (segundo)
+GLOBAL:  src/lib/app.css → design tokens, reset, .glass-panel, @keyframes
+SCOPED:  cada *.svelte → <style> com hash único (sem conflitos)
+BUILD:   Vite extrai CSS → build/_app/immutable/assets/*.css (com hash)
 ```
 
-⚠️ **Consequência**: Em LOCAL, `main.css` (importa glass-panel.css, responsive.css, cta.css, etc.) carrega DEPOIS de `tailwind-replacement.css`. Isso significa que regras de mesma especificidade em `main.css` SOBRESCREVEM as utilitárias em `tailwind-replacement.css`.
+⚠️ **Scoped CSS**: Cada componente tem seu próprio `<style>` com namespacing automático. Não há conflitos de classes entre componentes.
 
 ### Armadilhas Comuns
-| Problema | Sintoma | Por que acontece |
-|----------|---------|------------------|
-| `backdrop-filter` errado | Cards sem blur | `glass-panel.css` (via main.css) sobrescreve `backdrop-blur-xl` (via tailwind-replacement.css) |
-| `box-shadow` errado | Sombra diferente | `responsive.css` ou `cta.css` (via main.css) tem regra duplicada que sobrescreve `tailwind-replacement.css` |
-| `border` sumindo | Borda não aparece | `glass-panel.css` sem `border` ou ordem de carregamento invertida |
-| `opacity` errada | Texto muito transparente | `typography.css` (via main.css) define `opacity` em `.text-on-surface-variant` |
+| Problema | Sintoma | Causa Provável |
+|----------|---------|----------------|
+| `backdrop-filter` errado | Cards sem blur | `.glass-panel` não aplicado ou sobrescrito no scoped CSS |
+| `box-shadow` errado | Sombra diferente | Tokens `--shadow-*` não usados ou valor hard-coded |
+| `font-family` errada | Fonte inconsistente | Não usando `var(--font-body)` / `var(--font-display)` |
+| `opacity` errada | Texto muito claro/escuro | Valor hard-coded em vez de usar opacidade padrão (0.7) |
 
 ## Fluxo de Verificação
 
 ### 1. Abrir ambas as páginas
 ```
-LOCAL: file:///home/zanbook/Projects/ZanDevs/zania-website/build/index.html
-LIVE:  https://www.zan.ia.br/
+DEV:  http://localhost:5173  (dev server com HMR)
+LIVE: https://www.zan.ia.br/
 ```
 
 ### 2. Extrair estilos computados
-Use Playwright para comparar propriedades-chave:
 
 ```javascript
-const props = ['boxShadow', 'backdropFilter', 'backgroundColor', 'border', 
-               'letterSpacing', 'opacity', 'borderLeft',
-               'fontFamily', 'fontSize', 'fontWeight', 'lineHeight'];
+const props = ['boxShadow', 'backdropFilter', 'backgroundColor', 'border',
+               'opacity', 'fontFamily', 'fontSize', 'fontWeight', 'lineHeight',
+               'color', 'gap', 'padding', 'borderRadius'];
 ```
 
-### 3. Propriedades mais divergentes (histórico)
-| Propriedade | Elementos Afetados |
-|-------------|-------------------|
-| `boxShadow` | CTA WhatsApp (`shadow-[#25D366]/20`), cards (`shadow-lg`, `shadow-primary/10`) |
-| `backdropFilter` | Todos `.glass-panel` (deve ser `blur(12px)`), testimonial cards com `backdrop-blur-xl` (deve ser `blur(24px)`) |
-| `border` | Cards, CTA, authority counters |
-| `letterSpacing` | `tracking-tighter` (-0.05em), `tracking-widest` (0.1em) |
-| `opacity` | Elementos com `.opacity-80` (0.8) ou `.opacity-90` (0.9) |
-| `backgroundColor` | Sections (devem ser `rgba(0,0,0,0)`), footer |
+### 3. Propriedades mais sensíveis a divergência
+| Propriedade | Onde verificar |
+|-------------|---------------|
+| `backdropFilter` | Todos `.glass-panel` — deve ser `blur(24px)` |
+| `boxShadow` | Cards, CTA WhatsApp (`--shadow-whatsapp`) |
+| `fontFamily` | `.hero__title` → `Space Grotesk`, corpo → `Geist` |
+| `color` | Texto → `rgb(220, 225, 251)` (`--color-on-surface`) |
+| `opacity` | Texto secundário → `0.7` |
 
-### 4. Técnica do `:where()` para backdrop-filter
-Para que `backdrop-blur-xl` (blur 24px) possa sobrescrever o `backdrop-filter` base do `.glass-panel` (blur 12px):
+### 4. Svelte Scoped CSS Específico
 
+O Svelte adiciona um hash único a cada classe com escopo:
 ```css
-/* Em glass-panel.css — especificidade ZERO */
-:where(.glass-panel) {
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
+/* Código fonte */
+.testimonial__card { color: red; }
+
+/* Compilado */
+.testimonial__card.svelte-1jhcrt0 { color: red; }
 ```
 
-`:where()` tem especificidade 0, então qualquer classe `.backdrop-blur-*` (especificidade 0,1,0) vence naturalmente.
-
-### 5. Cache Busting
-Ao testar localmente com `file://`, o navegador pode cachear CSS. Adicione `?v=N` aos links:
-```html
-<link rel="stylesheet" href="assets/css/tailwind-replacement.css?v=2">
-<link rel="stylesheet" href="assets/css/main.css?v=2">
-```
+Isso significa que seletores **nunca** conflitam entre componentes. Mas estilos globais de `app.css` podem ser sobrescritos por scoped CSS com mesma especificidade.
 
 ## Correções Comuns
 
-### Sombra do WhatsApp CTA
-O valor correto (Tailwind `shadow-lg` + cor `#25D366` a 20%):
-```css
-box-shadow: 0 10px 15px -3px rgba(37, 211, 102, 0.2),
-            0 4px 6px -4px rgba(37, 211, 102, 0.2);
-```
+### Verificar se `.glass-panel` global está sendo aplicado
+1. Inspecione o elemento no devtools
+2. Confirme que a classe `glass-panel` aparece
+3. Se o `backdrop-filter` estiver errado, o scoped CSS do componente pode estar sobrescrevendo
 
-**Verificar sempre em**: `tailwind-replacement.css`, `responsive.css`, `cta.css`, `variables.css`
-
-### Glass-panel backdrop
-Valor base: `blur(12px)` (`.glass-panel`)
-Override: `blur(24px)` (`.backdrop-blur-xl` nos testimonial cards)
+### Verificar tokens
+- `var(--color-on-surface)` deve resolver para `#dce1fb`
+- `var(--font-body)` deve resolver para `'Geist', sans-serif`
+- Se não resolver, verifique se `app.css` está sendo carregado (`+layout.svelte`)
 
 ## Referências
-- `build/assets/css/tailwind-replacement.css` — utilitárias Tailwind em CSS puro
-- `build/assets/css/main.css` — entry point dos módulos (carregado por último!)
-- `build/assets/css/utilities/glass-panel.css` — componente glass panel
-- `build/assets/css/utilities/responsive.css` — utilities extras (pode sobrescrever!)
-- `build/assets/css/components/cta.css` — componente CTA (pode sobrescrever shadows!)
-- `build/assets/css/base/variables.css` — design tokens
+- `src/lib/app.css` — CSS global (design tokens + reset + glass-panel)
+- `src/lib/components/*.svelte` — componentes com scoped CSS
+- `build/_app/immutable/assets/*.css` — CSS compilado (pós-Vite)

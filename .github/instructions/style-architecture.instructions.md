@@ -1,95 +1,88 @@
 ---
-applyTo: "build/**"
+description: "Use when: designing new visual components, defining CSS patterns, choosing design tokens, or ensuring visual consistency across Svelte components. Covers glass-panel, gradients, grid layouts, badges, section headers, and typography patterns."
+applyTo: "src/**"
 ---
 
-# Arquitetura de Estilos — Padrões de Composição
+# Arquitetura de Estilos — Padrões SvelteKit
 
 ## 1. Sistema de Design Tokens
 
-O tema visual é baseado em **Material Design 3** (dark mode). Todos os tokens são definidos em `:root` no CSS.
+Definido em `src/lib/app.css`. Baseado em **Material Design 3** (dark mode).
 
 ### Paleta de Cores
 
-```css
-:root {
-  /* Primária — tons de azul/púrpura para destaque */
-  --color-primary: #7c5cfc;
-  --color-primary-container: #4a2fb3;
-  --color-on-primary: #ffffff;
+> **Fonte única:** `src/lib/app.css` — todos os tokens são definidos lá. Não duplique valores.
 
-  /* Superfície — tons escuros para backgrounds */
-  --color-surface: #0a0a14;
-  --color-surface-container: #12121f;
-  --color-on-surface: #e8e8ed;
+Consulte `src/lib/app.css` para a lista completa. Tokens principais:
 
-  /* Secundária — tons ciano para acentos */
-  --color-secondary: #00d4b8;
+| Token | Uso típico |
+|-------|-----------|
+| `--color-primary` / `--color-primary-container` | Destaques, ícones, badges |
+| `--color-surface` / `--color-surface-container` | Backgrounds de cards/seções |
+| `--color-surface-container-lowest` | Background da página (`html`, `body`) |
+| `--color-background` | Background alternativo |
+| `--color-on-surface` | Texto principal |
+| `--color-outline` / `--color-outline-variant` | Bordas |
 
-  /* Borda/Divisores */
-  --color-outline: rgba(255, 255, 255, 0.08);
-}
-```
+### Como Usar nos Componentes
 
-### Como Usar
-
-```html
-<!-- ✅ Background de cards -->
-<div class="bg-[var(--color-surface-container)]">
-
-<!-- ✅ Texto com opacidade para secundário -->
-<p class="text-[var(--color-on-surface)]/70">
-
-<!-- ✅ Badges com primary + transparência -->
-<span class="bg-[var(--color-primary)]/10 text-[var(--color-primary)]">
+```svelte
+<style>
+  .solutions__card {
+    background: var(--color-surface-container);
+    border: 1px solid var(--color-outline-variant);
+  }
+  .solutions__card-title {
+    color: var(--color-on-surface);
+    font-family: var(--font-display);
+  }
+  .solutions__card-desc {
+    color: var(--color-on-surface);
+    opacity: 0.7;
+  }
+</style>
 ```
 
 ### Opacidades Padrão
 
-| Uso | Opacidade | Exemplo |
-|-----|-----------|---------|
-| Texto principal | 100% | `var(--color-on-surface)` |
-| Texto secundário | 70% | `var(--color-on-surface)/70` |
-| Texto terciário | 50% | `var(--color-on-surface)/50` |
-| Borda sutil | 8-10% | `var(--color-outline)` ou `var(--color-on-surface)/10` |
-| Badge bg | 10% | `var(--color-primary)/10` |
-| Badge border | 20% | `var(--color-primary)/20` |
+| Uso | Opacidade | CSS |
+|-----|-----------|-----|
+| Texto principal | 100% | `color: var(--color-on-surface)` |
+| Texto secundário | 70% | `opacity: 0.7` |
+| Texto terciário | 50% | `opacity: 0.5` |
+| Borda sutil | 10% | `border-color: rgba(186,242,255,0.1)` |
+| Badge bg | 10-20% | `background: rgba(186,242,255,0.2)` |
 
 ## 2. Padrão Glass Panel
 
-O componente visual mais usado no projeto.
-
-```html
-<div class="
-  glass-panel
-  rounded-2xl            /* bordas arredondadas */
-  p-8                    /* padding interno */
-  transition-all         /* hover suave */
-  duration-500
-  hover:scale-[1.02]     /* leve zoom ao hover */
-  hover:shadow-2xl
-  flex flex-col          /* layout interno flex */
-  items-start
-  gap-4
-">
-```
+Definido globalmente em `src/lib/app.css`:
 
 ```css
 .glass-panel {
   background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(186, 242, 255, 0.1);
+  border-radius: var(--radius-lg);
 }
 ```
 
-### Variações do Glass Panel
+### Uso nos componentes
 
-| Variação | Quando Usar | Modificações |
-|----------|-------------|--------------|
-| **Card de serviço** | Grid de soluções | `hover:scale-[1.02]`, ícone gradiente no topo |
-| **Depoimento** | Carrossel | Largura fixa (`min-w-[340px]`), snap scroll |
-| **Navbar** | Header fixo | `backdrop-filter: blur(20px)`, sem hover |
-| **Footer** | Rodapé | Sem hover, opacidade reduzida |
+```svelte
+<!-- Card de serviço -->
+<div class="solutions__card glass-panel">
+  <span class="material-symbols-outlined solutions__icon">smart_toy</span>
+  <h3 class="solutions__card-title">Título</h3>
+  <p class="solutions__card-desc">Descrição</p>
+</div>
+
+<!-- Card de depoimento -->
+<div class="testimonial__card glass-panel">
+  <div class="testimonial__stars">...</div>
+  <p class="testimonial__text">...</p>
+</div>
+```
 
 ## 3. Padrão de Gradientes
 
@@ -108,96 +101,112 @@ background: linear-gradient(
 /* Gradiente de glow (hero, destaques) */
 background: radial-gradient(
   ellipse at 50% 0%,
-  rgba(124, 92, 252, 0.15) 0%,
+  rgba(186, 242, 255, 0.15) 0%,
   transparent 60%
 );
 ```
 
-## 4. Padrão de Grid Layouts
+## 4. Padrão de Grid Layouts (Scoped CSS)
 
-```html
-<!-- Grid de 3 colunas (serviços) -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-  <!-- card 1 -->
-  <!-- card 2 -->
-  <!-- card 3 -->
-</div>
+```css
+/* Mobile-first: 1 coluna */
+.solutions__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-gutter);
+}
 
-<!-- Grid de 2 colunas (sobre, contato) -->
-<div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-  <!-- texto -->
-  <!-- imagem/card -->
-</div>
-
-<!-- Grid de 4 colunas (diferenciais, métricas) -->
-<div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-  <!-- item -->
-</div>
+/* Desktop: 3 colunas */
+@media (min-width: 768px) {
+  .solutions__grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
 ```
 
-### Responsividade do Grid
+### Grids por Componente
 
-| Telas | Comportamento |
-|-------|---------------|
-| `< 768px` | `grid-cols-1` (mobile) |
-| `>= 768px` | `grid-cols-2`, `3` ou `4` conforme densidade |
+| Componente | Mobile | Desktop |
+|-----------|--------|---------|
+| Solutions | 1 col | 3 cols |
+| Authority | 1 col | 3 cols |
+| Differential | 1 col | 2 cols |
+| Testimonials | scroll horizontal | scroll horizontal |
 
 ## 5. Padrão de Badges / Tags
 
-```html
-<span class="
-  inline-block
-  px-4 py-1.5
-  rounded-full
-  bg-[var(--color-primary)]/10
-  text-[var(--color-primary)]
-  text-sm font-medium
-  border border-[var(--color-primary)]/20
-">
-  badge_label
+```svelte
+<span class="solutions__badge">
+  Agentes de IA
 </span>
+
+<style>
+  .solutions__badge {
+    display: inline-block;
+    padding: 4px 16px;
+    border-radius: var(--radius-full);
+    background: rgba(186, 242, 255, 0.1);
+    color: var(--color-primary);
+    font-size: var(--font-size-label-sm);
+    font-weight: var(--font-weight-medium);
+    border: 1px solid rgba(186, 242, 255, 0.2);
+  }
+</style>
 ```
 
 ## 6. Padrão de Header de Seção
 
-Toda seção deve ter este cabeçalho consistente:
-
-```html
-<div class="text-center max-w-3xl mx-auto mb-16">
-  <!-- Badge opcional -->
-  <span class="inline-block px-4 py-1.5 rounded-full ...">
-    badge
-  </span>
-
-  <!-- Título -->
-  <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-[var(--color-on-surface)]">
-    Título da Seção
-  </h2>
-
-  <!-- Subtítulo -->
-  <p class="mt-4 text-lg text-[var(--color-on-surface)]/70 max-w-2xl mx-auto">
-    Descrição ou subtítulo.
-  </p>
+```svelte
+<div class="testimonials__header">
+  <h2 class="testimonials__title">O que nossos parceiros dizem</h2>
+  <p class="testimonials__subtitle">Histórias de transformação digital.</p>
 </div>
+
+<style>
+  .testimonials__header {
+    text-align: center;
+    margin-bottom: 64px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .testimonials__title {
+    font-family: var(--font-display);
+    font-size: var(--font-size-headline-lg);
+    color: var(--color-on-surface);
+  }
+  .testimonials__subtitle {
+    font-family: var(--font-body);
+    font-size: var(--font-size-body-md);
+    color: var(--color-on-surface);
+    opacity: 0.7;
+  }
+</style>
 ```
 
 ## 7. Padrão de Tipografia
 
-| Elemento | Fonte | Peso | Tamanho |
-|----------|-------|------|---------|
-| Título hero (h1) | `font-space-grotesk` | 700 (bold) | `text-5xl` mobile, `text-7xl` desktop |
-| Título seção (h2) | `font-geist` | 700 (bold) | `text-3xl` mobile, `text-5xl` desktop |
-| Subtítulo | `font-geist` | 400 (regular) | `text-lg` |
-| Card title (h3) | `font-geist` | 600 (semibold) | `text-xl` |
-| Corpo | `font-geist` | 400 (regular) | `text-base` ou `text-sm` |
-| Código | `font-jetbrains-mono` | 400 | `text-sm` |
-| Badge | `font-geist` | 500 (medium) | `text-sm` |
+| Elemento | Token Fonte | Token Tamanho | Peso |
+|----------|-------------|---------------|------|
+| Título hero (h1) | `--font-display` | `--font-size-display-lg` | 700 |
+| Título seção (h2) | `--font-display` | `--font-size-headline-lg` | 600 |
+| Subtítulo | `--font-body` | `--font-size-body-md` | 400 |
+| Card title (h3) | `--font-display` | `--font-size-headline-md` | 500 |
+| Corpo | `--font-body` | `--font-size-body-md` | 400 |
+| Código/dados | `--font-code` | `--font-size-code-md` | 400 |
+| Badge | `--font-code` | `--font-size-label-sm` | 500 |
 
 ## 8. Padrão de Ícones (Material Symbols)
 
-```html
-<!-- Ícone standalone -->
-<span class="material-symbols-outlined text-2xl">icon_name</span>
+```svelte
+<span class="material-symbols-outlined">star</span>
+
+<style>
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+</style>
+```
 
 <!-- Ícone em wrapper com gradiente -->
 <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-container)] flex items-center justify-center">

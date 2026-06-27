@@ -1,88 +1,137 @@
 ---
-context: fork
 name: criar-section
-description: "Cria uma nova seção HTML na landing page Zan.IA seguindo os padrões visuais existentes. Gera o HTML completo com glass panels, gradientes, tipografia consistente e animações padrão do projeto."
+description: "Cria uma nova seção como componente Svelte na landing page Zan.IA seguindo os padrões visuais existentes. Gera o .svelte completo com glass panels, gradientes, tipografia consistente e scoped CSS."
 ---
 
-# Skill: Criar Nova Seção
+# Skill: Criar Nova Seção (SvelteKit)
 
-Cria uma nova seção HTML em `build/index.html` mantendo consistência visual com o resto da landing page.
+Cria um novo componente Svelte em `src/lib/components/` mantendo consistência visual.
 
-## Estrutura de Seção
+## Template de Componente
 
-```html
+```svelte
+<script lang="ts">
+  // Dados da seção
+  const items = [
+    { icon: "smart_toy", title: "Item 1", desc: "Descrição do item 1." },
+    { icon: "psychology", title: "Item 2", desc: "Descrição do item 2." },
+    { icon: "auto_awesome", title: "Item 3", desc: "Descrição do item 3." }
+  ];
+</script>
+
 <!-- ════════════════════════════════════════════ -->
 <!-- NOME_DA_SEÇÃO -->
 <!-- ════════════════════════════════════════════ -->
-<section id="nome-da-secao" class="relative py-24 px-4 md:px-8 overflow-hidden">
-  <!-- Background decorativo -->
-  <div class="absolute inset-0 bg-gradient-to-b from-[var(--color-surface)] via-[var(--color-surface-container)] to-[var(--color-surface)] pointer-events-none"></div>
-
-  <div class="max-w-6xl mx-auto relative z-10">
-    <!-- Header da seção -->
-    <div class="text-center max-w-3xl mx-auto mb-16">
-      <span class="inline-block px-4 py-1.5 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] text-sm font-medium border border-[var(--color-primary)]/20 mb-4">
-        badge_label
-      </span>
-      <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-[var(--color-on-surface)]">
-        Título da Seção
-      </h2>
-      <p class="mt-4 text-lg text-[var(--color-on-surface)]/70 max-w-2xl mx-auto">
-        Descrição ou subtítulo da seção.
-      </p>
+<section id="nome-secao" class="nome-secao" aria-label="Nome da Seção">
+  <div class="nome-secao__inner">
+    <!-- Header -->
+    <div class="nome-secao__header">
+      <h2 class="nome-secao__title">Título da Seção</h2>
+      <p class="nome-secao__subtitle">Descrição ou subtítulo.</p>
     </div>
 
-    <!-- Grid ou conteúdo: use glass-panel para cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <!-- Cards padrão glass-panel -->
-      <div class="group glass-panel rounded-2xl p-8 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl">
-        <!-- conteúdo -->
-      </div>
+    <!-- Grid de cards -->
+    <div class="nome-secao__grid">
+      {#each items as item}
+        <div class="nome-secao__card glass-panel">
+          <span class="material-symbols-outlined nome-secao__icon">{item.icon}</span>
+          <h3 class="nome-secao__card-title">{item.title}</h3>
+          <p class="nome-secao__card-desc">{item.desc}</p>
+        </div>
+      {/each}
     </div>
   </div>
 </section>
+
+<style>
+  .nome-secao {
+    padding: 96px var(--spacing-margin-mobile);
+  }
+  .nome-secao__inner {
+    max-width: var(--spacing-container-max);
+    margin: 0 auto;
+  }
+  .nome-secao__header {
+    text-align: center;
+    margin-bottom: 64px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .nome-secao__title {
+    font-family: var(--font-display);
+    font-size: var(--font-size-headline-lg);
+    color: var(--color-on-surface);
+  }
+  .nome-secao__subtitle {
+    font-family: var(--font-body);
+    font-size: var(--font-size-body-md);
+    color: var(--color-on-surface);
+    opacity: 0.7;
+  }
+  .nome-secao__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-gutter);
+  }
+  @media (min-width: 768px) {
+    .nome-secao__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .nome-secao__card {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 32px;
+    transition: box-shadow 0.5s ease, transform 0.5s ease;
+  }
+  .nome-secao__card:hover {
+    box-shadow: 0 0 30px rgba(0, 224, 255, 0.15);
+  }
+  .nome-secao__card-title {
+    font-family: var(--font-display);
+    font-size: var(--font-size-headline-md);
+    color: var(--color-on-surface);
+  }
+  .nome-secao__card-desc {
+    font-family: var(--font-body);
+    font-size: var(--font-size-body-md);
+    color: var(--color-on-surface);
+    opacity: 0.7;
+  }
+</style>
 ```
 
-## Design Tokens a Usar
+## Design Tokens
 
-| Token | Onde usar |
-|-------|-----------|
-| `--color-surface` | Background principal da seção |
-| `--color-surface-container` | Background de containers/cards |
-| `--color-primary` | Badges, destaques, links |
-| `--color-primary-container` | Gradientes, backgrounds de ícones |
+| Token | Uso |
+|-------|-----|
+| `--color-background` | Background da seção |
+| `--color-surface-container` | Background de cards |
+| `--color-primary` | Destaques, ícones |
 | `--color-on-surface` | Texto principal |
-| `--color-on-surface`/70 | Texto secundário/descrições |
-| `--color-on-primary` | Texto em backgrounds primary |
-
-## Animações Padrão
-
-```css
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* Aplicar com animate-fadeInUp na seção ou cards */
-```
-
-Inclua o bloco `@keyframes fadeInUp` apenas se ele ainda não estiver definido em `build/index.html` ou nos seus stylesheets vinculados. Se já estiver definido, aplique a classe `animate-fadeInUp` sem redeclarar os keyframes.
+| `--font-display` | Títulos |
+| `--font-body` | Corpo, descrições |
+| `--font-code` | Dados, badges |
+| `--spacing-gutter` | Gap do grid |
 
 ## Procedimento
 
-1. **Analise** o `build/index.html` para entender o padrão visual atual. Se o arquivo não existir ou não puder ser lido, pare e peça ao usuário para fornecer o caminho do arquivo ou compartilhar o HTML relevante antes de prosseguir.
-2. **Insira** a nova seção imediatamente antes do elemento `<footer>`, a menos que o usuário especifique uma posição diferente explicitamente.
-3. **Crie** a seção seguindo a estrutura acima
-4. **Adapte** o grid de acordo com a quantidade de itens de conteúdo distintos: 1 item → 1 coluna, 2 itens → 2 colunas, 3+ itens → 3 colunas
-5. **Mantenha** os estilos existentes — não adicione CSS novo se o padrão já cobre
+1. **Analise** componentes existentes em `src/lib/components/` para padrão visual
+2. **Crie** o arquivo `src/lib/components/NomeSecao.svelte`
+3. **Importe** no `+page.svelte`: `import NomeSecao from '$lib/components/NomeSecao.svelte';`
+4. **Adicione** o componente na ordem desejada: `<NomeSecao />`
+5. **Grid**: 1 col mobile, 2-3 cols desktop conforme densidade
+6. **Glass panels**: Use a classe global `.glass-panel`
 
 ## Checklist de Consistência
 
-- [ ] Usa `glass-panel` para cards/containers
-- [ ] Badge com gradiente e borda sutil
-- [ ] Tipografia com `font-geist` (ou `font-space-grotesk` para displays)
-- [ ] Transições `duration-500` em hover
-- [ ] Responsivo (`grid-cols-1 md:grid-cols-*`)
-- [ ] Ícones Material Symbols quando aplicável
-- [ ] Padding vertical `py-24`
-- [ ] max-width `max-w-6xl` para conteúdo
+- [ ] Usa `.glass-panel` para cards
+- [ ] Tipografia com `var(--font-display)` / `var(--font-body)`
+- [ ] Scoped `<style>` no próprio componente
+- [ ] Design tokens (`var(--color-*)`, nunca hex)
+- [ ] Responsivo (mobile-first, breakpoint 768px)
+- [ ] Ícones Material Symbols
+- [ ] Padding vertical 96px
+- [ ] Max-width com `var(--spacing-container-max)`
