@@ -1,48 +1,68 @@
 ---
-description: "Executa uma auditoria SEO completa na landing page Zan.IA e aplica correções. Verifica meta tags, structured data, Open Graph, performance e acessibilidade."
-agent: "agent"
+description: "Executa uma auditoria SEO completa na landing page Zan.IA (SvelteKit) e aplica correções. Verifica meta tags, structured data, Open Graph, performance e acessibilidade."
+argument-hint: "[opcional] Escopo da auditoria: 'completa', 'meta-tags', 'open-graph', 'structured-data'"
 ---
 
-# Otimização SEO - Zan.IA
+# Otimização SEO — Zan.IA (SvelteKit)
 
-Execute uma auditoria SEO completa no `build/index.html` e corrija todos os problemas encontrados.
+Execute uma auditoria SEO completa nos arquivos fonte e corrija todos os problemas.
+
+## Arquivos a Auditar
+
+| Arquivo | O que verificar |
+|---------|----------------|
+| `src/app.html` | Meta tags, Open Graph, fontes, lang, charset |
+| `src/routes/+layout.svelte` | Estrutura semântica, headings, ARIA |
+| `src/lib/components/Hero.svelte` | `<h1>` único, texto, imagens |
+| `src/lib/components/Footer.svelte` | Links, schema.org |
+| `static/robots.txt` | Configuração de rastreamento |
 
 ## Checklist
 
-### Meta Tags
+### Meta Tags (`src/app.html`)
 - [ ] `<title>` descritivo (50-60 chars) com palavra-chave principal
 - [ ] `<meta name="description">` (150-160 chars) com call-to-action
 - [ ] `<meta name="viewport" content="width=device-width, initial-scale=1">`
-- [ ] `<html lang="pt-BR">` configurado corretamente
-- [ ] `<meta charset="utf-8">` como primeiro elemento no `<head>`
+- [ ] `<html lang="pt-BR">`
+- [ ] `<meta charset="utf-8">` como primeiro elemento
 
-### Open Graph / Social
+### Open Graph / Social (`src/app.html`)
 - [ ] `og:title` — mesmo padrão do title
 - [ ] `og:description` — resumo atrativo
-- [ ] `og:image` — URL da imagem de compartilhamento (1200x630px)
-- [ ] `og:url` — URL canônica
+- [ ] `og:image` — URL absoluta (1200x630px)
+- [ ] `og:url` — URL canônica (`https://www.zan.ia.br/`)
 - [ ] `og:type` — `website`
+- [ ] `og:locale` — `pt_BR`
 - [ ] `twitter:card` — `summary_large_image`
 
 ### Structured Data (JSON-LD)
 - [ ] `Organization` schema com nome, logo, URL, descrição
-- [ ] `WebSite` schema com search action (se aplicável)
-- [ ] `LocalBusiness` schema (se endereço físico for relevante)
+- [ ] `WebSite` schema
+- [ ] Adicionar no `<head>` de `src/app.html` ou no `+layout.svelte`
 
-### Técnico
-- [ ] Canonical URL definida
-- [ ] Links internos funcionando
+### Técnico (Componentes)
+- [ ] `<h1>` único em `Hero.svelte`
+- [ ] Headings hierárquicos (h1 → h2 → h3, sem pular)
 - [ ] Imagens com `alt` descritivo
-- [ ] Headings em ordem hierárquica (`h1` único, `h2` para seções)
-- [ ] URLs de links externos com `rel="noopener noreferrer"` quando `target="_blank"`
+- [ ] Links externos com `rel="noopener noreferrer"`
+- [ ] `aria-label` em elementos interativos sem texto visível
+- [ ] `aria-current="page"` no link ativo
 
 ### Performance SEO
-- [ ] Verificar se há render-blocking resources desnecessários
-- [ ] Imagens com `width` e `height` para evitar CLS
-- [ ] Texto compressível (gzip/brotli habilitado no servidor)
+- [ ] Imagens com `width` e `height` explícitos
+- [ ] Fontes com `font-display: swap` + `rel="preconnect"`
+- [ ] `robots.txt` permite rastreamento
+- [ ] Sitemap (se aplicável)
+
+## Procedimento
+
+1. Audite `src/app.html` primeiro (meta tags)
+2. Audite cada componente por headings e alt text
+3. Corrija problemas diretamente nos arquivos `.svelte`
+4. Execute `npm run build && npm run preview` para verificar
 
 ## Saída Esperada
 Relatório com:
-- Problemas encontrados (com linha no HTML)
+- Problemas encontrados (arquivo + linha)
 - Correções aplicadas
-- Itens que requerem ação manual (ex: configurar servidor)
+- Itens que requerem ação manual

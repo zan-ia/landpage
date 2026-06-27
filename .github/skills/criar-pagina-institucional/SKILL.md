@@ -1,33 +1,31 @@
 ---
-context: fork
 name: criar-pagina-institucional
-description: 'Cria novas páginas institucionais seguindo o padrão visual do site Zan.IA. Use quando: precisar adicionar landing pages, páginas de serviço, páginas institucionais, ou seções que sigam o design system existente (glass panels, paleta Material Design 3, tipografia Space Grotesk/Geist/JetBrains Mono).'
+description: 'Cria novas páginas institucionais como componentes Svelte seguindo o padrão visual do site Zan.IA (SvelteKit). Use quando: precisar adicionar landing pages, páginas de serviço, páginas institucionais, ou seções que sigam o design system existente (glass panels, paleta Material Design 3, tipografia Space Grotesk/Geist/JetBrains Mono).'
 argument-hint: 'Descrição da página a criar (ex: "página de preços", "landing page do serviço de chatbots")'
 ---
 
-# Criar Página Institucional — Zan.IA
+# Criar Página Institucional — Zan.IA (SvelteKit)
 
-Gera uma nova página HTML seguindo o design system e convenções visuais do site Zan.IA.
+Gera um novo componente Svelte ou rota seguindo o design system Zan.IA.
 
 ## Quando Usar
-- Adicionar novas landing pages ao site
-- Criar páginas de serviço (ex: "Agentes de IA", "Fábrica de Mídia")
-- Adicionar seções institucionais (ex: "Política de Privacidade", "Termos de Uso")
+- Adicionar novas páginas ao site SvelteKit
+- Criar landing pages de serviço
+- Adicionar seções institucionais (ex: "Política de Privacidade")
 - Qualquer página que precise seguir o padrão visual existente
 
-## Design System
+## Design System (consulte `src/lib/app.css`)
 
-### Design Tokens (CSS Variables)
+### Design Tokens
 ```css
-/* Cores - Material Design 3 */
+/* Cores - Material Design 3 Dark */
 --color-surface: #0c1324;
 --color-surface-container: #191f31;
---color-surface-container-lowest: #070d1f;
+--color-background: #0c1324;
 --color-primary: #baf2ff;
 --color-primary-container: #00e0ff;
 --color-on-surface: #dce1fb;
 --color-on-primary: #00363f;
---color-on-primary-container: #005f6d;
 --color-outline-variant: #3b494c;
 
 /* Fontes */
@@ -39,51 +37,115 @@ Gera uma nova página HTML seguindo o design system e convenções visuais do si
 --spacing-gutter: 24px;
 --spacing-margin-mobile: 16px;
 --spacing-margin-desktop: 64px;
---spacing-base: 8px;
 ```
 
 ### Componentes Reutilizáveis
 
-| Componente | Classes CSS | Descrição |
+| Componente | Classe | Descrição |
 |---|---|---|
-| **Glass Panel** | `.glass-panel` | backdrop-filter: blur(12px), border sutil, bg semi-transparent |
-| **Botão Primário** | `.btn-primary` | `background: var(--color-primary-container); color: var(--color-on-primary); box-shadow: 0 0 12px var(--color-primary-container) on hover` — CTA principal |
-| **Botão WhatsApp** | `.btn-whatsapp` | `background: #25D366; color: #fff; border-radius: 8px` — CTA de contato |
+| **Glass Panel** | `.glass-panel` | Global em `app.css` — blur(24px), border sutil |
 | **Ícone Material** | `<span class="material-symbols-outlined">nome</span>` | Google Material Symbols |
-| **Grid de Cards** | Grid 3 colunas (responsive) | Para listar serviços/soluções |
-| **Carrossel** | Scroll horizontal com snap | Para depoimentos |
+| **Grid de Cards** | CSS grid 3 cols (responsive) | `grid-template-columns: repeat(3, 1fr)` |
 
-### Animações Padrão
-- `@keyframes pulse` — glow pulsante em elementos de destaque
-- `@keyframes glow` — brilho sutil em bordas
-- `@keyframes scanning-line` — linha de scan animada (efeito tech)
+### Template de Componente Svelte
+
+```svelte
+<script lang="ts">
+  // Props e estado
+  interface Props {
+    title: string;
+  }
+  let { title }: Props = $props();
+</script>
+
+<section class="nova-pagina" aria-label="{title}">
+  <div class="nova-pagina__inner">
+    <div class="nova-pagina__header">
+      <h2 class="nova-pagina__title">{title}</h2>
+      <p class="nova-pagina__subtitle">Subtítulo descritivo</p>
+    </div>
+
+    <div class="nova-pagina__grid">
+      <div class="nova-pagina__card glass-panel">
+        <span class="material-symbols-outlined nova-pagina__icon">icon_name</span>
+        <h3 class="nova-pagina__card-title">Título do Card</h3>
+        <p class="nova-pagina__card-desc">Descrição</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .nova-pagina {
+    padding: 96px var(--spacing-margin-mobile);
+  }
+  .nova-pagina__inner {
+    max-width: var(--spacing-container-max);
+    margin: 0 auto;
+  }
+  .nova-pagina__header {
+    text-align: center;
+    margin-bottom: 64px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .nova-pagina__title {
+    font-family: var(--font-display);
+    font-size: var(--font-size-headline-lg);
+    color: var(--color-on-surface);
+  }
+  .nova-pagina__subtitle {
+    font-family: var(--font-body);
+    font-size: var(--font-size-body-md);
+    color: var(--color-on-surface);
+    opacity: 0.7;
+  }
+  .nova-pagina__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-gutter);
+  }
+  @media (min-width: 768px) {
+    .nova-pagina__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .nova-pagina__card {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 32px;
+  }
+  .nova-pagina__card-title {
+    font-family: var(--font-display);
+    font-size: var(--font-size-headline-md);
+    color: var(--color-on-surface);
+  }
+  .nova-pagina__card-desc {
+    font-family: var(--font-body);
+    font-size: var(--font-size-body-md);
+    color: var(--color-on-surface);
+    opacity: 0.7;
+  }
+</style>
+```
 
 ## Procedimento
 
-1. **Briefing**: Entenda o propósito da página (serviço, institucional, landing)
-2. **Estrutura**: Crie o HTML semântico com `<header>`, `<main>`, `<section>`, `<footer>`
-3. **Navbar**: Reutilize o padrão do header fixo com logo + navegação + CTA. Exemplo de markup:
-```html
-<header class="fixed-header">
-  <a href="/" class="logo">
-    <span class="material-symbols-outlined">smart_toy</span> Zan.IA
-  </a>
-  <nav class="nav-links">
-    <a href="#solutions">Soluções</a>
-    <a href="#authority">Sobre</a>
-  </nav>
-  <a href="https://wa.me/SEU_NUMERO" class="btn-primary">Fale Conosco</a>
-</header>
-```
-4. **Seções**: Use o padrão de seções com padding adequado (`px-*` equivalente a 24px/64px)
-5. **Glass Panels**: Use `.glass-panel` para cards e containers destacados
-6. **Responsividade**: Aplique breakpoint mobile em 768px
-7. **Ícones**: Use Material Symbols Outlined para ícones
-8. **CTAs**: Inclua pelo menos um botão WhatsApp por página
+1. **Briefing**: Entenda o propósito da página
+2. **Crie o componente**: `src/lib/components/NomePagina.svelte`
+3. **Registre a rota** (se for página separada):
+   - Crie `src/routes/nome-pagina/+page.svelte`
+   - Adicione `src/routes/nome-pagina/+page.js` com `export const prerender = true;`
+4. **Use scoped CSS**: `<style>` no próprio componente
+5. **Design tokens**: Sempre `var(--color-*)`, `var(--font-*)`, `var(--spacing-*)`
+6. **Glass panels**: Use a classe global `.glass-panel`
+7. **Responsividade**: Mobile-first, breakpoint 768px
+8. **Ícones**: Material Symbols Outlined
 
 ## Arquivos de Referência
-- `build/index.html` — página principal (padrão visual)
-- `AGENTS.md` — convenções de código
-- `docs/INSTITUCIONAL.md` — conteúdo institucional da empresa
-
-> **IMPORTANTE:** Se os arquivos de referência não estiverem disponíveis no contexto, informe o usuário e solicite que cole o conteúdo relevante antes de gerar a página. Não invente estrutura, conteúdo ou estilos sem essas referências.
+- `src/lib/components/*.svelte` — componentes existentes (padrão visual)
+- `src/lib/app.css` — design tokens globais
+- `AGENTS.md` — convenções de código, stack
+- `docs/INSTITUCIONAL.md` — conteúdo institucional

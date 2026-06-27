@@ -1,113 +1,125 @@
 ---
-applyTo: "build/**/*.html"
+description: "Use when: creating or editing Svelte components, writing markup in .svelte files, adding ARIA attributes, ensuring semantic HTML5 structure, or updating src/app.html meta tags. Covers accessibility, headings hierarchy, images, and links."
+applyTo: "src/**/*.svelte, src/app.html"
 ---
 
-# Regras e Padrões de HTML
+# Regras e Padrões de HTML — SvelteKit
 
 ## 1. Estrutura Semântica
 
-Use elementos HTML5 semânticos para definir a estrutura da página. Evite `div` quando um elemento semântico existir.
+Use elementos HTML5 semânticos nos componentes Svelte. Evite `<div>` quando um elemento semântico existir.
 
-```html
-<!-- ✅ Correto -->
+```svelte
+<!-- ✅ Correto — +layout.svelte -->
 <header>
-  <nav>...</nav>
+  <nav aria-label="Navegação principal">...</nav>
 </header>
 <main>
-  <section id="hero">...</section>
-  <section id="solutions">...</section>
-  <section id="testimonials">...</section>
+  <slot />
 </main>
 <footer>...</footer>
 
+<!-- ✅ Correto — +page.svelte -->
+<section id="hero" aria-label="Hero principal">...</section>
+<section id="solutions" aria-labelledby="solutions-title">...</section>
+
 <!-- ❌ Errado -->
-<div class="header">
-  <div class="nav">...</div>
-</div>
-<div class="main">
-  <div class="hero">...</div>
-</div>
+<div class="header">...</div>
+<div class="main">...</div>
 ```
 
-### Hierarquia de Seções
+### Hierarquia de Elementos
 
-| Elemento | Quando Usar |
-|----------|-------------|
-| `<header>` | Topo da página ou de uma seção |
-| `<nav>` | Navegação principal |
-| `<main>` | Conteúdo único da página (1 por página) |
-| `<section>` | Agrupa conteúdo temático (com `id` e `heading`) |
-| `<article>` | Conteúdo independente (cards, depoimentos) |
-| `<aside>` | Conteúdo complementar (sidebar, callout) |
-| `<footer>` | Rodapé da página ou de uma seção |
-| `<figure>` / `<figcaption>` | Imagens com legenda |
+| Elemento | Quando Usar | Componente |
+|----------|-------------|------------|
+| `<header>` | Topo da página | `Header.svelte` |
+| `<nav>` | Navegação principal | `Header.svelte` |
+| `<main>` | Conteúdo único (1 por página) | `+layout.svelte` |
+| `<section>` | Agrupa conteúdo temático | Cada componente |
+| `<article>` | Conteúdo independente | Cards de depoimento |
+| `<footer>` | Rodapé | `Footer.svelte` |
 
 ## 2. Headings
 
-- **Um único `<h1>`** por página (geralmente o título hero)
-- Headings seguem ordem hierárquica sem pular níveis
+- **Um único `<h1>`** por página (no `Hero.svelte`)
+- Headings em ordem hierárquica, sem pular níveis
 
-```html
+```svelte
 <!-- ✅ Correto -->
-<h1>Zan.IA — Deep Tech Systems</h1>
-<section>
-  <h2>Soluções</h2>
-  <article>
-    <h3>Sistemas & Sites de IA</h3>
-  </article>
-</section>
+<!-- Hero.svelte -->
+<h1 class="hero__title">Zan.IA — Deep Tech Systems</h1>
 
-<!-- ❌ Errado: h1 ausente, h3 depois de h1 -->
-<div class="hero-title">Zan.IA</div>
-<h3>Sistemas & Sites de IA</h3>
+<!-- Solutions.svelte -->
+<h2 class="solutions__title">Nossas Soluções</h2>
+
+<!-- Card de solução -->
+<h3 class="solutions__card-title">Agentes de IA</h3>
 ```
 
 ## 3. Acessibilidade (ARIA)
 
-```html
+```svelte
 <!-- ✅ Navegação com role e label -->
 <nav aria-label="Navegação principal">
-  <a href="#hero" aria-current="page">Home</a>
-  <a href="#solutions">Soluções</a>
+  <a href="/#hero" aria-current="page">Home</a>
+  <a href="/#solutions">Soluções</a>
 </nav>
 
-<!-- ✅ Botão comaria-label quando sem texto visível -->
-<button aria-label="Abrir menu" class="mobile-menu-btn">
+<!-- ✅ Botão com aria-label (sem texto visível) -->
+<button aria-label="Abrir menu" class="header__menu-btn">
   <span class="material-symbols-outlined">menu</span>
 </button>
 
-<!-- ✅ Seção com aria-labelledby -->
-<section aria-labelledby="solutions-title">
-  <h2 id="solutions-title">Nossas Soluções</h2>
-</section>
+<!-- ✅ Carrossel com ARIA -->
+<div
+  class="testimonials__carousel"
+  role="group"
+  aria-roledescription="carrossel"
+  aria-label="Depoimentos"
+  tabindex="0"
+>
+  <div
+    class="testimonial__card"
+    role="group"
+    aria-roledescription="slide"
+    aria-label="Depoimento 1 de 6"
+  >
+    ...
+  </div>
+</div>
+
+<!-- ✅ Região aria-live para anúncios dinâmicos -->
+<div class="sr-only" aria-live="polite" aria-atomic="true">
+  {liveRegionText}
+</div>
 ```
 
 ### Checklist de Acessibilidade
 
-- [ ] `<html lang="pt-BR">`
-- [ ] Todos os elementos interativos são focáveis via teclado
-- [ ] Imagens têm `alt` descritivo (nunca vazio para imagens decorativas use `alt=""`)
-- [ ] Contraste de cores mínimo 4.5:1 (texto normal) / 3:1 (texto grande)
-- [ ] Links distinguíveis do texto (underline ou contraste)
-- [ ] Formulários com `<label>` associado
+- [ ] `<html lang="pt-BR">` em `src/app.html`
+- [ ] Elementos interativos focáveis via teclado
+- [ ] Imagens com `alt` descritivo (`alt=""` para decorativas)
+- [ ] Contraste mínimo 4.5:1 (texto) / 3:1 (texto grande)
 - [ ] `aria-label` em botões sem texto visível
-- [ ] `aria-current="page"` no link ativo de navegação
+- [ ] `aria-current="page"` no link ativo
+- [ ] Carrossel com `aria-roledescription`, `aria-label` por slide
+- [ ] `aria-live` para conteúdo que muda dinamicamente
 
-## 4. Meta Tags
+## 4. Meta Tags (src/app.html)
 
 Ordem obrigatória no `<head>`:
 
 ```html
-<meta charset="utf-8">           <!-- 1º: sempre primeiro -->
-<meta name="viewport" content="width=device-width, initial-scale=1">  <!-- 2º -->
-<title>ZAN.IA | Deep Tech Systems</title>  <!-- 3º -->
-<meta name="description" content="...">    <!-- 4º -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ZAN.IA | Deep Tech Systems</title>
+<meta name="description" content="...">
 
 <!-- Open Graph -->
 <meta property="og:title" content="ZAN.IA">
 <meta property="og:description" content="...">
-<meta property="og:image" content="...">
-<meta property="og:url" content="https://zanetti-lg.github.io/zania-website/">
+<meta property="og:image" content="/assets/images/og-image.jpg">
+<meta property="og:url" content="https://www.zan.ia.br/">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="pt_BR">
 
@@ -115,13 +127,20 @@ Ordem obrigatória no `<head>`:
 <meta name="twitter:card" content="summary_large_image">
 
 <!-- Ícones -->
-<link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
-<link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+<!-- Preconnects para CDNs -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<!-- SvelteKit head placeholder -->
+%sveltekit.head%
 ```
 
-## 5. Imagens Responsivas
+## 5. Imagens
 
-```html
+```svelte
 <!-- ✅ Imagem decorativa com lazy loading -->
 <img
   src="/assets/images/solucoes.webp"
@@ -129,7 +148,6 @@ Ordem obrigatória no `<head>`:
   loading="lazy"
   width="800"
   height="600"
-  class="w-full h-auto"
   decoding="async"
 >
 
@@ -140,64 +158,102 @@ Ordem obrigatória no `<head>`:
   fetchpriority="high"
   width="1200"
   height="630"
-  class="w-full h-auto"
   decoding="async"
 >
-
-<!-- ❌ Errado: sem dimensões, sem alt -->
-<img src="hero.jpg">
 ```
 
-### Regras para Imagens
+### Regras
 - `width` + `height` sempre explícitos (previne CLS)
 - `loading="lazy"` para imagens abaixo da dobra
-- `fetchpriority="high"` apenas na imagem hero (1 por página)
+- `fetchpriority="high"` apenas na hero (1 por página)
 - `alt` descritivo para imagens funcionais, `alt=""` para decorativas
-- Formato WebP com fallback (ou AVIF se suporte for aceitável)
+- Assets em `static/assets/images/`, referenciados como `/assets/images/...`
 
 ## 6. Links e Navegação
 
-```html
+```svelte
 <!-- ✅ Link interno com âncora -->
-<a href="#solutions">Soluções</a>
+<a href="/#solutions">Soluções</a>
 
 <!-- ✅ Link externo com security attributes -->
 <a href="https://wa.me/5511999999999" target="_blank" rel="noopener noreferrer">
   Fale Conosco
 </a>
 
-<!-- ✅ CTA principal como link, não div clicável -->
-<a href="https://wa.me/5511999999999" class="glass-panel ...">
+<!-- ✅ CTA como link, não como div clicável -->
+<a href="https://wa.me/5511999999999" class="cta__button glass-panel">
   Iniciar Projeto
 </a>
 ```
 
 ### Regras
-- Links externos com `target="_blank"` **devem** ter `rel="noopener noreferrer"`
-- CTA principal deve ser um `<a>` com `href`, não um `button` ou `div`
-- Nav links com `href` para seções (`#id`), não usar `javascript:void(0)`
+- Links externos `target="_blank"` **devem** ter `rel="noopener noreferrer"`
+- CTA principal deve ser `<a>` com `href`, não `<button>` ou `<div>`
+- Nav links usam `href` para seções (`/#id`), não `javascript:void(0)`
 
-## 7. Formulários
+## 7. Svelte Templates Específicos
 
-```html
-<form id="contato" action="#" method="POST" novalidate>
-  <label for="nome">Nome</label>
-  <input
-    type="text"
-    id="nome"
-    name="nome"
-    required
-    autocomplete="name"
-    class="..."
+### Componente com slot (layout)
+```svelte
+<!-- +layout.svelte -->
+<script>
+  import Header from '$lib/components/Header.svelte';
+  import Footer from '$lib/components/Footer.svelte';
+</script>
+
+<Header />
+<main>
+  <slot />
+</main>
+<Footer />
+```
+
+### Página que monta componentes
+```svelte
+<!-- +page.svelte -->
+<script>
+  import Hero from '$lib/components/Hero.svelte';
+  import Solutions from '$lib/components/Solutions.svelte';
+</script>
+
+<Hero />
+<Solutions />
+```
+
+### bind:this para refs
+```svelte
+<script lang="ts">
+  let carouselEl = $state<HTMLElement>();
+</script>
+
+<div bind:this={carouselEl}>
+  <!-- conteúdo -->
+</div>
+```
+
+### Each com itens
+```svelte
+{#each testimonials as t, i}
+  <div class="testimonial__card glass-panel"
+       role="group"
+       aria-roledescription="slide"
+       aria-label={`Depoimento ${i + 1} de ${total}`}
   >
+    <p>{t.text}</p>
+  </div>
+{/each}
+```
 
-  <label for="email">E-mail</label>
-  <input
-    type="email"
-    id="email"
-    name="email"
-    required
-    autocomplete="email"
+## 8. Comentários e Organização
+
+```svelte
+<!-- ════════════════════════════════════════════ -->
+<!-- NOME_DA_SEÇÃO — Descrição breve -->
+<!-- ════════════════════════════════════════════ -->
+<section class="nome-secao" aria-label="...">
+  ...
+</section>
+```
     placeholder="seu@email.com"
   >
 

@@ -1,174 +1,144 @@
 ---
-applyTo: "build/**"
+description: "Use when: navigating the project structure, adding new files/directories, understanding the tech stack layout, or refactoring folder organization. Covers src/ structure, build conventions, naming, and dependency rules."
+applyTo: "src/**"
 ---
 
-# Organização de Projeto — Estrutura e Convenções
+# Organização de Projeto — SvelteKit
 
 ## 1. Estrutura de Diretórios
 
 ```
 zania-website/
-├── build/                          # 🚀 Produção (deploy GitHub Pages)
-│   ├── index.html                  # Landing page completa
+├── src/                            # 🔧 Fonte (SvelteKit)
+│   ├── app.html                    # Template HTML (fontes, meta tags)
+│   ├── app.d.ts                    # Tipos TypeScript
+│   ├── lib/
+│   │   ├── app.css                 # CSS global (design tokens + reset + utilitários)
+│   │   ├── index.ts                # Re-exports
+│   │   └── components/             # Componentes Svelte (cada um com <style> escopado)
+│   │       ├── Header.svelte
+│   │       ├── Hero.svelte
+│   │       ├── Authority.svelte
+│   │       ├── Solutions.svelte
+│   │       ├── Differential.svelte
+│   │       ├── Testimonials.svelte
+│   │       ├── CTA.svelte
+│   │       └── Footer.svelte
+│   └── routes/
+│       ├── +layout.js              # Config: prerender = true
+│       ├── +layout.svelte          # Layout principal (Header + Footer)
+│       └── +page.svelte            # Home page (monta todos os componentes)
+├── static/                         # Assets estáticos (copiados para build/)
+│   ├── robots.txt
 │   └── assets/
-│       ├── images/                 # Imagens otimizadas (WebP)
-│       └── ...
+│       └── images/                 # Imagens (referenciar como /assets/images/...)
+├── build/                          # 🚀 Output do build (gerado, NÃO versionar)
+│   ├── index.html
+│   ├── 404.html
+│   └── _app/immutable/...          # JS/CSS com hash
 ├── docs/                           # 📄 Documentação institucional
-│   └── INSTITUCIONAL.md            # Visão completa da empresa
-├── .github/
-│   ├── workflows/
-│   │   └── static.yml              # CI/CD: GitHub Pages
-│   ├── ISSUES.md                   # Plano de refatoração
-│   ├── prompts/                    # Comandos customizados (/comando)
-│   │   ├── adicionar-servico.prompt.md
-│   │   ├── adicionar-depoimento.prompt.md
-│   │   └── otimizar-seo.prompt.md
-│   ├── agents/                     # Agentes customizados
-│   │   ├── refactor-css.agent.md
-│   │   ├── criador-conteudo.agent.md
-│   │   └── performance-auditor.agent.md
-│   ├── skills/                     # Skills (conhecimento especializado)
-│   │   ├── criar-pagina-institucional/SKILL.md
-│   │   ├── criar-section/SKILL.md
-│   │   └── otimizar-imagens/SKILL.md
-│   └── instructions/               # Instruções (regras automáticas)
-│       ├── deploy.instructions.md
-│       ├── css.instructions.md
-│       ├── html.instructions.md
-│       ├── style-architecture.instructions.md
-│       └── project-organization.instructions.md  ← este arquivo
+│   └── INSTITUCIONAL.md
+├── .github/                        # Agentes, skills, instruções, CI/CD
+│   ├── agents/
+│   ├── instructions/
+│   ├── prompts/
+│   ├── skills/
+│   └── workflows/
+│       └── deploy.yml              # Build + Deploy GitHub Pages
+├── svelte.config.js                # Config SvelteKit + adapter-static
+├── vite.config.ts                  # Config Vite
+├── package.json                    # Dependências e scripts
 ├── AGENTS.md                       # Diretrizes para AI agents
-├── README.md
-└── LICENSE
+└── README.md
 ```
 
 ### Convenções de Diretório
 
-| Caminho | Propósito | Quem usa |
-|---------|-----------|----------|
-| `build/` | Arquivos de produção deployados | GitHub Pages |
-| `build/assets/` | Recursos estáticos (imagens, fontes, etc.) | HTML |
-| `docs/` | Documentação não técnica (institucional) | Humanos + AI |
-| `.github/workflows/` | Automação CI/CD | GitHub Actions |
-| `.github/prompts/` | Comandos `/comando` no chat | AI agents |
-| `.github/agents/` | Agentes especializados | AI agents |
-| `.github/skills/` | Conhecimento especializado por domínio | AI agents |
-| `.github/instructions/` | Regras aplicadas automaticamente a arquivos | AI agents |
+| Caminho | Propósito | Editar? |
+|---------|-----------|---------|
+| `src/lib/components/` | Componentes Svelte (fonte) | ✅ Sim |
+| `src/lib/app.css` | CSS global (tokens + reset) | ✅ Sim |
+| `src/routes/` | Rotas e layout SvelteKit | ✅ Sim |
+| `src/app.html` | Template HTML (meta, fontes) | ✅ Sim |
+| `static/` | Assets estáticos | ✅ Sim |
+| `build/` | Output de produção (gerado) | ❌ Não |
+| `docs/` | Documentação institucional | ✅ Sim |
+| `.github/` | Sistema agentico + CI/CD | ✅ Sim |
 
-## 2. Regras de Build e Deploy
+## 2. Stack Tecnológica
 
-### O que vai para produção
-- ✅ `build/index.html` — único arquivo HTML completo
-- ✅ `build/assets/` — imagens, fontes, etc.
-- ❌ `docs/` — não vai para produção
-- ❌ `.github/` — não vai para produção
-- ❌ Arquivos de desenvolvimento (.md de docs, ISSUES, etc.)
+| Camada | Tecnologia |
+|--------|-----------|
+| **Framework** | SvelteKit 5 (Runes mode) |
+| **Build** | Vite + `@sveltejs/adapter-static` |
+| **Markup** | Componentes Svelte com scoped CSS |
+| **Estilos** | Scoped `<style>` por componente + `app.css` global |
+| **Ícones** | Google Material Symbols Outlined |
+| **Tipografia** | Space Grotesk, Geist, JetBrains Mono (Google Fonts) |
+| **Tema** | Dark mode (Material Design 3) |
+| **Deploy** | GitHub Pages + GitHub Actions |
+| **Sem Tailwind** | CSS vanilla com design tokens |
 
-### Processo de Deploy
-```yaml
-# .github/workflows/static.yml
-# Trigger: push na branch main
-# Ação: GitHub Pages deploy de ./build/
-# URL: https://zanetti-lg.github.io/zania-website/
+## 3. Scripts
+
+```bash
+npm run dev       # Dev server em localhost:5173 (HMR)
+npm run build     # Build de produção → build/
+npm run preview   # Preview do build (localhost:4173)
+npm run check     # Type-check com svelte-check
 ```
 
-### Regras de Conteúdo em `build/`
-- **Imagens:** WebP como formato principal, com fallback JPEG/PNG
-- **HTML:** Monolítico (tudo em `index.html`) — sem arquivos parciais
-- **CSS:** Inline no `<style>` do HTML (não usar arquivos `.css` externos além de CDNs)
-- **JS:** Inline no `<script>` do HTML
-- **CDNs:** Apenas Google Fonts, Google Material Symbols e Tailwind (enquanto não migrado)
+## 4. Convenções de Código
 
-## 3. Convenções de Responsividade
+### Componentes Svelte (Runes Mode)
+- `$state()` para variáveis reativas
+- `$effect()` para efeitos colaterais
+- `$props()` para props de componente
+- `bind:this={elementRef}` para refs de DOM
 
-| Breakpoint | Largura | Alvo |
-|------------|---------|------|
-| Mobile | `< 768px` | Smartphones |
-| Desktop | `>= 768px` | Tablets e acima |
+### CSS
+- Scoped `<style>` em cada componente (sem conflitos)
+- Classes BEM-like: `componente__elemento--modificador`
+- Design tokens via `var(--color-*)`, `var(--font-*)`, `var(--spacing-*)`
+- Breakpoint único: 768px (`@media (min-width: 768px)`)
 
-**Regra:** Não introduzir novos breakpoints sem aprovação. O ponto de ruptura único mantém a base de código simples.
-
-## 4. Convenções de Imagens
-
-| Tipo | Formato | Tamanho máx. | Local |
-|------|---------|--------------|-------|
-| Hero / background | WebP | 200kB | `build/assets/images/` |
-| Ícones / logos | SVG | 10kB | `build/assets/images/` |
-| Fotos / ilustrações | WebP | 100kB | `build/assets/images/` |
-| Open Graph | JPG | 200kB | `build/assets/images/og-image.jpg` |
-
-### Nomenclatura
-- Minúsculas, hífens para separar palavras
-- Prefixo do contexto: `hero-`, `servico-`, `icone-`, `og-`
-- Extensão do formato real (`.webp`, `.svg`, `.jpg`)
-
-```
-build/assets/images/
-├── hero.webp
-├── servico-sistemas.webp
-├── servico-agentes.webp
-├── servico-midia.webp
-├── og-image.jpg
-└── favicon.svg
+### Imports
+```typescript
+import Header from '$lib/components/Header.svelte';
+import type { PageData } from './$types';
 ```
 
-## 5. Convenções de Código no HTML
+## 5. IDs de Seção
 
-### Seções
-- Cada seção tem: `id` único, padding vertical `py-24`, `max-w-6xl mx-auto`
-- Comentários delimitadores antes de cada seção:
-  ```html
-  <!-- ════════════════════════════════════════════ -->
-  <!-- NOME_DA_SEÇÃO -->
-  <!-- ════════════════════════════════════════════ -->
-  ```
+| ID | Componente |
+|----|-----------|
+| `#hero` | `Hero.svelte` |
+| `#solutions` | `Solutions.svelte` |
+| `#authority` | `Authority.svelte` |
+| `#differential` | `Differential.svelte` |
+| `#testimonials` | `Testimonials.svelte` |
+| `#contact` | `CTA.svelte` |
 
-### IDs de Seção
-| ID | Conteúdo |
-|----|----------|
-| `#hero` | Seção principal de entrada |
-| `#solutions` | Grid de serviços |
-| `#testimonials` | Carrossel de depoimentos |
-| `#contact` | CTA / formulário de contato |
-| `#footer` | Rodapé |
+## 6. Dependências Externas (CDN)
 
-### Classes CSS
-- Preferir classes Tailwind (`flex`, `grid`, `gap-*`, `p-*`, `text-*`)
-- Classes customizadas apenas para padrões reutilizáveis (`.glass-panel`)
-- Usar `var(--color-*)` para cores, nunca hex/rgb direto
+Apenas Google Fonts e Material Symbols (carregados via `src/app.html`):
 
-## 6. Versionamento (Git)
-
-### Branch
-- **`main`** — branch de produção (deploy automático ao push)
-- Commits diretos na `main` são aceitáveis para projetos single-page
-- Para refatorações grandes, usar branch separada + PR
-
-### Commits
-- Preferir mensagens em português (consistente com o projeto)
-- Prefixo opcional: `feat:`, `fix:`, `refactor:`, `docs:`, `chore:`
-
-## 7. Dependências Externas (CDN)
-
-Atualmente carregadas via CDN. **Meta:** remover dependências conforme plano de refatoração.
-
-| Recurso | CDN | Prioridade de Remoção |
-|---------|-----|-----------------------|
-| Tailwind CSS | `cdn.tailwindcss.com` | 🔴 Alta (Issue #1) |
-| Google Fonts | `fonts.googleapis.com` | 🟡 Média |
-| Material Symbols | `fonts.googleapis.com` | 🟡 Média |
+| Recurso | CDN | Justificativa |
+|---------|-----|---------------|
+| Google Fonts | `fonts.googleapis.com` | Space Grotesk, Geist, JetBrains Mono |
+| Material Symbols | `fonts.googleapis.com` | Ícones (Outlined) |
 
 ### Ao Adicionar Novo Recurso
-1. Prefira inline (CSS/JS no próprio HTML)
+1. Prefira assets locais em `static/`
 2. Se CDN for inevitável, adicione `rel="preconnect"` no `<head>`
-3. Documente no `AGENTS.md` ou neste arquivo
+3. Documente no `AGENTS.md`
 
-## 8. Limites e Restrições
+## 7. Limites e Restrições
 
 | Aspecto | Limite | Motivo |
 |---------|--------|--------|
-| Tamanho do HTML | < 500kB | Performance em conexões lentas |
-| Imagens | < 200kB cada | Core Web Vitals (LCP) |
-| Dependências CDN | 0 (ideal), 3 (atual) | Autonomia do projeto |
-| Breakpoints | 1 (768px) | Simplicidade de manutenção |
-| Arquivos em build/ | index.html + assets/ | Monolítico por design |
+| Tamanho do build | < 200kB (HTML+CSS+JS inicial) | Core Web Vitals |
+| Imagens | < 200kB cada | LCP |
+| Dependências CDN | 2 (Google Fonts + Symbols) | Autonomia |
+| Breakpoints | 1 (768px) | Simplicidade |
+| Componentes | < 300 linhas cada | Manutenibilidade |

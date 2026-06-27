@@ -7,20 +7,14 @@
 </script>
 
 <Header />
-<main class="pt-24">
+<main class="layout__main">
 	{@render children()}
 </main>
 <Footer />
 
 <style>
-	:global(body) {
-		background-color: #070d1f;
-		color: #dce1fb;
-		font-family: 'Geist', sans-serif;
-		overflow-x: hidden;
-	}
-
-	:global(.pt-24) {
-		padding-top: 96px;
+	/* Estilos de layout — tokens de corpo estão em app.css */
+	.layout__main {
+		padding-top: var(--spacing-2xl); /* 96px = 2 * 48px */
 	}
 </style>

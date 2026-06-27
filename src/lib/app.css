@@ -135,15 +135,15 @@
 
 html {
 	scroll-behavior: smooth;
-	background-color: #070d1f;
-	color: #dce1fb;
+	background-color: var(--color-surface-container-lowest);
+	color: var(--color-on-surface);
 }
 
 body {
 	font-family: var(--font-body);
 	font-size: var(--font-size-body-md);
 	line-height: var(--line-height-body-md);
-	background-color: #070d1f;
+	background-color: var(--color-surface-container-lowest);
 	color: var(--color-on-surface);
 	overflow-x: hidden;
 	-webkit-font-smoothing: antialiased;

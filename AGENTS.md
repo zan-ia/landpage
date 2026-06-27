@@ -63,9 +63,28 @@ zania-website/
 │   └── assets/images/         # Imagens locais
 ├── build/                     # Output do build (gerado, não versionar)
 ├── .github/
+│   ├── agents/              # Agentes especializados
+│   │   ├── criador-conteudo.agent.md
+│   │   ├── performance-auditor.agent.md
+│   │   └── refactor-css.agent.md
+│   ├── instructions/         # Regras automáticas (applyTo)
+│   │   ├── css.instructions.md
+│   │   ├── html.instructions.md
+│   │   ├── deploy.instructions.md
+│   │   ├── style-architecture.instructions.md
+│   │   └── project-organization.instructions.md
+│   ├── prompts/              # Comandos customizados
+│   │   ├── adicionar-depoimento.prompt.md
+│   │   ├── adicionar-servico.prompt.md
+│   │   └── otimizar-seo.prompt.md
+│   ├── skills/               # Conhecimento especializado
+│   │   ├── criar-pagina-institucional/SKILL.md
+│   │   ├── criar-section/SKILL.md
+│   │   ├── css-comparison-workflow/SKILL.md
+│   │   └── otimizar-imagens/SKILL.md
 │   ├── ISSUES.md
 │   └── workflows/
-│       └── deploy.yml         # Build + Deploy GitHub Pages
+│       └── deploy.yml        # Build + Deploy GitHub Pages
 ├── svelte.config.js
 ├── vite.config.ts
 ├── package.json

@@ -1,55 +1,62 @@
 ---
-context: fork
 name: otimizar-imagens
-description: "Otimiza imagens da landing page Zan.IA. Converte para formatos modernos (WebP/AVIF), gera srcset com múltiplas resoluções, aplica lazy loading, e sugere compressão. Reduz o peso total de imagens mantendo qualidade visual."
+description: "Otimiza imagens da landing page Zan.IA (SvelteKit). Converte para formatos modernos (WebP/AVIF), gera srcset com múltiplas resoluções, aplica lazy loading, e sugere compressão."
 ---
 
-# Skill: Otimização de Imagens
+# Skill: Otimização de Imagens (SvelteKit)
 
 Skill para gerenciar e otimizar todas as imagens do projeto Zan.IA.
+
+## Localização dos Assets
+
+```
+static/assets/images/     ← Coloque as imagens aqui
+  └── hero.webp           ← Referencie como /assets/images/hero.webp
+```
+
+Nos componentes Svelte:
+```svelte
+<img src="/assets/images/hero.webp" alt="..." />
+```
 
 ## Workflow de Otimização
 
 ### 1. Conversão para Formatos Modernos
 
 ```bash
-# WebP (qualidade 80): ~30% menor que JPEG/PNG
-cwebp -q 80 input.jpg -o input.webp
+# WebP (qualidade 80)
+cwebp -q 80 input.jpg -o static/assets/images/output.webp
 
-# AVIF (qualidade 60): ~50% menor que JPEG/PNG
-avifenc -s 8 -q 60 input.jpg -o input.avif
+# AVIF (qualidade 60)
+avifenc -s 8 -q 60 input.jpg -o static/assets/images/output.avif
 ```
 
-> Se `cwebp` ou `avifenc` não estiverem instalados, use ferramentas online como [Squoosh](https://squoosh.app) ou [Convertio](https://convertio.co).
+### 2. Imagem com Fallback (Svelte)
 
-### 2. Estrutura `<picture>` com Fallback
-
-```html
+```svelte
 <picture>
   <source srcset="/assets/images/hero.avif" type="image/avif">
   <source srcset="/assets/images/hero.webp" type="image/webp">
   <img
     src="/assets/images/hero.jpg"
-    alt="Descrição da imagem"
+    alt="Zan.IA — Deep Tech Systems"
     loading="lazy"
     width="1200"
     height="630"
-    class="w-full h-auto"
+    decoding="async"
   >
 </picture>
 ```
 
 ### 3. Imagens Críticas (acima da dobra)
 
-Para a imagem hero (primeira da página):
-```html
+```svelte
 <img
   src="/assets/images/hero.webp"
   alt="Hero Zan.IA"
   fetchpriority="high"
   width="1200"
   height="630"
-  class="w-full h-auto"
   decoding="async"
 >
 ```
@@ -57,34 +64,34 @@ Para a imagem hero (primeira da página):
 ### 4. Convenções de Nomenclatura
 
 ```
-assets/images/
+static/assets/images/
 ├── hero.webp          # Hero principal (acima da dobra)
 ├── hero.jpg           # Fallback
 ├── servico-sistemas.webp
 ├── servico-agentes.webp
 ├── servico-midia.webp
-├── icone-contato.webp
 └── og-image.jpg       # Open Graph (1200x630px)
 ```
 
 ## Checklist por Imagem
 
-- [ ] Formato: WebP + fallback JPEG/PNG (AVIF se suporte for aceitável)
+- [ ] Local: `static/assets/images/` (não `build/assets/images/`)
+- [ ] Referência: `/assets/images/nome.ext` (path absoluto a partir da raiz)
+- [ ] Formato: WebP + fallback JPEG/PNG
 - [ ] Tamanho: < 100kB (ideal), < 200kB (aceitável)
-- [ ] Dimensões: explícitas (`width` + `height`)
+- [ ] Dimensões: `width` + `height` explícitos
 - [ ] `loading="lazy"` em imagens abaixo da dobra
 - [ ] `fetchpriority="high"` apenas na hero
-- [ ] `alt` descritivo e relevante (nunca vazio)
-- [ ] Nome consistente e em minúsculas (hífens para separar)
+- [ ] `alt` descritivo
 
 ## Procedimento
 
-1. **Mapeie** todas as imagens referenciadas em `build/index.html`
+1. **Mapeie** todas as imagens referenciadas nos componentes `src/lib/components/*.svelte`
 2. **Identifique** quais estão em CDN externo vs. locais
-3. **Converta** para WebP usando a ferramenta disponível
-4. **Atualize** o HTML com `<picture>` e fallbacks
+3. **Converta** para WebP e coloque em `static/assets/images/`
+4. **Atualize** os `src` nos componentes Svelte
 5. **Remova** dependências de CDNs externos de imagens
-6. **Verifique** visualmente se a qualidade está aceitável
+6. **Verifique** visualmente com `npm run dev`
 
 ## Tolerâncias
 

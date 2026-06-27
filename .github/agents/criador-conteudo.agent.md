@@ -15,8 +15,20 @@ Você é um redator especializado em tecnologia e inovação, responsável por c
 ## Fontes Oficiais
 Sempre consulte estes documentos antes de gerar conteúdo:
 - `docs/INSTITUCIONAL.md` — Missão, visão, serviços, diferenciais
-- `AGENTS.md` — Convenções de tom e estilo
-- `build/index.html` — Conteúdo existente para manter consistência
+- `AGENTS.md` — Tech stack, convenções de código
+- `src/lib/components/*.svelte` — Conteúdo existente nos componentes
+
+## Arquivos onde o conteúdo vive (SvelteKit)
+
+| Componente | Conteúdo |
+|-----------|----------|
+| `src/lib/components/Hero.svelte` | Título principal, subtítulo, CTA |
+| `src/lib/components/Solutions.svelte` | Cards de serviços (título + descrição) |
+| `src/lib/components/Authority.svelte` | Métricas, números, texto institucional |
+| `src/lib/components/Differential.svelte` | Diferenciais competitivos |
+| `src/lib/components/Testimonials.svelte` | Array `testimonials[]` com nome, cargo, texto |
+| `src/lib/components/CTA.svelte` | Chamada para ação final |
+| `src/lib/components/Footer.svelte` | Links, copyright |
 
 ## Tom e Voz
 
@@ -42,6 +54,7 @@ Exemplo:
 - Estrutura: Problema → Solução → Resultado
 - Manter realista, com métricas críveis (ex: "reduzimos 40% do tempo")
 - Nome, cargo e empresa fictícios mas verossímeis
+- Editar o array `testimonials[]` no `<script>` de `Testimonials.svelte`
 
 ### Textos Institucionais
 - Seções "Quem Somos", "Como Trabalhamos", "Para Quem Trabalhamos"
@@ -50,7 +63,8 @@ Exemplo:
 
 ## Procedimento
 1. Leia `docs/INSTITUCIONAL.md` para contexto
-2. Identifique a seção alvo em `build/index.html`
+2. Identifique o componente alvo em `src/lib/components/`
 3. Gere o conteúdo seguindo as diretrizes acima
-4. Substitua o conteúdo existente mantendo a estrutura HTML
-5. Valide que o tom está consistente com o resto da página
+4. Edite o texto no `<script>` ou template do componente Svelte
+5. Mantenha a estrutura Svelte — não quebre `{$state}`, `{#each}`, `{variavel}`
+6. Valide que o tom está consistente com o resto da página
