@@ -1,3 +1,7 @@
+<script lang="ts">
+	import { base } from '$app/paths';
+</script>
+
 <section class="authority">
 	<div class="authority__grid">
 		<div class="authority__image-wrapper">
@@ -7,7 +11,7 @@
 				<img
 					class="authority__image"
 					alt="A sophisticated macro shot of high-tech integrated circuits and glowing blue neural pathways inside a glass chamber"
-					src="/assets/images/authority-circuit.webp"
+					src="{base}/assets/images/authority-circuit.webp"
 					loading="lazy"
 				/>
 			</div>
