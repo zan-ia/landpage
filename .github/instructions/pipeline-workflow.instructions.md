@@ -1,326 +1,323 @@
 ---
 description: "Use when: working with pipeline agents, prompts, or skills — orchestrating development workflow, creating issues, branches, or PRs via agents. Defines the complete Plan→Implement→Review cycle with HITL, severity classification, and conventions."
-applyTo:
-  - ".github/agents/**"
-  - ".github/prompts/**"
-  - ".github/skills/**"
+applyTo: ".github/agents/**, .github/prompts/**, .github/skills/**"
 ---
 
-# Pipeline de Desenvolvimento — Fluxo de Trabalho
+# Development Pipeline — Workflow
 
-Este documento define o fluxo completo do pipeline de desenvolvimento CI/CD gerenciado por agentes do Copilot. O pipeline implementa um ciclo **Plan → Implement → Review** com **Human-in-the-Loop (HITL)** em pontos críticos.
+This document defines the complete CI/CD development pipeline workflow managed by Copilot agents. The pipeline implements a **Plan → Implement → Review** cycle with **Human-in-the-Loop (HITL)** at critical points.
 
 ---
 
-## Fluxo Completo
+## Complete Flow
 
 ```
-USUÁRIO reporta bug/feature/melhoria
+USER reports bug/feature/improvement
     │
     ▼
 ┌─────────────────────────────────────────────────┐
-│ ORQUESTRADOR (agente principal)                  │
-│ ├─ Analisa solicitação → classifica tipo         │
-│ ├─ Cria ISSUE no GitHub                          │
-│ ├─ 🛑 HITL: Usuário revisa e aprova a issue      │
-│ ├─ Cria BRANCH: fix|feat|improve/descricao-curta │
-│ ├─ Invoca PLANEJADOR (subagente)                 │
-│ ├─ Invoca IMPLEMENTADOR (subagente)              │
-│ ├─ Invoca REVISOR (subagente)                    │
-│ │   └─ Loop de revisão (máx. 3 iterações)       │
+│ ORCHESTRATOR (main agent)                        │
+│ ├─ Analyzes request → classifies type            │
+│ ├─ Creates ISSUE on GitHub                       │
+│ ├─ 🛑 HITL: User reviews and approves issue      │
+│ ├─ Creates BRANCH: fix|feat|improve/short-desc   │
+│ ├─ Invokes PLANNER (subagent)                    │
+│ ├─ Invokes IMPLEMENTER (subagent)                │
+│ ├─ Invokes REVIEWER (subagent)                   │
+│ │   └─ Review loop (max. 3 iterations)           │
 │ ├─ Commit + Push                                 │
-│ ├─ Cria PR (com Closes #N)                       │
-│ ├─ 🛑 HITL: Usuário revisa e mergeia o PR        │
-│ └─ Checkout para branch main                     │
+│ ├─ Creates PR (with Closes #N)                   │
+│ ├─ 🛑 HITL: User reviews and merges PR           │
+│ └─ Checkout to main branch                       │
 └─────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Fases do Pipeline
+## Pipeline Phases
 
-### Fase 0: Entrada do Usuário
+### Phase 0: User Input
 
-O usuário inicia o pipeline através de um dos prompts:
-- `/iniciar-bugfix` — para correção de bugs
-- `/iniciar-feature` — para novas funcionalidades
-- `/iniciar-melhoria` — para melhorias e refatorações
+The user starts the pipeline through one of the prompts:
+- `/iniciar-bugfix` — for bug fixes
+- `/iniciar-feature` — for new features
+- `/iniciar-melhoria` — for improvements and refactoring
 
-O orquestrador **DEVE** usar `vscode_askQuestions` se o relato do usuário for ambíguo ou incompleto.
+The orchestrator **MUST** use `vscode_askQuestions` if the user's report is ambiguous or incomplete.
 
 ---
 
-### Fase 1: Criação da Issue
+### Phase 1: Issue Creation
 
-O orquestrador cria uma issue no GitHub com:
+The orchestrator creates a GitHub issue with:
 
-**Template para Bugs (`fix:`):**
+**Template for Bugs (`fix:`):**
 ```markdown
-### Descrição do Bug
-[Descrição clara e concisa]
+### Bug Description
+[Clear and concise description]
 
-### Passos para Reproduzir
+### Steps to Reproduce
 1. 
 2. 
 3. 
 
-### Comportamento Esperado
-[O que deveria acontecer]
+### Expected Behavior
+[What should happen]
 
-### Comportamento Atual
-[O que está acontecendo]
+### Current Behavior
+[What is happening]
 
-### Ambiente
-- SO: Windows 11
-- Navegador: Chrome
+### Environment
+- OS: Windows 11
+- Browser: Chrome
 - Branch: main
 ```
 
-**Template para Features (`feat:`):**
+**Template for Features (`feat:`):**
 ```markdown
-### Motivação
-[Por que esta feature é necessária]
+### Motivation
+[Why this feature is needed]
 
-### Descrição
-[O que será implementado]
+### Description
+[What will be implemented]
 
-### Critérios de Aceitação
-- [ ] Critério 1
-- [ ] Critério 2
+### Acceptance Criteria
+- [ ] Criterion 1
+- [ ] Criterion 2
 
-### Referências
-- [Links, docs, inspirações]
+### References
+- [Links, docs, inspirations]
 ```
 
-**Template para Melhorias (`improve:`):**
+**Template for Improvements (`improve:`):**
 ```markdown
-### Situação Atual
-[Como está hoje]
+### Current Situation
+[How it is today]
 
-### Melhoria Proposta
-[O que será melhorado]
+### Proposed Improvement
+[What will be improved]
 
-### Benefícios Esperados
-[Impacto positivo da mudança]
+### Expected Benefits
+[Positive impact of the change]
 
-### Impacto
-- Componentes afetados: [lista]
-- Risco: [baixo | médio | alto]
+### Impact
+- Affected components: [list]
+- Risk: [low | medium | high]
 ```
 
-🛑 **HITL obrigatório:** Após criar a issue, o orquestrador DEVE apresentar a issue ao usuário e aguardar aprovação explícita antes de prosseguir. Use `vscode_askQuestions` com opção de aprovar/rejeitar/modificar.
+🛑 **Mandatory HITL:** After creating the issue, the orchestrator MUST present the issue to the user and wait for explicit approval before proceeding. Use `vscode_askQuestions` with approve/reject/modify options.
 
 ---
 
-### Fase 2: Criação da Branch
+### Phase 2: Branch Creation
 
-Após aprovação da issue, o orquestrador cria uma branch a partir de `main`:
+After issue approval, the orchestrator creates a branch from `main`:
 
-**Convenção de nomenclatura:**
-| Tipo | Prefixo | Exemplo |
+**Naming convention:**
+| Type | Prefix | Example |
 |------|---------|---------|
-| Bug | `fix/` | `fix/corrigir-cores-header` |
-| Feature | `feat/` | `feat/adicionar-secao-precos` |
-| Melhoria | `improve/` | `improve/otimizar-carregamento-fontes` |
+| Bug | `fix/` | `fix/fix-header-colors` |
+| Feature | `feat/` | `feat/add-pricing-section` |
+| Improvement | `improve/` | `improve/optimize-font-loading` |
 
-Regras:
-- Nome em minúsculas, palavras separadas por hífen
-- Máximo 50 caracteres
-- Derivado do título da issue
-- SEMPRE criar a partir de `main` (branch limpa e atualizada)
+Rules:
+- Lowercase name, words separated by hyphens
+- Max 50 characters
+- Derived from the issue title
+- ALWAYS create from `main` (clean and updated branch)
 
 ```bash
 git checkout main
 git pull origin main
-git checkout -b fix/descricao-curta
+git checkout -b fix/short-description
 ```
 
 ---
 
-### Fase 3: Planejamento (subagente `planejador`)
+### Phase 3: Planning (subagent `planejador`)
 
-O orquestrador invoca o subagente `planejador` com:
-- Número e título da issue
-- Descrição completa do problema/solicitação
-- Contexto adicional relevante
+The orchestrator invokes the `planejador` subagent with:
+- Issue number and title
+- Complete problem/request description
+- Any additional relevant context
 
-O planejador:
-1. Busca a issue no GitHub para contexto completo
-2. Explora a codebase para identificar arquivos relevantes
-3. Consulta `AGENTS.md`, `docs/INSTITUCIONAL.md`, e instructions aplicáveis
-4. Gera plano detalhado com: arquivos a modificar, padrões a seguir, riscos, ordem de implementação
-5. Salva em `.github/plans/issue-{N}-{slug}.md`
-6. Retorna: path do plano + resumo curto (2-3 frases) + complexidade + arquivos impactados
+The planner:
+1. Fetches the GitHub issue for complete context
+2. Explores the codebase to identify relevant files
+3. Consults `AGENTS.md`, `docs/INSTITUCIONAL.md`, and applicable instructions
+4. Generates a detailed plan with: files to modify, patterns to follow, risks, implementation order
+5. Saves to `.github/plans/issue-{N}-{slug}.md`
+6. Returns: plan path + short summary (2-3 sentences) + complexity + impacted files
 
-**Exemplo de retorno do planejador:**
+**Example planner return:**
 ```
-📋 Plano: .github/plans/issue-42-fix-header-colors.md
-📝 Resumo: Corrigir cores do header que divergem entre DEV e LIVE. 
-   Ajustar 2 tokens em Header.svelte e verificar glass-panel em app.css.
-🔧 Complexidade: Baixa
-📁 Arquivos: Header.svelte, app.css
+📋 Plan: .github/plans/issue-42-fix-header-colors.md
+📝 Summary: Fix header colors that diverge between DEV and LIVE. 
+   Adjust 2 tokens in Header.svelte and verify glass-panel in app.css.
+🔧 Complexity: Low
+📁 Files: Header.svelte, app.css
 ```
 
-O orquestrador salva estas informações em `/memories/session/pipeline-state.md`.
+The orchestrator saves this information to `/memories/session/pipeline-state.md`.
 
 ---
 
-### Fase 4: Implementação (subagente `implementador`)
+### Phase 4: Implementation (subagent `implementador`)
 
-O orquestrador invoca o subagente `implementador` com:
-- Path do arquivo de plano
-- Resumo do planejador
-- Arquivos impactados
+The orchestrator invokes the `implementador` subagent with:
+- Plan file path
+- Planner summary
+- Impacted files
 
-O implementador:
-1. Lê o plano completo
-2. Executa cada passo em ordem, fazendo alterações cirúrgicas
-3. Após cada arquivo, verifica erros com `get_errors`
-4. Executa `npm run check` ao final
-5. Executa `npm run build` ao final
-6. NUNCA modifica `build/` diretamente
-7. Respeita TODAS as convenções: scoped CSS, design tokens, BEM naming, sem Tailwind
-8. Retorna: resumo do que foi implementado + lista de arquivos modificados
+The implementer:
+1. Reads the complete plan
+2. Executes each step in order, making surgical changes
+3. After each file, checks for errors with `get_errors`
+4. Runs `npm run check` at the end
+5. Runs `npm run build` at the end
+6. NEVER modifies `build/` directly
+7. Respects ALL conventions: scoped CSS, design tokens, BEM naming, no Tailwind
+8. Returns: summary of what was implemented + list of modified files
 
 ---
 
-### Fase 5: Revisão (subagente `revisor`)
+### Phase 5: Review (subagent `revisor`)
 
-O orquestrador invoca o subagente `revisor` com:
-- Path do arquivo de plano
-- Resumo da implementação
-- Lista de arquivos modificados
+The orchestrator invokes the `revisor` subagent with:
+- Plan file path
+- Implementation summary
+- List of modified files
 
-O revisor analisa o diff (`git diff`) contra o plano e verifica:
+The reviewer analyzes the diff (`git diff`) against the plan and verifies:
 
-**Checklist de Qualidade:**
-| Dimensão | O que verificar |
+**Quality Checklist:**
+| Dimension | What to check |
 |----------|----------------|
-| **Código** | Scoped CSS, design tokens, BEM naming, Svelte 5 Runes, sem Tailwind, sem hex hardcoded |
-| **Arquitetura** | Composição correta de componentes, sem quebrar layout, imports corretos |
-| **Design** | Glass-panel aplicado, tipografia correta, paleta MD3, badges e seções padronizados |
-| **Legibilidade** | Nomes descritivos, código limpo, comentários onde necessário |
-| **Performance** | `will-change` só durante interação, `contain` onde aplicável, sem animações de `width`/`height` |
-| **Manutenibilidade** | Padrões consistentes, reutilização de tokens, sem duplicação |
-| **Especificidade** | CSS com baixa especificidade, sem `!important` |
-| **Dependências** | Material Symbols correto, Google Fonts com swap+preconnect, sem novas deps CDN |
-| **Testes** | `npm run check` sem erros, `npm run build` limpo, critérios de aceitação atendidos |
-| **Acessibilidade** | ARIA labels, heading hierarchy, alt texts, `prefers-reduced-motion` |
+| **Code** | Scoped CSS, design tokens, BEM naming, Svelte 5 Runes, no Tailwind, no hex hardcoded |
+| **Architecture** | Correct component composition, no layout breakage, correct imports |
+| **Design** | Glass-panel applied, correct typography, MD3 palette, standardized badges and sections |
+| **Readability** | Descriptive names, clean code, comments where needed |
+| **Performance** | `will-change` only during interaction, `contain` where applicable, no `width`/`height` animations |
+| **Maintainability** | Consistent patterns, token reuse, no duplication |
+| **Specificity** | Low-specificity CSS, no `!important` |
+| **Dependencies** | Correct Material Symbols, Google Fonts with swap+preconnect, no new CDN deps |
+| **Tests** | `npm run check` without errors, clean `npm run build`, acceptance criteria met |
+| **Accessibility** | ARIA labels, heading hierarchy, alt texts, `prefers-reduced-motion` |
 
 ---
 
-### Fase 6: Decisão de Revisão
+### Phase 6: Review Decision
 
-O revisor classifica cada issue encontrado e retorna:
+The reviewer classifies each issue found and returns:
 
 ```
-📊 Relatório de Revisão — Issue #N
+📊 Review Report — Issue #N
 
-Status: ALTERACOES
+Status: CHANGES_NEEDED
 
-Issues Encontrados:
+Issues Found:
 🔴 CRITICAL (2):
-  - Header.svelte: cor hardcoded #1a1a2e em vez de var(--color-surface)
-  - app.css: animação usa 'height' em vez de 'transform'
+  - Header.svelte: hardcoded color #1a1a2e instead of var(--color-surface)
+  - app.css: animation uses 'height' instead of 'transform'
 
 🟡 MAJOR (1):
-  - Novo componente não usa glass-panel
+  - New component doesn't use glass-panel
 
 🟢 MINOR (2):
-  - Comentário em inglês (padrão é português)
-  - Variável poderia ter nome mais descritivo
+  - Comment in English (standard is Portuguese)
+  - Variable could have a more descriptive name
 
-Recomendação: RE-PLANEJAR (2 issues críticos)
+Recommendation: RE-PLAN (2 critical issues)
 ```
 
-**Classificação de Severidade:**
+**Severity Classification:**
 
-| Nível | Definição |
+| Level | Definition |
 |-------|-----------|
-| 🔴 **CRITICAL** | Bug funcional, segurança, quebra de build, violação grave de arquitetura |
-| 🟡 **MAJOR** | Violação de padrão, design inconsistente, performance degradada |
-| 🟢 **MINOR** | Estilo, documentação, naming, melhorias cosméticas |
+| 🔴 **CRITICAL** | Functional bug, security, build breakage, severe architecture violation |
+| 🟡 **MAJOR** | Pattern violation, inconsistent design, degraded performance |
+| 🟢 **MINOR** | Style, documentation, naming, cosmetic improvements |
 
-**Matriz de Decisão (4 Status Possíveis):**
+**Decision Matrix (4 Possible Statuses):**
 
-| Status do Relatório | Condição | Ação do Orquestrador |
+| Report Status | Condition | Orchestrator Action |
 |---------------------|----------|----------------------|
-| **APROVADO** | Nenhum issue encontrado | Prosseguir para Fase 7 (Commit/PR) |
-| **ALTERACOES** | Apenas MINOR | Prosseguir para Fase 7; documentar follow-ups no corpo do PR |
-| **ALTERACOES** | CRITICAL ou MAJOR presente | Voltar para Fase 3 (Re-planejar) |
-| **REJEITADO** | Issues estruturais graves (ex.: abordagem inválida) | Voltar para Fase 3 (Re-planejar com nova estratégia) |
+| **APPROVED** | No issues found | Proceed to Phase 7 (Commit/PR) |
+| **CHANGES_NEEDED** | Only MINOR | Proceed to Phase 7; document follow-ups in PR body |
+| **CHANGES_NEEDED** | CRITICAL or MAJOR present | Return to Phase 3 (Re-plan) |
+| **REJECTED** | Severe structural issues (e.g., invalid approach) | Return to Phase 3 (Re-plan with new strategy) |
 
-**Regras do loop de revisão:**
-1. **Máximo 3 iterações** do ciclo (Fase 3 → 4 → 5 → 6)
-2. Se a 3ª iteração ainda tiver CRITICAL/MAJOR → documentar riscos conhecidos no PR e prosseguir com ressalvas
-3. O orquestrador controla o contador de iterações em `pipeline-state.md`
+**Review loop rules:**
+1. **Maximum 3 iterations** of the cycle (Phase 3 → 4 → 5 → 6)
+2. If the 3rd iteration still has CRITICAL/MAJOR → document known risks in PR and proceed with caveats
+3. The orchestrator tracks the iteration counter in `pipeline-state.md`
 
 ---
 
-### Fase 7: Commit, Push e PR
+### Phase 7: Commit, Push and PR
 
-**Mensagens de commit (Conventional Commits):**
+**Commit messages (Conventional Commits):**
 ```
-fix(Header): corrigir cores do glass-panel para tokens MD3
+fix(Header): fix glass-panel colors to MD3 tokens
 
-Ajusta backgroundColor e borderColor para usar variáveis CSS
-em vez de valores hardcoded. Corrige divergência visual com LIVE.
+Adjusts backgroundColor and borderColor to use CSS variables
+instead of hardcoded values. Fixes visual divergence with LIVE.
 
 Closes #42
 ```
 
-**Criação do PR:**
-- Título: mesmo prefixo do commit (`fix:`, `feat:`, `improve:`)
-- Corpo: resumo das mudanças + `Closes #N`
-- Base: `main` ← Compare: branch de trabalho
+**PR Creation:**
+- Title: same commit prefix (`fix:`, `feat:`, `improve:`)
+- Body: summary of changes + `Closes #N`
+- Base: `main` ← Compare: working branch
 
-🛑 **HITL obrigatório:** Após criar o PR, o orquestrador DEVE apresentar o PR ao usuário para revisão final. NÃO fazer merge automaticamente.
+🛑 **Mandatory HITL:** After creating the PR, the orchestrator MUST present the PR to the user for final review. Do NOT merge automatically.
 
 ---
 
-### Fase 8: Finalização
+### Phase 8: Finalization
 
-Após o merge do PR (feito pelo usuário):
+After the PR merge (done by the user):
 ```bash
 git checkout main
 git pull origin main
 ```
 
-O orquestrador limpa o estado do pipeline:
-- Atualiza `/memories/session/pipeline-state.md` com status FINALIZADO
-- Opcional: deleta a branch local (a remota é deletada pelo GitHub no merge)
+The orchestrator cleans up the pipeline state:
+- Updates `/memories/session/pipeline-state.md` with status COMPLETED
+- Optional: deletes the local branch (remote is deleted by GitHub on merge)
 
 ---
 
-## Rastreamento de Estado
+## State Tracking
 
-O orquestrador mantém o arquivo `/memories/session/pipeline-state.md` com:
+The orchestrator maintains the `/memories/session/pipeline-state.md` file with:
 
 ```markdown
 # Pipeline State — Issue #N
 
-- **Issue:** [#N](url) — Título
-- **Tipo:** bug | feature | melhoria
-- **Branch:** fix|feat|improve/nome
-- **Fase Atual:** planejamento | implementação | revisão
-- **Iteração de Revisão:** X de 3
-- **Plano:** .github/plans/issue-N-slug.md
-- **Arquivos Modificados:** [lista]
-- **Status:** EM_ANDAMENTO | AGUARDANDO_HITL | FINALIZADO
-- **Próximo Passo:** [descrição]
+- **Issue:** [#N](url) — Title
+- **Type:** bug | feature | improvement
+- **Branch:** fix|feat|improve/name
+- **Current Phase:** planning | implementation | review
+- **Review Iteration:** X of 3
+- **Plan:** .github/plans/issue-N-slug.md
+- **Modified Files:** [list]
+- **Status:** IN_PROGRESS | WAITING_HITL | COMPLETED
+- **Next Step:** [description]
 ```
 
 ---
 
-## Resumo de Convenções
+## Conventions Summary
 
-| Convenção | Padrão |
+| Convention | Standard |
 |-----------|--------|
-| **Branch** | `fix/`, `feat/`, `improve/` + slug em minúsculas |
+| **Branch** | `fix/`, `feat/`, `improve/` + lowercase slug |
 | **Commit** | Conventional Commits: `fix:`, `feat:`, `improve:` |
-| **PR** | Incluir `Closes #N` no corpo |
-| **Issue** | Template específico por tipo (bug/feature/melhoria) |
-| **Plano** | `.github/plans/issue-{N}-{slug}.md` |
-| **Estado** | `/memories/session/pipeline-state.md` |
-| **Revisão** | Máx. 3 iterações; critical/major → re-planeja; minor → documenta |
-| **HITL** | Obrigatório após criação da issue e após criação do PR |
+| **PR** | Include `Closes #N` in body |
+| **Issue** | Type-specific template (bug/feature/improvement) |
+| **Plan** | `.github/plans/issue-{N}-{slug}.md` |
+| **State** | `/memories/session/pipeline-state.md` |
+| **Review** | Max. 3 iterations; critical/major → re-plan; minor → document |
+| **HITL** | Mandatory after issue creation and after PR creation |

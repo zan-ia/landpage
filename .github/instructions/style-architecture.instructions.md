@@ -3,28 +3,28 @@ description: "Use when: designing new visual components, defining CSS patterns, 
 applyTo: "src/**"
 ---
 
-# Arquitetura de Estilos — Padrões SvelteKit
+# Style Architecture — SvelteKit Patterns
 
-## 1. Sistema de Design Tokens
+## 1. Design Token System
 
-Definido em `src/lib/app.css`. Baseado em **Material Design 3** (dark mode).
+Defined in `src/lib/app.css`. Based on **Material Design 3** (dark mode).
 
-### Paleta de Cores
+### Color Palette
 
-> **Fonte única:** `src/lib/app.css` — todos os tokens são definidos lá. Não duplique valores.
+> **Single source:** `src/lib/app.css` — all tokens are defined there. Do not duplicate values.
 
-Consulte `src/lib/app.css` para a lista completa. Tokens principais:
+See `src/lib/app.css` for the full list. Key tokens:
 
-| Token | Uso típico |
+| Token | Typical Use |
 |-------|-----------|
-| `--color-primary` / `--color-primary-container` | Destaques, ícones, badges |
-| `--color-surface` / `--color-surface-container` | Backgrounds de cards/seções |
-| `--color-surface-container-lowest` | Background da página (`html`, `body`) |
-| `--color-background` | Background alternativo |
-| `--color-on-surface` | Texto principal |
-| `--color-outline` / `--color-outline-variant` | Bordas |
+| `--color-primary` / `--color-primary-container` | Highlights, icons, badges |
+| `--color-surface` / `--color-surface-container` | Card/section backgrounds |
+| `--color-surface-container-lowest` | Page background (`html`, `body`) |
+| `--color-background` | Alternative background |
+| `--color-on-surface` | Main text |
+| `--color-outline` / `--color-outline-variant` | Borders |
 
-### Como Usar nos Componentes
+### How to Use in Components
 
 ```svelte
 <style>
@@ -43,19 +43,19 @@ Consulte `src/lib/app.css` para a lista completa. Tokens principais:
 </style>
 ```
 
-### Opacidades Padrão
+### Standard Opacities
 
-| Uso | Opacidade | CSS |
+| Use | Opacity | CSS |
 |-----|-----------|-----|
-| Texto principal | 100% | `color: var(--color-on-surface)` |
-| Texto secundário | 70% | `opacity: 0.7` |
-| Texto terciário | 50% | `opacity: 0.5` |
-| Borda sutil | 10% | `border-color: rgba(186,242,255,0.1)` |
+| Main text | 100% | `color: var(--color-on-surface)` |
+| Secondary text | 70% | `opacity: 0.7` |
+| Tertiary text | 50% | `opacity: 0.5` |
+| Subtle border | 10% | `border-color: rgba(186,242,255,0.1)` |
 | Badge bg | 10-20% | `background: rgba(186,242,255,0.2)` |
 
-## 2. Padrão Glass Panel
+## 2. Glass Panel Pattern
 
-Definido globalmente em `src/lib/app.css`:
+Globally defined in `src/lib/app.css`:
 
 ```css
 .glass-panel {
@@ -67,30 +67,30 @@ Definido globalmente em `src/lib/app.css`:
 }
 ```
 
-### Uso nos componentes
+### Usage in components
 
 ```svelte
-<!-- Card de serviço -->
+<!-- Service card -->
 <div class="solutions__card glass-panel">
   <span class="material-symbols-outlined solutions__icon">smart_toy</span>
-  <h3 class="solutions__card-title">Título</h3>
-  <p class="solutions__card-desc">Descrição</p>
+  <h3 class="solutions__card-title">Title</h3>
+  <p class="solutions__card-desc">Description</p>
 </div>
 
-<!-- Card de depoimento -->
+<!-- Testimonial card -->
 <div class="testimonial__card glass-panel">
   <div class="testimonial__stars">...</div>
   <p class="testimonial__text">...</p>
 </div>
 ```
 
-## 3. Padrão de Gradientes
+## 3. Gradient Pattern
 
 ```css
-/* Gradiente primário (ícones, badges) */
+/* Primary gradient (icons, badges) */
 background: linear-gradient(135deg, var(--color-primary), var(--color-primary-container));
 
-/* Gradiente de superfície (background de seções) */
+/* Surface gradient (section backgrounds) */
 background: linear-gradient(
   to bottom,
   var(--color-surface),
@@ -98,7 +98,7 @@ background: linear-gradient(
   var(--color-surface)
 );
 
-/* Gradiente de glow (hero, destaques) */
+/* Glow gradient (hero, highlights) */
 background: radial-gradient(
   ellipse at 50% 0%,
   rgba(186, 242, 255, 0.15) 0%,
@@ -106,17 +106,17 @@ background: radial-gradient(
 );
 ```
 
-## 4. Padrão de Grid Layouts (Scoped CSS)
+## 4. Grid Layout Pattern (Scoped CSS)
 
 ```css
-/* Mobile-first: 1 coluna */
+/* Mobile-first: 1 column */
 .solutions__grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--spacing-gutter);
 }
 
-/* Desktop: 3 colunas */
+/* Desktop: 3 columns */
 @media (min-width: 768px) {
   .solutions__grid {
     grid-template-columns: repeat(3, 1fr);
@@ -124,20 +124,20 @@ background: radial-gradient(
 }
 ```
 
-### Grids por Componente
+### Grids by Component
 
-| Componente | Mobile | Desktop |
+| Component | Mobile | Desktop |
 |-----------|--------|---------|
 | Solutions | 1 col | 3 cols |
 | Authority | 1 col | 3 cols |
 | Differential | 1 col | 2 cols |
-| Testimonials | scroll horizontal | scroll horizontal |
+| Testimonials | horizontal scroll | horizontal scroll |
 
-## 5. Padrão de Badges / Tags
+## 5. Badge / Tag Pattern
 
 ```svelte
 <span class="solutions__badge">
-  Agentes de IA
+  AI Agents
 </span>
 
 <style>
@@ -154,12 +154,12 @@ background: radial-gradient(
 </style>
 ```
 
-## 6. Padrão de Header de Seção
+## 6. Section Header Pattern
 
 ```svelte
 <div class="testimonials__header">
-  <h2 class="testimonials__title">O que nossos parceiros dizem</h2>
-  <p class="testimonials__subtitle">Histórias de transformação digital.</p>
+  <h2 class="testimonials__title">What our partners say</h2>
+  <p class="testimonials__subtitle">Stories of digital transformation.</p>
 </div>
 
 <style>
@@ -184,19 +184,19 @@ background: radial-gradient(
 </style>
 ```
 
-## 7. Padrão de Tipografia
+## 7. Typography Pattern
 
-| Elemento | Token Fonte | Token Tamanho | Peso |
+| Element | Font Token | Size Token | Weight |
 |----------|-------------|---------------|------|
-| Título hero (h1) | `--font-display` | `--font-size-display-lg` | 700 |
-| Título seção (h2) | `--font-display` | `--font-size-headline-lg` | 600 |
-| Subtítulo | `--font-body` | `--font-size-body-md` | 400 |
+| Hero title (h1) | `--font-display` | `--font-size-display-lg` | 700 |
+| Section title (h2) | `--font-display` | `--font-size-headline-lg` | 600 |
+| Subtitle | `--font-body` | `--font-size-body-md` | 400 |
 | Card title (h3) | `--font-display` | `--font-size-headline-md` | 500 |
-| Corpo | `--font-body` | `--font-size-body-md` | 400 |
-| Código/dados | `--font-code` | `--font-size-code-md` | 400 |
+| Body | `--font-body` | `--font-size-body-md` | 400 |
+| Code/data | `--font-code` | `--font-size-code-md` | 400 |
 | Badge | `--font-code` | `--font-size-label-sm` | 500 |
 
-## 8. Padrão de Ícones (Material Symbols)
+## 8. Icon Pattern (Material Symbols)
 
 ```svelte
 <span class="material-symbols-outlined">star</span>
@@ -219,20 +219,20 @@ background: radial-gradient(
 </a>
 ```
 
-### Tamanhos de Ícone
+### Icon Sizes
 
-| Classe | Tamanho | Uso |
+| Class | Size | Use |
 |--------|---------|-----|
-| `text-xl` | 20px | Inline com texto |
-| `text-2xl` | 24px | Wrapper de ícone |
-| `text-3xl` | 30px | Wrapper grande (serviços) |
-| `text-4xl` | 40px | Hero / destaque |
+| `text-xl` | 20px | Inline with text |
+| `text-2xl` | 24px | Icon wrapper |
+| `text-3xl` | 30px | Large wrapper (services) |
+| `text-4xl` | 40px | Hero / highlight |
 
-## 9. Composição de Seção (Template)
+## 9. Section Composition (Template)
 
 ```
 ┌─────────────────────────────────────────┐
-│  Gradient/Glow Background (absoluto)    │
+│  Gradient/Glow Background (absolute)    │
 ├─────────────────────────────────────────┤
 │  ┌─ max-w-6xl mx-auto ──────────────┐  │
 │  │  ┌─ text-center ──────────────┐   │  │
@@ -247,21 +247,21 @@ background: radial-gradient(
 │  │  │  │  H3 Title         │       │  │  │
 │  │  │  │  P description    │       │  │  │
 │  │  │  └───────────────────┘       │  │  │
-│  │  │  ... (mais cards)            │  │  │
+│  │  │  ... (more cards)            │  │  │
 │  │  └───────────────────────────────┘  │  │
 │  └─────────────────────────────────────┘  │
 └─────────────────────────────────────────┘
 ```
 
-## 10. Checklist de Consistência Visual
+## 10. Visual Consistency Checklist
 
-- [ ] `glass-panel` usado para cards e containers
-- [ ] Cores usam `var(--color-*)` — sem valores hard-coded
-- [ ] Tipografia segue a tabela de fontes/ pesos/ tamanhos
-- [ ] Badges seguem o padrão de `bg-primary/10` + `border-primary/20`
-- [ ] Ícones Material Symbols com wrapper gradiente (serviços) ou glass (redes)
-- [ ] Grids responsive: `grid-cols-1 md:grid-cols-N`
-- [ ] Header de seção com badge + h2 + p, centralizado, `max-w-3xl`
-- [ ] Animações de hover: `scale-[1.02]` + `shadow` em cards
-- [ ] Padding vertical: `py-24` nas seções
-- [ ] Conteúdo centralizado com `max-w-6xl mx-auto`
+- [ ] `glass-panel` used for cards and containers
+- [ ] Colors use `var(--color-*)` — no hard-coded values
+- [ ] Typography follows the font/weight/size table
+- [ ] Badges follow the `bg-primary/10` + `border-primary/20` pattern
+- [ ] Material Symbols icons with gradient wrapper (services) or glass (social)
+- [ ] Responsive grids: `grid-cols-1 md:grid-cols-N`
+- [ ] Section header with badge + h2 + p, centered, `max-w-3xl`
+- [ ] Hover animations: `scale-[1.02]` + `shadow` on cards
+- [ ] Vertical padding: `py-24` on sections
+- [ ] Centered content with `max-w-6xl mx-auto`

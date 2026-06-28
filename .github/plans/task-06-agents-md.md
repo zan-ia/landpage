@@ -6,7 +6,7 @@ Criar/validar o arquivo `AGENTS.md` raiz do projeto — o ponto de entrada princ
 ## Responsabilidades Específicas
 
 1. **Definir Project Overview**:
-   - Nome e propósito do projeto (Zan.IA — landing page institucional)
+   - Nome e propósito do projeto (landing page institucional)
    - Tech stack completa (SvelteKit 5 + Vite + adapter-static)
    - Tipo de site: static generation, GitHub Pages
 

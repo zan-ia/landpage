@@ -1,84 +1,84 @@
----
-description: "Executa uma revisão de código na landing page Zan.IA seguindo as 10 dimensões de qualidade. Analisa diff, arquivos específicos ou mudanças staged/unstaged."
-argument-hint: "[opcional] Escopo: 'diff', 'staged', 'unstaged', ou caminho do arquivo (ex: 'src/lib/components/Hero.svelte')"
+﻿---
+description: "Runs a code review on the landing page following the 10 quality dimensions. Analyzes diff, specific files, or staged/unstaged changes."
+argument-hint: "[optional] Scope: 'diff', 'staged', 'unstaged', or file path (e.g., 'src/lib/components/Hero.svelte')"
 agent: "revisor"
 ---
 
-# Revisar Código — Zan.IA
+# Review Code
 
-Execute uma revisão de código completa seguindo o checklist de 10 dimensões de qualidade definido no pipeline Zan.IA.
+Run a complete code review following the 10-dimension quality checklist defined in the pipeline.
 
-## Escopos Suportados
+## Supported Scopes
 
-| Escopo | Descrição |
+| Scope | Description |
 |--------|-----------|
-| `diff` (padrão) | Analisa as mudanças entre a branch atual e `main` |
-| `staged` | Analisa apenas mudanças em staging (git diff --staged) |
-| `unstaged` | Analisa mudanças não staged (git diff) |
-| `<arquivo>` | Analisa um arquivo específico |
+| `diff` (default) | Analyzes changes between current branch and `main` |
+| `staged` | Analyzes only staged changes (git diff --staged) |
+| `unstaged` | Analyzes unstaged changes (git diff) |
+| `<file>` | Analyzes a specific file |
 
-## Procedimento
+## Procedure
 
-### 1. Coletar o Diff
+### 1. Collect the Diff
 
-Dependendo do escopo:
+Depending on scope:
 - `diff`: `git diff main...HEAD`
 - `staged`: `git diff --staged`
 - `unstaged`: `git diff`
-- Arquivo específico: ler o arquivo e comparar com `main`
+- Specific file: read the file and compare with `main`
 
-### 2. Analisar 10 Dimensões
+### 2. Analyze 10 Dimensions
 
-| # | Dimensão | O que Verificar |
+| # | Dimension | What to Verify |
 |---|----------|----------------|
-| 1 | **Código** | Scoped CSS, design tokens (`var(--color-*)`), BEM naming, Svelte 5 Runes (`$props()`, `$state()`), sem Tailwind, sem hex hardcoded |
-| 2 | **Arquitetura** | Composição correta de componentes, imports organizados, layout (`+layout.svelte`) intacto, sem acoplamento indevido |
-| 3 | **Design** | `.glass-panel` aplicado, tipografia (Space Grotesk/Geist/JetBrains Mono), paleta Material Design 3, gradientes consistentes |
-| 4 | **Legibilidade** | Nomes descritivos em português, código limpo, comentários onde necessário, sem código morto |
-| 5 | **Performance** | `will-change` só durante interação, `contain` onde aplicável, animações em `transform`/`opacity`, imagens com `loading="lazy"` |
-| 6 | **Manutenibilidade** | Padrões consistentes com o restante do código, reutilização de tokens CSS, sem duplicação de estilos |
-| 7 | **Especificidade** | Baixa especificidade nos seletores, sem `!important`, sem seletores de ID, sem aninhamento profundo |
-| 8 | **Dependências** | Apenas Material Symbols + Google Fonts, sem novas CDN, sem novos pacotes npm não aprovados |
-| 9 | **Build** | `npm run check` sem erros, `npm run build` sem warnings, sem alterações em `build/` |
-| 10 | **Acessibilidade** | ARIA labels em seções, heading hierarchy (h1→h2→h3), alt text em imagens, `prefers-reduced-motion`, `html lang="pt-BR"` |
+| 1 | **Code** | Scoped CSS, design tokens (`var(--color-*)`), BEM naming, Svelte 5 Runes (`$props()`, `$state()`), no Tailwind, no hex hardcoded |
+| 2 | **Architecture** | Correct component composition, organized imports, layout (`+layout.svelte`) intact, no improper coupling |
+| 3 | **Design** | `.glass-panel` applied, typography (Space Grotesk/Geist/JetBrains Mono), Material Design 3 palette, consistent gradients |
+| 4 | **Readability** | Descriptive names in Portuguese, clean code, comments where needed, no dead code |
+| 5 | **Performance** | `will-change` only during interaction, `contain` where applicable, `transform`/`opacity` animations, images with `loading="lazy"` |
+| 6 | **Maintainability** | Patterns consistent with the rest of the code, CSS token reuse, no style duplication |
+| 7 | **Specificity** | Low selector specificity, no `!important`, no ID selectors, no deep nesting |
+| 8 | **Dependencies** | Only Material Symbols + Google Fonts, no new CDN, no unapproved npm packages |
+| 9 | **Build** | `npm run check` without errors, `npm run build` without warnings, no changes in `build/` |
+| 10 | **Accessibility** | ARIA labels on sections, heading hierarchy (h1→h2→h3), alt text on images, `prefers-reduced-motion`, `html lang="pt-BR"` |
 
-### 3. Classificar Issues
+### 3. Classify Issues
 
-| Severidade | Critério | Ação |
+| Severity | Criterion | Action |
 |-----------|----------|------|
-| 🔴 **Critical** | Bug funcional, build quebrado, regressão visual grave | Bloqueia merge — corrigir antes |
-| 🟠 **Major** | Violação de padrão, design inconsistente, performance ruim | Deve ser corrigido |
-| 🟡 **Minor** | Estilo, naming, pequenas melhorias | Documentar como follow-up |
+| 🔴 **Critical** | Functional bug, broken build, severe visual regression | Blocks merge — fix before |
+| 🟠 **Major** | Pattern violation, inconsistent design, poor performance | Should be fixed |
+| 🟡 **Minor** | Style, naming, small improvements | Document as follow-up |
 
-### 4. Gerar Relatório
+### 4. Generate Report
 
-Formato do relatório:
+Report format:
 
 ```markdown
-## Relatório de Revisão — [escopo]
+## Review Report — [scope]
 
-### Resumo
-- Arquivos analisados: N
-- Issues encontradas: N (Critical: X, Major: Y, Minor: Z)
+### Summary
+- Files analyzed: N
+- Issues found: N (Critical: X, Major: Y, Minor: Z)
 
-### Issues Critical 🔴
-| # | Arquivo | Linha | Descrição |
+### Critical Issues 🔴
+| # | File | Line | Description |
 |---|---------|-------|-----------|
 
-### Issues Major 🟠
-| # | Arquivo | Linha | Descrição |
+### Major Issues 🟠
+| # | File | Line | Description |
 |---|---------|-------|-----------|
 
-### Issues Minor 🟡
-| # | Arquivo | Linha | Descrição |
+### Minor Issues 🟡
+| # | File | Line | Description |
 |---|---------|-------|-----------|
 
-### Recomendação
-[✅ Aprovado | ⚠️ Aprovado com ressalvas | 🔴 Não aprovado]
+### Recommendation
+[✅ Approved | ⚠️ Approved with caveats | 🔴 Not approved]
 ```
 
-## Referências
-- Convenções de código: `AGENTS.md`
+## References
+- Code conventions: `AGENTS.md`
 - Design system: `src/lib/app.css`
 - Pipeline workflow: `.github/instructions/pipeline-workflow.instructions.md`
 - CSS conventions: `.github/instructions/css.instructions.md`

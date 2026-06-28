@@ -1,38 +1,38 @@
----
-description: "Adiciona um novo depoimento ao carrossel de testimonials da landing page Zan.IA. Edita o array testimonials[] no componente Svelte."
-argument-hint: "Nome do cliente, cargo/empresa e texto do depoimento (ex: 'Maria Silva, CEO TechCorp: A Zan.IA transformou nossa presença digital...')"
+﻿---
+description: "Adds a new testimonial to the landing page testimonials carousel. Edits the testimonials[] array in the Svelte component."
+argument-hint: "Client name, role/company and testimonial text (e.g., 'Maria Silva, CEO TechCorp: The company transformed our digital presence...')"
 agent: "criador-conteudo"
 ---
 
-# Adicionar Depoimento
+# Add Testimonial
 
-Adicione uma nova entrada ao array `testimonials[]` no componente `src/lib/components/Testimonials.svelte`.
+Add a new entry to the `testimonials[]` array in the `src/lib/components/Testimonials.svelte` component.
 
-## Template do Objeto
+## Object Template
 
 ```typescript
 {
   stars: 5,
-  text: "Texto do depoimento descrevendo o problema, a solução e o resultado obtido com a Zan.IA.",
+  text: "Testimonial text describing the problem, solution, and result achieved with the company.",
   initials: "MS",
   name: "Maria S.",
   role: "CEO, TechCorp"
 }
 ```
 
-## Regras
+## Rules
 
-- **stars:** sempre 5 (máximo)
-- **text:** 1-3 frases. Estrutura: Problema → Solução → Resultado. Incluir métricas críveis.
-- **initials:** 2 letras maiúsculas (primeira letra do nome + sobrenome)
-- **name:** Nome + inicial do sobrenome (ex: "Maria S.")
-- **role:** Cargo + empresa (separados por vírgula)
+- **stars:** always 5 (maximum)
+- **text:** 1-3 sentences. Structure: Problem → Solution → Result. Include credible metrics.
+- **initials:** 2 uppercase letters (first letter of first name + last name)
+- **name:** Name + last name initial (e.g., "Maria S.")
+- **role:** Position + company (separated by comma)
 
-## Procedimento
+## Procedure
 
-1. Abra `src/lib/components/Testimonials.svelte`
-2. Localize o array `testimonials: Testimonial[] = [...]` no `<script lang="ts">`
-3. Adicione o novo objeto ANTES do último item (para manter ordem)
-4. O carrossel usa clones automáticos — não precisa duplicar HTML
-5. Os dots indicadores se ajustam automaticamente (`testimonials.length`)
-6. Execute `npm run dev` para verificar visualmente
+1. Open `src/lib/components/Testimonials.svelte`
+2. Locate the `testimonials: Testimonial[] = [...]` array in `<script lang="ts">`
+3. Add the new object BEFORE the last item (to maintain order)
+4. The carousel uses automatic clones — no need to duplicate HTML
+5. The indicator dots adjust automatically (`testimonials.length`)
+6. Run `npm run dev` to verify visually

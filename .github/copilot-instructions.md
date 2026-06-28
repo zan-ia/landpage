@@ -1,4 +1,4 @@
-# Zan.IA Landing Page — Copilot Instructions
+﻿# Institutional Landing Page — Copilot Instructions
 
 ## Stack
 - **SvelteKit 5** (Runes mode) + `@sveltejs/adapter-static`
@@ -13,7 +13,7 @@
 - ALWAYS use design tokens: `var(--color-*)`, `var(--font-*)`, `var(--spacing-*)`, `var(--radius-*)`
 - NEVER hardcode colors (hex, rgb) or font families
 - Scoped CSS goes in each component's `<style>` — only shared utilities in `src/lib/app.css`
-- BEM-like naming: `componente__elemento--modificador`
+- BEM-like naming: `component__element--modifier`
 
 ### HTML
 - Semantic HTML5: `<header>`, `<nav>`, `<main>`, `<section>`, `<article>`, `<footer>`
@@ -35,7 +35,13 @@
 ### Quality
 - Run `npm run check` and `npm run build` before committing
 - **MANDATORY: Use `vscode/askQuestions` tool for ANY user communication — NEVER ask questions in plain text**
-- **MANDATORY: Use `todos` tool to track sequential execution for any task with 3+ steps**
+- **MANDATORY: Use `manage_todo_list` tool to track sequential execution for any task with 3+ steps**
 - Consult `docs/INSTITUCIONAL.md` for company content
+
+### Tool Usage
+- `vscode/askQuestions` — MANDATORY for any ambiguity; never assume user preferences
+- `manage_todo_list` — Create list BEFORE starting, 1 step in-progress at a time, mark completed immediately
+- Subagents — Prefer specialized agents (`planejador`, `implementador`, `revisor`) for pipeline tasks
+- Memory — Use `/memories/session/pipeline-state.md` for pipeline state tracking
 
 See [AGENTS.md](./AGENTS.md) for full project guidelines, agent pipeline, and skill documentation.

@@ -1,94 +1,92 @@
----
-description: "Use when: performing any development task — editing code, running commands, searching files, asking questions, or invoking subagents. Covers strict rules for each Copilot tool including when to use vscode_askQuestions, browser, terminal, edit, search, memory, and subagents."
-applyTo:
-  - "src/**"
-  - ".github/**"
+﻿---
+description: "Use when: performing any development task — editing code, running commands, searching files, asking questions, or invoking subagents. Covers strict rules for each Copilot tool including when to use vscode_askQuestions, browser, terminal, edit, search, memory/*, vscode/memory, and subagents."
+applyTo: "src/**, .github/**"
 ---
 
-# Regras de Uso de Ferramentas — Copilot
+# Tool Usage Rules — Copilot
 
-Estas regras são **obrigatórias** para qualquer tarefa de desenvolvimento. O não cumprimento compromete a qualidade e segurança do código.
+These rules are **mandatory** for any development task. Non-compliance compromises code quality and security.
 
 ---
 
-## 0. Harness Copilot — Visão Geral das Primitivas de Customização
+## 0. Harness Copilot — Customization Primitives Overview
 
-O VS Code oferece **6 primitivas de customização** que formam o harness completo do Copilot. Cada agente do pipeline DEVE conhecer todas elas para tomar decisões corretas de arquitetura.
+VS Code offers **7 customization primitives** that form the complete Copilot harness. Every pipeline agent MUST know all of them to make correct architecture decisions.
 
-| Primitiva | Arquivo | Onde | Uso | Carregamento |
+| Primitive | File | Location | Use | Loading |
 |-----------|---------|------|-----|-------------|
-| **Agent Instructions** | `AGENTS.md` / `copilot-instructions.md` | Raiz ou `.github/` | Diretrizes globais para todo o projeto | Sempre-on |
-| **File Instructions** | `*.instructions.md` | `.github/instructions/` | Regras específicas por padrão de arquivo | `applyTo` ou on-demand via `description` |
-| **Custom Agents** | `*.agent.md` | `.github/agents/` | Personas especializadas com ferramentas restritas | Seletor de agente ou subagente |
-| **Prompts** | `*.prompt.md` | `.github/prompts/` | Tarefa única e focada com parâmetros | Slash command (`/`) |
-| **Skills** | `SKILL.md` | `.github/skills/<nome>/` | Workflows reutilizáveis com assets empacotados | Slash command ou detecção automática |
-| **Hooks** | `*.json` | `.github/hooks/` | Automação determinística no ciclo de vida do agente | Eventos (`PreToolUse`, `PostToolUse`, etc.) |
-| **MCP Servers** | Config JSON | `.vscode/` ou settings | Integração com APIs e serviços externos | Sob demanda via ferramentas MCP |
+| **Agent Instructions** | `AGENTS.md` / `copilot-instructions.md` | Root or `.github/` | Global guidelines for the entire project | Always-on |
+| **File Instructions** | `*.instructions.md` | `.github/instructions/` | Specific rules per file pattern | `applyTo` or on-demand via `description` |
+| **Custom Agents** | `*.agent.md` | `.github/agents/` | Specialized personas with restricted tools | Agent selector or subagent |
+| **Prompts** | `*.prompt.md` | `.github/prompts/` | Single focused task with parameters | Slash command (`/`) |
+| **Skills** | `SKILL.md` | `.github/skills/<name>/` | Reusable workflows with packaged assets | Slash command or automatic detection |
+| **Hooks** | `*.json` | `.github/hooks/` | Deterministic automation in agent lifecycle | Events (`PreToolUse`, `PostToolUse`, etc.) |
+| **MCP Servers** | Config JSON | `.vscode/` or settings | Integration with external APIs and services | On demand via MCP tools |
 
-### Como o Harness Funciona
+### How the Harness Works
 
-1. **Descoberta:** O VS Code escaneia os diretórios configurados (`.github/instructions/`, `.github/agents/`, `.github/skills/`, `.github/prompts/`, `.github/hooks/`) e carrega os arquivos encontrados.
-2. **Seleção:** Para `*.instructions.md`, o sistema usa o campo `applyTo` (glob pattern) para anexar automaticamente quando o arquivo alvo corresponde. Se não houver `applyTo`, usa `description` para correspondência semântica.
-3. **Prioridade:** Instruções de perfil do usuário > Instruções do workspace > Instruções da organização.
-4. **Context Isolado:** Custom agents como subagentes (`runSubagent`) rodam em contexto isolado — o agente pai só recebe o resultado final.
-5. **Fork Mode:** Skills com `context: fork` executam em um subagente dedicado, limpando o contexto da conversa principal.
+1. **Discovery:** VS Code scans the configured directories (`.github/instructions/`, `.github/agents/`, `.github/skills/`, `.github/prompts/`, `.github/hooks/`) and loads the found files.
+2. **Selection:** For `*.instructions.md`, the system uses the `applyTo` field (glob pattern) to automatically attach when the target file matches. If no `applyTo`, uses `description` for semantic matching.
+3. **Priority:** User profile instructions > Workspace instructions > Organization instructions.
+4. **Isolated Context:** Custom agents as subagents (`runSubagent`) run in isolated context — the parent agent only receives the final result.
+5. **Fork Mode:** Skills with `context: fork` execute in a dedicated subagent, clearing the main conversation context.
 
-### Mapa do Pipeline para o Harness
+### Pipeline Map for the Harness
 
 ```
-AGENTS.md + *.instructions.md → Diretrizes (sempre disponíveis)
+AGENTS.md + *.instructions.md → Guidelines (always available)
        │
        ▼
-  orquestrador.agent.md  → Agente coordenador (tools: all, agents: [planejador, implementador, revisor, Explore])
+  orquestrador.agent.md  → Coordinator agent (tools: all, agents: [planejador, implementador, revisor, Explore])
        │
-       ├── ▶ planejador.agent.md   → Subagente read-only (tools: read, search, web)
-       ├── ▶ implementador.agent.md → Subagente executor (tools: read, search, edit, execute)
-       ├── ▶ revisor.agent.md      → Subagente read-only (tools: read, search)
-       └── ▶ Explore (built-in)     → Subagente de exploração (tools: read, search)
+       ├── ▶ planejador.agent.md   → Read-only subagent (tools: read, search, web)
+       ├── ▶ implementador.agent.md → Executor subagent (tools: read, search, edit, execute)
+       ├── ▶ revisor.agent.md      → Read-only subagent (tools: read, search)
+       └── ▶ Explore (built-in)     → Exploration subagent (tools: read, search)
        
-Skills (pipeline-orquestracao, criar-section, etc.) → Workflows sob demanda
-Prompts (/iniciar-bugfix, /iniciar-feature, etc.) → Tarefas parametrizadas
+Skills (pipeline-orquestracao, criar-section, etc.) → On-demand workflows
+Prompts (/iniciar-bugfix, /iniciar-feature, etc.) → Parameterized tasks
 ```
 
 ---
 
-## 1. `vscode/askQuestions` — Perguntas ao Usuário
+## 1. `vscode/askQuestions` — User Questions
 
-**🚨 REGRA CRÍTICA: NUNCA faça perguntas em texto livre para o usuário. SEMPRE use a tool `vscode/askQuestions` (carrossel interativo). Perguntas em markdown comum são PROIBIDAS — o usuário não consegue respondê-las de forma estruturada e o fluxo de trabalho é interrompido.**
+**🚨 CRITICAL RULE: NEVER ask questions in free text to the user. ALWAYS use the `vscode/askQuestions` tool (interactive carousel). Plain markdown questions are FORBIDDEN — the user cannot answer them in a structured way and the workflow is interrupted.**
 
-O `vscode/askQuestions` é uma tool nativa do VS Code que exibe um **carrossel interativo** de perguntas com opções clicáveis, selects, e campos de texto livre. O usuário responde com cliques/seleções e as respostas são mapeadas de volta para o agente.
+`vscode/askQuestions` is a native VS Code tool that displays an **interactive carousel** of questions with clickable options, selects, and free text fields. The user responds with clicks/selections and the answers are mapped back to the agent.
 
-**Use `vscode/askQuestions` obrigatoriamente quando:**
-- Houver **qualquer** ambiguidade no pedido do usuário que impacte o escopo da tarefa
-- Existirem múltiplas abordagens válidas com trade-offs diferentes
-- O usuário não especificar preferência de design/estilo/ferramenta
-- For necessário confirmar uma decisão antes de prosseguir
-- Precisar de input do usuário para continuar o fluxo de trabalho
+**Use `vscode/askQuestions` mandatorily when:**
+- There is **any** ambiguity in the user's request that impacts the task scope
+- There are multiple valid approaches with different trade-offs
+- The user does not specify design/style/tool preferences
+- It is necessary to confirm a decision before proceeding
+- User input is needed to continue the workflow
 
-**Regras do carrossel:**
-- Máximo **4 perguntas** por interação
-- Sempre ofereça opções pré-definidas (`options`) quando possível — reduz atrito
-- Use `allowFreeformInput: true` para permitir respostas abertas (default)
-- `header`: curto e descritivo (máx. 50 caracteres)
-- `question`: concisa (máx. 200 caracteres)
-- `multiSelect: true` quando o usuário pode escolher múltiplas opções
-- Marque a opção recomendada com `recommended: true`
+**Carousel rules:**
+- Maximum **4 questions** per interaction
+- Always offer predefined options (`options`) when possible — reduces friction
+- Use `allowFreeformInput: true` to allow open responses (default)
+- `header`: short and descriptive (max. 50 characters)
+- `question`: concise (max. 200 characters)
+- `multiSelect: true` when the user can choose multiple options
+- Mark the recommended option with `recommended: true`
 
 ```yaml
-# ✅ Exemplo correto — carrossel interativo
-- header: "Escopo da Feature"
-  question: "Quais são os limites desta funcionalidade?"
+# ✅ Correct example — interactive carousel
+- header: "Feature Scope"
+  question: "What are the boundaries of this functionality?"
   options:
-    - label: "Apenas frontend"
-      description: "Somente componentes visuais"
+    - label: "Frontend only"
+      description: "Only visual components"
       recommended: true
     - label: "Frontend + backend"
-      description: "Inclui endpoints e lógica de servidor"
+      description: "Includes endpoints and server logic"
   allowFreeformInput: true
 
-# ✅ Exemplo — múltipla escolha
-- header: "Breakpoint Responsivo"
-  question: "Quais breakpoints devo usar?"
+# ✅ Example — multiple choice
+- header: "Responsive Breakpoint"
+  question: "Which breakpoints should I use?"
   multiSelect: true
   options:
     - label: "Mobile (< 768px)"
@@ -96,226 +94,226 @@ O `vscode/askQuestions` é uma tool nativa do VS Code que exibe um **carrossel i
     - label: "Desktop (> 1024px)"
 ```
 
-**NUNCA use `vscode/askQuestions` para:**
-- Senhas, tokens, API keys ou secrets (peça ao usuário para digitar diretamente no terminal)
-- Perguntas triviais cuja resposta está documentada no código, em AGENTS.md, ou em docs/INSTITUCIONAL.md
+**NEVER use `vscode/askQuestions` for:**
+- Passwords, tokens, API keys, or secrets (ask the user to type directly in the terminal)
+- Trivial questions whose answer is documented in code, AGENTS.md, or docs/INSTITUCIONAL.md
 
-**Exemplo do que NÃO fazer:**
+**Example of what NOT to do:**
 ```markdown
-<!-- ❌ PROIBIDO — pergunta em texto livre -->
-Você prefere que eu use flexbox ou grid para este layout?
+<!-- ❌ FORBIDDEN — free text question -->
+Do you prefer I use flexbox or grid for this layout?
 ```
-O correto é usar `vscode/askQuestions` com opções clicáveis.
+The correct approach is to use `vscode/askQuestions` with clickable options.
 
 ---
 
-## 2. Browser — Ferramentas de Navegação
+## 2. Browser — Navigation Tools
 
-As ferramentas de browser são essenciais para verificação visual, pesquisa de documentação e validação de UI.
+Browser tools are essential for visual verification, documentation research, and UI validation.
 
-### Catálogo de Ferramentas
+### Tool Catalog
 
-| Ferramenta | Uso Principal |
+| Tool | Primary Use |
 |-----------|---------------|
-| `open_browser_page` | Abrir uma URL no navegador integrado |
-| `fetch_webpage` | Buscar conteúdo textual de uma URL (mais leve) |
-| `read_page` | Obter snapshot de acessibilidade da página atual |
-| `screenshot_page` | Capturar screenshot da página ou elemento |
-| `click_element` | Clicar em um elemento da página |
-| `type_in_page` | Digitar texto ou pressionar teclas |
-| `navigate_page` | Navegar (url, back, forward, reload) |
-| `run_playwright_code` | Executar código Playwright arbitrário |
-| `handle_dialog` | Responder a modais (alert, confirm, prompt) |
-| `hover_element` | Pairar sobre um elemento |
-| `drag_element` | Arrastar um elemento |
+| `open_browser_page` | Open a URL in the integrated browser |
+| `fetch_webpage` | Fetch textual content from a URL (lighter) |
+| `read_page` | Get accessibility snapshot of the current page |
+| `screenshot_page` | Capture screenshot of the page or element |
+| `click_element` | Click an element on the page |
+| `type_in_page` | Type text or press keys |
+| `navigate_page` | Navigate (url, back, forward, reload) |
+| `run_playwright_code` | Run arbitrary Playwright code |
+| `handle_dialog` | Respond to modals (alert, confirm, prompt) |
+| `hover_element` | Hover over an element |
+| `drag_element` | Drag an element |
 
-### Quando Usar Cada Ferramenta
+### When to Use Each Tool
 
-**`fetch_webpage`** — documentação e pesquisa:
-- Verificar documentação oficial de dependências (Svelte, SvelteKit, Vite, MD3)
-- Pesquisar soluções para erros ou padrões de código
-- Buscar referências de API e boas práticas
-- SEMPRE valide a URL antes de buscar
+**`fetch_webpage`** — documentation and research:
+- Check official dependency documentation (Svelte, SvelteKit, Vite, MD3)
+- Research solutions for errors or code patterns
+- Search for API references and best practices
+- ALWAYS validate the URL before fetching
 
-**`open_browser_page` + `read_page`** — verificação visual:
-- Comparar DEV local (`localhost:5173`) com LIVE (`www.zan.ia.br`)
-- Verificar layout, cores, e posicionamento de elementos
-- Reutilize páginas existentes (`forceNew: false`) — evite abrir novas desnecessariamente
+**`open_browser_page` + `read_page`** — visual verification:
+- Compare local DEV (`localhost:5173`) with LIVE (production site)
+- Check layout, colors, and element positioning
+- Reuse existing pages (`forceNew: false`) — avoid opening new ones unnecessarily
 
-**`screenshot_page`** — captura de evidência:
-- Documentar estado visual antes/depois de mudanças
-- Capturar elementos específicos (`ref` ou `selector`)
-- Para comparação DEV vs LIVE, use o skill `css-comparison-workflow`
+**`screenshot_page`** — evidence capture:
+- Document visual state before/after changes
+- Capture specific elements (`ref` or `selector`)
+- For DEV vs LIVE comparison, use the `css-comparison-workflow` skill
 
-**`run_playwright_code`** — automação avançada:
-- Extrair computed styles de elementos (para comparação CSS)
-- Executar ações complexas que exigem lógica condicional
-- Use `page.evaluate()` para ler propriedades do DOM
+**`run_playwright_code`** — advanced automation:
+- Extract computed styles from elements (for CSS comparison)
+- Execute complex actions requiring conditional logic
+- Use `page.evaluate()` to read DOM properties
 
-**`click_element`, `type_in_page`, `navigate_page`** — interação:
-- Testar fluxos de usuário (navegação, scroll, formulários)
-- Verificar comportamento de componentes interativos (carrossel, accordion)
+**`click_element`, `type_in_page`, `navigate_page`** — interaction:
+- Test user flows (navigation, scroll, forms)
+- Verify interactive component behavior (carousel, accordion)
 
-### Regras Gerais
-- SEMPRE valide que a URL é válida e acessível antes de abrir
-- Prefira `read_page` (snapshot de acessibilidade) sobre `screenshot_page` para análise de estrutura
-- Para `screenshot_page`, capture elementos específicos, não a página inteira
-- Documente o que foi verificado e o resultado
+### General Rules
+- ALWAYS validate that the URL is valid and accessible before opening
+- Prefer `read_page` (accessibility snapshot) over `screenshot_page` for structure analysis
+- For `screenshot_page`, capture specific elements, not the entire page
+- Document what was verified and the result
 
-### Exemplo: Verificação Visual DEV vs LIVE
+### Example: DEV vs LIVE Visual Verification
 ```
 1. open_browser_page("http://localhost:5173") → pageId: "dev"
-2. open_browser_page("https://www.zan.ia.br") → pageId: "live"
+2. open_browser_page("https://www.example.com") → pageId: "live"
 3. screenshot_page("dev", element="Hero section") → hero-dev.png
 4. screenshot_page("live", element="Hero section") → hero-live.png
-5. Comparar visualmente → relatar diferenças
+5. Compare visually → report differences
 ```
 
 ---
 
 ## 3. Terminal — `run_in_terminal`
 
-**Regras de segurança:**
-- Comandos devem ser **não-destrutivos** e verificados
-- Sempre use `mode=sync` para comandos pontuais (build, test, lint)
-- Use `mode=async` apenas para servidores de longa duração (`npm run dev`)
-- NUNCA execute: `rm -rf`, `git push --force`, `npm publish`, ou comandos destrutivos sem confirmação explícita
+**Security rules:**
+- Commands must be **non-destructive** and verified
+- Always use `mode=sync` for one-shot commands (build, test, lint)
+- Use `mode=async` only for long-running servers (`npm run dev`)
+- NEVER run: `rm -rf`, `git push --force`, `npm publish`, or destructive commands without explicit confirmation
 
-**Regras de verificação:**
-- SEMPRE leia o output completo do terminal
-- Se houver erros, analise e corrija antes de prosseguir
-- Execute `npm run check` após cada arquivo modificado
-- Execute `npm run build` ao final para garantir build limpo
-- NUNCA modifique arquivos em `build/` — toda edição deve ser em `src/`
+**Verification rules:**
+- ALWAYS read the complete terminal output
+- If there are errors, analyze and fix before proceeding
+- Run `npm run check` after each modified file
+- Run `npm run build` at the end to ensure clean build
+- NEVER modify files in `build/` — all editing must be in `src/`
 
 ```powershell
-# ✅ Correto — comandos verificados
+# ✅ Correct — verified commands
 npm run check
 npm run build
 npm run dev
 
-# ❌ Errado — comandos cegos ou destrutivos
+# ❌ Wrong — blind or destructive commands
 rm -r build/
 git push --force origin main
 ```
 
 ---
 
-## 4. Edição de Arquivos — `replace_string_in_file`, `insert_edit_into_file`
+## 4. File Editing — `replace_string_in_file`, `insert_edit_into_file`
 
-**Regra fundamental: Leia antes de editar.**
+**Fundamental rule: Read before editing.**
 
-- SEMPRE leia o arquivo com `read_file` antes de editar — contexto mínimo de 30 linhas
-- Alterações devem ser **mínimas e cirúrgicas** — nunca reescreva arquivos inteiros
-- Prefira `replace_string_in_file` (mais preciso); use `insert_edit_into_file` como fallback
-- Para múltiplas edições no mesmo arquivo, use `replace_string_in_file` sequencialmente
-- Inclua 3-5 linhas de contexto antes e depois do `oldString`
-- Verifique erros com `get_errors` após cada edição
-- Se `oldString` não for encontrada, releia o arquivo e tente novamente
+- ALWAYS read the file with `read_file` before editing — minimum 30 lines of context
+- Changes must be **minimal and surgical** — never rewrite entire files
+- Prefer `replace_string_in_file` (more precise); use `insert_edit_into_file` as fallback
+- For multiple edits in the same file, use `replace_string_in_file` sequentially
+- Include 3-5 lines of context before and after the `oldString`
+- Check for errors with `get_errors` after each edit
+- If `oldString` is not found, re-read the file and try again
 
-**Fluxo de edição:**
+**Editing flow:**
 ```
-1. read_file (contexto completo)
-2. replace_string_in_file (edição cirúrgica)
-3. get_errors (verificar se não quebrou nada)
-4. Se erro → corrigir; se OK → próximo arquivo
+1. read_file (full context)
+2. replace_string_in_file (surgical edit)
+3. get_errors (verify nothing broke)
+4. If error → fix; if OK → next file
 ```
 
 ---
 
-## 5. Busca — `grep_search`, `semantic_search`, `file_search`
+## 5. Search — `grep_search`, `semantic_search`, `file_search`
 
-**Regra: Busque antes de assumir.**
+**Rule: Search before assuming.**
 
-- Use `grep_search` para strings exatas e expressões regulares
-- Use `semantic_search` para conceitos e padrões de código
-- Use `file_search` para localizar arquivos por glob pattern
-- SEMPRE busque antes de afirmar que algo "não existe" no código
-- Combine múltiplas estratégias de busca quando necessário
+- Use `grep_search` for exact strings and regular expressions
+- Use `semantic_search` for concepts and code patterns
+- Use `file_search` to locate files by glob pattern
+- ALWAYS search before claiming something "does not exist" in the code
+- Combine multiple search strategies when needed
 
 ```typescript
-// ✅ Correto — busca antes de criar
-// 1. grep_search para ver se componente similar já existe
-// 2. semantic_search para encontrar padrões de código relacionados
-// 3. Só então criar o novo componente
+// ✅ Correct — search before creating
+// 1. grep_search to check if similar component already exists
+// 2. semantic_search to find related code patterns
+// 3. Only then create the new component
 
-// ❌ Errado — criar sem verificar duplicação
+// ❌ Wrong — create without checking for duplication
 ```
 
 ---
 
-## 6. Memória — `memory`
+## 6. Memory — `memory/*` and `vscode/memory`
 
-Use o sistema de memória para:
+Use the memory system for:
 
-| Escopo | Uso | Exemplo |
+| Scope | Use | Example |
 |--------|-----|---------|
-| `/memories/session/` | Estado do pipeline, progresso da tarefa atual | `pipeline-state.md` |
-| `/memories/repo/` | Convenções do projeto, builds verificados | `build-commands.md` |
-| `/memories/` | Preferências do usuário persistentes | `preferences.md` |
+| `/memories/session/` | Pipeline state, current task progress | `pipeline-state.md` |
+| `/memories/repo/` | Project conventions, verified builds | `build-commands.md` |
+| `/memories/` | Persistent user preferences | `preferences.md` |
 
-**Pipeline State:** O orquestrador DEVE manter `/memories/session/pipeline-state.md` com:
-- Issue atual (número, título, URL)
-- Branch atual
-- Fase do pipeline (planejamento | implementação | revisão)
-- Iteração atual de revisão
-- Próximo passo
-
----
-
-## 7. Subagentes — `runSubagent` e Padrões de Orquestração
-
-### 7.1 Conceitos Fundamentais
-
-Subagentes são instâncias independentes do Copilot que executam trabalho focado em contexto isolado. O agente pai invoca um subagente, passa uma tarefa específica, e recebe apenas o resultado final — o contexto intermediário não polui a conversa principal.
-
-**Quando usar:**
-- Tarefas complexas que exigem contexto isolado (planejamento, revisão)
-- Operações que se beneficiam de um agente especializado
-- Tarefas de exploração em larga escala (use o agente `Explore`)
-- Paralelismo: múltiplos subagentes rodando simultaneamente para perspectivas diferentes
-
-**Regras:**
-- SEMPRE passe contexto completo no prompt do subagente — eles são stateless
-- Use `agentName` para selecionar o agente especializado correto
-- Subagentes são stateless — inclua TODAS as informações necessárias no prompt
-- Prefira o agente `Explore` para buscas complexas na codebase (evita poluir a conversa principal)
-- Especifique o thoroughness: `quick`, `medium`, ou `thorough`
+**Pipeline State:** The orchestrator MUST maintain `/memories/session/pipeline-state.md` with:
+- Current issue (number, title, URL)
+- Current branch
+- Pipeline phase (planning | implementation | review)
+- Current review iteration
+- Next step
 
 ---
 
-### 7.2 Ciclo de Vida de um Subagente
+## 7. Subagents — `runSubagent` and Orchestration Patterns
+
+### 7.1 Core Concepts
+
+Subagents are independent Copilot instances that execute focused work in isolated context. The parent agent invokes a subagent, passes a specific task, and receives only the final result — intermediate context does not pollute the main conversation.
+
+**When to use:**
+- Complex tasks requiring isolated context (planning, review)
+- Operations that benefit from a specialized agent
+- Large-scale exploration tasks (use the `Explore` agent)
+- Parallelism: multiple subagents running simultaneously for different perspectives
+
+**Rules:**
+- ALWAYS pass complete context in the subagent prompt — they are stateless
+- Use `agentName` to select the correct specialized agent
+- Subagents are stateless — include ALL necessary information in the prompt
+- Prefer the `Explore` agent for complex codebase searches (avoids polluting the main conversation)
+- Specify thoroughness: `quick`, `medium`, or `thorough`
+
+---
+
+### 7.2 Subagent Lifecycle
 
 ```
-Agente Pai (orquestrador)
+Parent Agent (orchestrator)
   │
-  ├── 1. Identifica subtarefa que beneficia contexto isolado
-  ├── 2. Invoca runSubagent(agentName, prompt)
-  │       └── Subagente recebe contexto INTEIRO no prompt
-  │       └── Subagente executa ferramentas (read, search, edit, ...)
-  │       └── Subagente retorna resultado ÚNICO (string)
-  ├── 3. Agente pai incorpora resultado e continua
-  └── 4. Contexto do subagente é descartado
+  ├── 1. Identifies subtask that benefits from isolated context
+  ├── 2. Invokes runSubagent(agentName, prompt)
+  │       └── Subagent receives FULL context in prompt
+  │       └── Subagent executes tools (read, search, edit, ...)
+  │       └── Subagent returns SINGLE result (string)
+  ├── 3. Parent agent incorporates result and continues
+  └── 4. Subagent context is discarded
 ```
 
-O subagente aparece no chat como uma chamada de ferramenta colapsável — você pode expandir para ver detalhes.
+The subagent appears in chat as a collapsible tool call — you can expand to see details.
 
 ---
 
-### 7.3 Controle de Invocação
+### 7.3 Invocation Control
 
-O arquivo `.agent.md` de cada agente controla como ele pode ser invocado:
+Each agent's `.agent.md` file controls how it can be invoked:
 
-| Configuração | Efeito |
+| Setting | Effect |
 |-------------|--------|
-| `user-invocable: false` | Agente NÃO aparece no seletor de agentes, mas ainda pode ser subagente |
-| `disable-model-invocation: true` | Agente NÃO pode ser invocado como subagente por outros agentes |
-| `agents: ["planejador", "implementador"]` | Lista explícita de subagentes permitidos (vazio `[]` = nenhum, `*` = todos) |
-| `tools: ["read", "search"]` | Restringe as ferramentas disponíveis para o agente |
+| `user-invocable: false` | Agent does NOT appear in agent selector, but can still be a subagent |
+| `disable-model-invocation: true` | Agent CANNOT be invoked as a subagent by other agents |
+| `agents: ["planejador", "implementador"]` | Explicit list of allowed subagents (empty `[]` = none, `*` = all) |
+| `tools: ["read", "search"]` | Restricts the tools available to the agent |
 
-**Importante:** Listar explicitamente um agente no array `agents` sobrescreve `disable-model-invocation: true`. Isso permite criar agentes "protegidos" que só um coordenador específico pode invocar.
+**Important:** Explicitly listing an agent in the `agents` array overrides `disable-model-invocation: true`. This allows creating "protected" agents that only a specific coordinator can invoke.
 
-**Exemplo — orquestrador restrito:**
+**Example — restricted orchestrator:**
 ```yaml
 # orquestrador.agent.md
 tools: ["read", "search", "edit", "execute", "web"]
@@ -324,387 +322,378 @@ agents: ["planejador", "implementador", "revisor", "Explore"]
 
 ---
 
-### 7.4 Padrão Coordinator + Worker
+### 7.4 Coordinator + Worker Pattern
 
-Este é o padrão principal do pipeline Zan.IA. Um agente coordenador (orquestrador) gerencia o fluxo de alto nível e delega subtarefas para subagentes especializados (workers). Cada worker tem ferramentas restritas ao seu papel.
+This is the main pattern of the landing page pipeline. A coordinator agent (orchestrator) manages the high-level flow and delegates subtasks to specialized subagents (workers). Each worker has tools restricted to its role.
 
 ```
-orquestrador (coordena o fluxo)
+orquestrador (coordinates the flow)
   │
   ├── planejador (read-only: read, search, web)
-  │     └── Gera plano em .github/plans/
+  │     └── Generates plan in .github/plans/
   │
   ├── implementador (executor: read, search, edit, execute)
-  │     └── Executa o plano, altera arquivos, verifica build
+  │     └── Executes the plan, modifies files, verifies build
   │
   ├── revisor (read-only: read, search)
-  │     └── Analisa diff, checklists de qualidade, classifica issues
+  │     └── Analyzes diff, quality checklists, classifies issues
   │
   └── Explore (built-in, read-only: read, search)
-        └── Exploração rápida da codebase
+        └── Quick codebase exploration
 ```
 
-**Regras do padrão Coordinator + Worker:**
-- O coordenador NUNCA faz o trabalho dos workers — apenas gerencia o fluxo
-- Cada worker tem UM papel e UM conjunto mínimo de ferramentas
-- O coordenador passa contexto COMPLETO para cada worker (issue, plano, diff)
-- Workers retornam apenas o resultado final (resumo estruturado)
-- O coordenador sintetiza os resultados e decide o próximo passo
+**Coordinator + Worker pattern rules:**
+- The coordinator NEVER does the workers' job — only manages the flow
+- Each worker has ONE role and ONE minimal set of tools
+- The coordinator passes COMPLETE context to each worker (issue, plan, diff)
+- Workers return only the final result (structured summary)
+- The coordinator synthesizes results and decides the next step
 
 ---
 
-### 7.5 Padrão Multi-Perspectiva (Revisão Paralela)
+### 7.5 Multi-Perspective Pattern (Parallel Review)
 
-Para code review, você pode rodar múltiplos subagentes em paralelo, cada um com uma perspectiva diferente:
+For code review, you can run multiple subagents in parallel, each with a different perspective:
 
 ```
-Revisor Multifacetado
-  ├── (paralelo) Corretude: erros lógicos, edge cases, tipos
-  ├── (paralelo) Qualidade: legibilidade, naming, duplicação
-  ├── (paralelo) Segurança: validação de input, riscos de injeção
-  └── (paralelo) Arquitetura: padrões da codebase, consistência estrutural
+Multi-faceted Reviewer
+  ├── (parallel) Correctness: logic errors, edge cases, types
+  ├── (parallel) Quality: readability, naming, duplication
+  ├── (parallel) Security: input validation, injection risks
+  └── (parallel) Architecture: codebase patterns, structural consistency
   
-  └── SINTETIZA: prioriza issues, destaca acertos
+  └── SYNTHESIZES: prioritizes issues, highlights successes
 ```
 
-**Quando usar:** revisões complexas com múltiplas dimensões que se beneficiam de olhares independentes.
+**When to use:** complex reviews with multiple dimensions that benefit from independent perspectives.
 
 ---
 
-### 7.6 Subagentes Aninhados (Nested)
+### 7.6 Nested Subagents
 
-Por padrão, subagentes NÃO podem criar outros subagentes. Para habilitar:
+By default, subagents CANNOT create other subagents. To enable:
 - Setting: `chat.subagents.allowInvocationsFromSubagents = true`
-- Máximo: 5 níveis de profundidade
+- Maximum: 5 levels of depth
 
-**Quando usar:** padrão divide-and-conquer — um agente que quebra um problema grande em partes menores e delega cada parte para uma nova instância de si mesmo.
+**When to use:** divide-and-conquer pattern — an agent that breaks a large problem into smaller parts and delegates each part to a new instance of itself.
 
 ```yaml
-# Exemplo de agente recursivo
+# Example recursive agent
 ---
-name: ProcessadorRecursivo
+name: RecursiveProcessor
 tools: ["read", "search", "edit"]
-agents: [ProcessadorRecursivo]
+agents: [RecursiveProcessor]
 ---
-Se a lista tiver > 4 itens, divida ao meio e delegue cada metade para um subagente.
-Se ≤ 4 itens, processe diretamente. Mescle os resultados.
+If the list has > 4 items, split in half and delegate each half to a subagent.
+If ≤ 4 items, process directly. Merge the results.
 ```
 
 ---
 
-### 7.7 Handoffs — Transições entre Agentes
+### 7.7 Handoffs — Transitions Between Agents
 
-Handoffs permitem criar fluxos de trabalho sequenciais com transições guiadas entre agentes. Após uma resposta, botões de handoff aparecem para o usuário avançar para o próximo agente com contexto pré-preenchido.
+Handoffs enable creating sequential workflows with guided transitions between agents. After a response, handoff buttons appear for the user to advance to the next agent with pre-filled context.
 
 ```yaml
-# Exemplo no frontmatter de um agente
+# Example in an agent's frontmatter
 ---
 handoffs:
-  - label: "Iniciar Implementação"
+  - label: "Start Implementation"
     agent: implementador
-    prompt: "Implemente o plano descrito acima."
+    prompt: "Implement the plan described above."
     send: false
-  - label: "Revisar Código"
+  - label: "Review Code"
     agent: revisor
-    prompt: "Revise o código implementado na etapa anterior."
+    prompt: "Review the code implemented in the previous step."
     send: false
     model: "Claude Sonnet 4.6 (copilot)"
 ---
 ```
 
-| Campo | Descrição |
+| Field | Description |
 |-------|-----------|
-| `label` | Texto exibido no botão |
-| `agent` | Agente alvo para a transição |
-| `prompt` | Prompt pré-preenchido para o próximo agente |
-| `send` | `true` = envia automaticamente; `false` = só preenche, aguarda usuário |
-| `model` | Modelo específico para o handoff (opcional) |
+| `label` | Text displayed on the button |
+| `agent` | Target agent for the transition |
+| `prompt` | Pre-filled prompt for the next agent |
+| `send` | `true` = sends automatically; `false` = only fills, waits for user |
+| `model` | Specific model for the handoff (optional) |
 
-**Handoffs vs Subagentes:** Handoffs são interativos (usuário decide quando avançar), subagentes são automáticos (agente decide quando delegar).
+**Handoffs vs Subagents:** Handoffs are interactive (user decides when to advance), subagents are automatic (agent decides when to delegate).
 
 ---
 
-### 7.8 Seleção de Modelo por Subagente
+### 7.8 Model Selection per Subagent
 
-É possível especificar qual modelo cada subagente usa:
+It is possible to specify which model each subagent uses:
 
-1. **Parâmetro explícito:** o agente pai especifica o modelo ao invocar `runSubagent`:
+1. **Explicit parameter:** the parent agent specifies the model when invoking `runSubagent`:
    ```
-   "Use Claude Sonnet 4.6 em um subagente para revisar este código."
+   "Use Claude Sonnet 4.6 in a subagent to review this code."
    ```
-2. **Configurado no agente:** o `.agent.md` pode definir `model` no frontmatter:
+2. **Configured in the agent:** the `.agent.md` can define `model` in the frontmatter:
    ```yaml
    model: ["Claude Haiku 4.6 (copilot)", "Gemini 3 Flash (Preview) (copilot)"]
    ```
-3. **Herança:** se não especificado, o subagente usa o mesmo modelo do agente pai.
+3. **Inheritance:** if not specified, the subagent uses the same model as the parent agent.
 
-**Regra:** O modelo do subagente não pode exceder o tier de custo do modelo principal.
+**Rule:** The subagent model cannot exceed the main model's cost tier.
 
 ---
 
-### 7.9 Subagentes Disponíveis no Projeto
+### 7.9 Subagents Available in the Project
 
-| Agente | user-invocable | agents | Ferramentas | Papel |
+| Agent | user-invocable | agents | Tools | Role |
 |--------|---------------|--------|-------------|-------|
-| `orquestrador` | `true` | planejador, implementador, revisor, Explore | read, search, edit, execute, web | Coordena pipeline completo |
-| `planejador` | `true` | Explore | read, search, web | Gera planos de implementação (read-only) |
-| `implementador` | `true` | — | read, search, edit, execute | Executa planos, altera código |
-| `revisor` | `true` | — | read, search | Analisa diffs, qualidade (read-only) |
-| `refactor-css` | `false` | — | read, search, edit | Refatora CSS (só subagente) |
-| `criador-conteudo` | `true` | — | read, search, edit | Gera conteúdo institucional |
-| `performance-auditor` | `true` | — | read, search, edit, web | Audita performance |
-| `Explore` (built-in) | `true` | — | read, search | Exploração rápida da codebase |
+| `orquestrador` | `true` | planejador, implementador, revisor, Explore | read, search, edit, execute, web | Coordinates complete pipeline |
+| `planejador` | `true` | Explore | read, search, web | Generates implementation plans (read-only) |
+| `implementador` | `true` | — | read, search, edit, execute | Executes plans, modifies code |
+| `revisor` | `true` | — | read, search | Analyzes diffs, quality (read-only) |
+| `refactor-css` | `false` | — | read, search, edit | Refactors CSS (subagent only) |
+| `criador-conteudo` | `true` | — | read, search, edit | Generates institutional content |
+| `performance-auditor` | `true` | — | read, search, edit, web | Audits performance |
+| `Explore` (built-in) | `true` | — | read, search | Quick codebase exploration |
 
 ---
 
-## 8. GitHub — Ferramentas de Gestão de Repositório
+## 8. GitHub — Repository Management Tools
 
-As ferramentas do GitHub são usadas pelo pipeline para criar issues, branches, PRs, e gerenciar o ciclo de desenvolvimento. Elas são ativadas sob demanda via `activate_*_tools`.
+GitHub tools are used by the pipeline to create issues, branches, PRs, and manage the development cycle. They are activated on demand via `activate_*_tools`.
 
-### Catálogo de Grupos de Ferramentas
+### Tool Group Catalog
 
-| Grupo | Ferramenta de Ativação | Uso Principal |
+| Group | Activation Tool | Primary Use |
 |-------|----------------------|---------------|
-| **Issues & Notifications** | `activate_github_issue_and_notification_tools` | Criar/issues, buscar detalhes, listar labels |
-| **Pull Requests** | `activate_github_pull_request_management` | Informações do PR ativo, status checks, CI results |
-| **PR Management** | `activate_pull_request_management_tools` | Criar branches, PRs, delegar ao Copilot, merge |
+| **Issues & Notifications** | `activate_github_issue_and_notification_tools` | Create issues, fetch details, list labels |
+| **Pull Requests** | `activate_github_pull_request_management` | Active PR info, status checks, CI results |
+| **PR Management** | `activate_pull_request_management_tools` | Create branches, PRs, delegate to Copilot, merge |
 | **Repository Info** | `activate_repository_information_tools` | Commits, issues, releases, file contents |
-| **Labels & Releases** | `activate_label_and_release_management_tools` | Gerenciar labels e releases |
-| **PR Comments** | `activate_pull_request_comment_tools` | Adicionar/responder comentários em PRs e issues |
-| **Code Search** | `activate_code_and_repository_search_tools` | Buscar código, commits, repositórios |
-| **Team Management** | `activate_team_management_tools` | Informações de times e membros |
+| **Labels & Releases** | `activate_label_and_release_management_tools` | Manage labels and releases |
+| **PR Comments** | `activate_pull_request_comment_tools` | Add/reply to comments on PRs and issues |
+| **Code Search** | `activate_code_and_repository_search_tools` | Search code, commits, repositories |
+| **Team Management** | `activate_team_management_tools` | Team and member information |
 
-### Quando Usar no Pipeline
+### When to Use in the Pipeline
 
-**Fase de Criação de Issue:**
+**Issue Creation Phase:**
 ```
 1. activate_github_issue_and_notification_tools
-2. Criar issue com template adequado (bug/feature/melhoria)
-3. Adicionar labels relevantes
+2. Create issue with appropriate template (bug/feature/improvement)
+3. Add relevant labels
 ```
 
-**Fase de Criação de PR:**
+**PR Creation Phase:**
 ```
 1. activate_pull_request_management_tools
-2. Criar branch ou usar branch existente
-3. Criar PR com Closes #N no corpo
-4. activate_pull_request_comment_tools (se precisar comentar)
+2. Create branch or use existing branch
+3. Create PR with Closes #N in body
+4. activate_pull_request_comment_tools (if you need to comment)
 ```
 
-**Fase de Revisão:**
+**Review Phase:**
 ```
 1. activate_github_pull_request_management
-2. Verificar status checks e CI results
-3. activate_pull_request_comment_tools para adicionar comentários de revisão
+2. Check status checks and CI results
+3. activate_pull_request_comment_tools to add review comments
 ```
 
-**Fase de Planejamento:**
+**Planning Phase:**
 ```
 1. activate_github_issue_and_notification_tools
-2. Buscar detalhes completos da issue (descrição, comments)
-3. activate_repository_information_tools (se precisar ver commits anteriores)
+2. Fetch complete issue details (description, comments)
+3. activate_repository_information_tools (if need to check previous commits)
 ```
 
-### Regras
-- SEMPRE ative o grupo de ferramentas ANTES de usá-las
-- Use `mcp_github_mcp_se_create_pull_request_with_copilot` para delegar implementação ao Copilot
-- Ao criar issues, use SEMPRE o template específico do tipo (bug/feature/melhoria)
-- Ao criar PRs, inclua `Closes #N` no corpo (GitHub auto-close)
-- Para revisão de PR, use `activate_github_pull_request_management` para verificar CI status
-- NUNCA faça merge automático — sempre aguarde aprovação do usuário (HITL)
-- Após merge, verifique se a issue foi fechada automaticamente; se não, feche manualmente
+### Rules
+- ALWAYS activate the tool group BEFORE using them
+- Use `mcp_github_mcp_se_create_pull_request_with_copilot` to delegate implementation to Copilot
+- When creating issues, ALWAYS use the type-specific template (bug/feature/improvement)
+- When creating PRs, include `Closes #N` in the body (GitHub auto-close)
+- For PR review, use `activate_github_pull_request_management` to check CI status
+- NEVER auto-merge — always wait for user approval (HITL)
+- After merge, check if the issue was closed automatically; if not, close manually
 
-### Exemplo: Fluxo Completo de Criação de Issue + PR
+### Example: Complete Issue + PR Creation Flow
 ```
-1. activate_github_issue_and_notification_tools → criar issue bug
-2. HITL: usuário aprova a issue
-3. Criar branch local: git checkout -b fix/descricao-curta
-4. Implementar correção (via implementador subagente)
-5. Revisar (via revisor subagente)
+1. activate_github_issue_and_notification_tools → create bug issue
+2. HITL: user approves the issue
+3. Create local branch: git checkout -b fix/short-description
+4. Implement fix (via implementador subagent)
+5. Review (via revisor subagent)
 6. Commit + Push
-7. activate_pull_request_management_tools → criar PR com Closes #N
-8. HITL: usuário revisa e mergeia o PR
+7. activate_pull_request_management_tools → create PR with Closes #N
+8. HITL: user reviews and merges the PR
 ```
 
 ---
 
 ## 9. Skills — Fork Mode (`context: fork`)
 
-### 9.1 O Que é Fork Mode?
+### 9.1 What is Fork Mode?
 
-Por padrão, quando um skill é carregado, suas instruções são adicionadas ao contexto do agente pai. Para skills grandes, ou cujo raciocínio intermediário não é relevante para o resto da conversa, é possível usar **fork mode**: o skill executa em um **subagente dedicado** e apenas o resultado final retorna ao agente pai.
+By default, when a skill is loaded, its instructions are added to the parent agent's context. For large skills, or those whose intermediate reasoning is not relevant to the rest of the conversation, **fork mode** can be used: the skill executes in a **dedicated subagent** and only the final result returns to the parent agent.
 
 ```yaml
 ---
-name: meu-skill
-description: "Descrição do skill e quando usar."
-context: fork   # ← Habilita fork mode
+name: my-skill
+description: "Skill description and when to use."
+context: fork   # ← Enables fork mode
 ---
 ```
 
-**Status:** Experimental. Requer setting `github.copilot.chat.skillTool.enabled`.
+**Status:** Experimental. Requires setting `github.copilot.chat.skillTool.enabled`.
 
-### 9.2 Quando Usar Fork Mode
+### 9.2 When to Use Fork Mode
 
-| Cenário | Inline (default) | Fork |
+| Scenario | Inline (default) | Fork |
 |---------|------------------|------|
-| Skill pequeno (< 100 linhas) | ✅ Ideal | ❌ Overhead desnecessário |
-| Skill que lê muitos arquivos | ❌ Polui contexto | ✅ Isola contexto |
-| Resultado focado (resumo, relatório) | ❌ Intermediário polui | ✅ Só resultado final |
-| Skill que não deve influenciar comportamento do pai | ❌ Pode vazar contexto | ✅ Isolamento total |
+| Small skill (< 100 lines) | ✅ Ideal | ❌ Unnecessary overhead |
+| Skill that reads many files | ❌ Pollutes context | ✅ Isolates context |
+| Focused result (summary, report) | ❌ Intermediate pollutes | ✅ Only final result |
+| Skill that should not influence parent behavior | ❌ May leak context | ✅ Total isolation |
 
-**Use `context: fork` para skills que:**
-- Leem muitos arquivos ou fazem investigações longas
-- Produzem um resultado focado (resumo, relatório, conjunto pequeno de edições)
-- Não devem influenciar o comportamento do agente pai além do resultado final
+**Use `context: fork` for skills that:**
+- Read many files or do long investigations
+- Produce a focused result (summary, report, small set of edits)
+- Should not influence the parent agent's behavior beyond the final result
 
-**Mantenha inline (padrão) para skills que:**
-- São pequenos e rápidos
-- Produzem informações contextuais que o agente pai precisa para prosseguir
-- Fazem parte do raciocínio contínuo da conversa
+**Keep inline (default) for skills that:**
+- Are small and fast
+- Produce contextual information the parent agent needs to proceed
+- Are part of the continuous conversation reasoning
 
-### 9.3 Skills do Projeto e Modo Recomendado
+### 9.3 Project Skills and Recommended Mode
 
-| Skill | Tamanho | Modo | Motivo |
+| Skill | Size | Mode | Reason |
 |-------|---------|------|--------|
-| `pipeline-orquestracao` | Grande | `inline` (padrão) | O orquestrador precisa do contexto completo do pipeline |
-| `criar-section` | Médio | `inline` (padrão) | Preciso para criar seções com padrões consistentes |
-| `criar-pagina-institucional` | Médio | `inline` (padrão) | Similar ao acima |
-| `css-comparison-workflow` | Médio | `fork` | Leitura de muitos arquivos, resultado é relatório |
-| `otimizar-imagens` | Pequeno | `inline` (padrão) | Rápido, resultado influencia diretamente o código |
+| `pipeline-orquestracao` | Large | `inline` (default) | The orchestrator needs the full pipeline context |
+| `criar-section` | Medium | `inline` (default) | Needed to create sections with consistent patterns |
+| `criar-pagina-institucional` | Medium | `inline` (default) | Similar to above |
+| `css-comparison-workflow` | Medium | `fork` | Reads many files, result is a report |
+| `otimizar-imagens` | Small | `inline` (default) | Fast, result directly influences code |
+| `seo-otimization` | Medium | `inline` (default) | Provides SEO knowledge for content generation |
 
-### 9.4 Carregamento Progressivo de Skills
+### 9.4 Progressive Skill Loading
 
-O harness carrega skills em 3 níveis para manter o contexto eficiente:
+The harness loads skills in 3 levels to keep context efficient:
 
-1. **Descoberta** (~100 tokens): O agente lê `name` e `description` do YAML frontmatter
-2. **Instruções** (<5000 tokens): Carrega o corpo do `SKILL.md` quando relevante
-3. **Recursos**: Arquivos adicionais (scripts, templates) sob demanda quando referenciados
+1. **Discovery** (~100 tokens): The agent reads `name` and `description` from the YAML frontmatter
+2. **Instructions** (<5000 tokens): Loads the `SKILL.md` body when relevant
+3. **Resources**: Additional files (scripts, templates) on demand when referenced
 
-**Em fork mode:** Os passos 2 e 3 rodam no subagente dedicado — o pai só vê o resultado final.
+**In fork mode:** Steps 2 and 3 run in the dedicated subagent — the parent only sees the final result.
 
 ### 9.5 Slash Commands: Skills vs Prompts
 
-Tanto skills quanto prompts aparecem como slash commands (`/`) no chat:
+Both skills and prompts appear as slash commands (`/`) in chat:
 
-| Configuração | Aparece em `/` | Auto-carregamento |
+| Setting | Appears in `/` | Auto-loading |
 |-------------|---------------|-------------------|
-| Padrão (ambos omitidos) | ✅ Sim | ✅ Sim |
-| `user-invocable: false` | ❌ Não | ✅ Sim |
-| `disable-model-invocation: true` | ✅ Sim | ❌ Não |
-| Ambos configurados | ❌ Não | ❌ Não |
+| Default (both omitted) | ✅ Yes | ✅ Yes |
+| `user-invocable: false` | ❌ No | ✅ Yes |
+| `disable-model-invocation: true` | ✅ Yes | ❌ No |
+| Both configured | ❌ No | ❌ No |
 
-### 9.6 Estrutura de um Skill no Projeto
+### 9.6 Skill Structure in the Project
 
 ```
-.github/skills/<nome-do-skill>/
-├── SKILL.md           # Obrigatório (nome deve corresponder ao diretório)
-├── scripts/           # Código executável
-├── references/        # Documentos de referência
+.github/skills/<skill-name>/
+├── SKILL.md           # Required (name must match directory)
+├── scripts/           # Executable code
+├── references/        # Reference documents
 └── assets/            # Templates, boilerplate
 ```
 
-**Regras:**
-- O campo `name` no SKILL.md DEVE corresponder ao nome do diretório
-- Use paths relativos (`./scripts/test.js`) para referenciar recursos
-- Mantenha SKILL.md < 5000 tokens; use arquivos de referência para conteúdo extenso
-- O description deve usar o padrão "Use when: ..." com palavras-chave para descoberta semântica
+**Rules:**
+- The `name` field in SKILL.md MUST match the directory name
+- Use relative paths (`./scripts/test.js`) to reference resources
+- Keep SKILL.md < 5000 tokens; use reference files for extensive content
+- The description should use the pattern "Use when: ..." with keywords for semantic discovery
 
 ---
 
-## 10. `todos` — Lista de Tarefas e Execução Sequencial
+## 10. `todo` — Task List and Sequential Execution
 
-A tool `todos` (built-in do VS Code) é a ferramenta de **gerenciamento de execução sequencial** dentro de uma sessão de chat. Ela exibe uma lista de tarefas visível ao usuário, com status rastreável e atualização em tempo real.
+The `todo` tool (VS Code built-in) is the **sequential execution management** tool within a chat session. It displays a task list visible to the user, with trackable status and real-time updates.
 
-### 10.1 Por que Usar `todos`?
+### 10.1 Why Use `todo`?
 
-Sem `todos`, o agente pode:
-- Executar passos fora de ordem
-- Pular verificações importantes (build, lint)
-- Perder o rastro do que já foi feito
-- Deixar o usuário sem visibilidade do progresso
+Without `todo`, the agent may:
+- Execute steps out of order
+- Skip important checks (build, lint)
+- Lose track of what has been done
+- Leave the user without visibility of progress
 
-Com `todos`, o agente:
-- Planeja a execução ANTES de começar — estrutura visível
-- Executa UM passo por vez (só 1 `in-progress` simultâneo)
-- Marca cada passo como `completed` IMEDIATAMENTE após concluir
-- Dá visibilidade total ao usuário sobre o andamento
+With `todo`, the agent:
+- Plans execution BEFORE starting — visible structure
+- Executes ONE step at a time (only 1 `in-progress` simultaneously)
+- Marks each step as `completed` IMMEDIATELY after finishing
+- Gives full visibility to the user on progress
 
-### 10.2 Quando Usar — Regra de Ouro
+### 10.2 When to Use — Golden Rule
 
-**Use `todos` obrigatoriamente para qualquer tarefa com 3+ passos distintos.** Se a tarefa tem um único passo, é opcional mas recomendado.
+**Use `todo` mandatorily for any task with 3+ distinct steps.** If the task has a single step, it is optional but recommended.
 
-Exemplos de quando usar:
-- Pipeline completo: 12 fases do orquestrador
-- Implementação: editar 3+ arquivos, verificar build
-- Revisão: verificar 10 dimensões de qualidade
-- Planejamento: explorar codebase → identificar arquivos → escrever plano
-- Criação de conteúdo: pesquisar → redigir → revisar → integrar
+Examples of when to use:
+- Complete pipeline: 12 orchestrator phases
+- Implementation: edit 3+ files, verify build
+- Review: verify 10 quality dimensions
+- Planning: explore codebase → identify files → write plan
+- Content creation: research → draft → review → integrate
 
-### 10.3 Como Usar
+### 10.3 How to Use
 
-O agente invoca `manage_todo_list` com um array de todos, cada um com:
-- `id`: número sequencial (1, 2, 3...)
-- `title`: ação concisa (3-7 palavras)
+The agent invokes `manage_todo_list` with an array of todos, each with:
+- `id`: sequential number (1, 2, 3...)
+- `title`: concise action (3-7 words)
 - `status`: `not-started` | `in-progress` | `completed`
 
-**Fluxo correto de uso:**
+**Correct usage flow:**
 
 ```
-1. manage_todo_list(todos=[{id:1, title:"Ler arquivo X", status:"not-started"}, ...])
-2. manage_todo_list(todos=[{id:1, title:"Ler arquivo X", status:"in-progress"}, ...])
-3. [executa a tarefa — read_file, edit, etc.]
-4. manage_todo_list(todos=[{id:1, title:"Ler arquivo X", status:"completed"}, {id:2, ...}])
-5. manage_todo_list(todos=[{id:2, title:"Editar arquivo Y", status:"in-progress"}, ...])
-6. [executa...]
-7. ... (repete até todos completed)
+1. manage_todo_list(todos=[{id:1, title:"Read file X", status:"not-started"}, ...])
+2. manage_todo_list(todos=[{id:1, title:"Read file X", status:"in-progress"}, ...])
+3. [execute the task — read_file, edit, etc.]
+4. manage_todo_list(todos=[{id:1, title:"Read file X", status:"completed"}, {id:2, ...}])
+5. manage_todo_list(todos=[{id:2, title:"Edit file Y", status:"in-progress"}, ...])
+6. [execute...]
+7. ... (repeat until all completed)
 ```
 
-**Regras estritas:**
-- **NUNCA** comece a trabalhar sem antes criar a lista de todos
-- **NUNCA** tenha mais de 1 todo `in-progress` simultaneamente
-- **SEMPRE** marque como `completed` IMEDIATAMENTE após terminar o passo
-- **SEMPRE** inclua TODOS os itens no array (existentes + novos) em cada chamada
-- **NUNCA** remova itens da lista — apenas mude o status
+**Strict rules:**
+- **NEVER** start working without first creating the todo list
+- **NEVER** have more than 1 todo `in-progress` simultaneously
+- **ALWAYS** mark as `completed` IMMEDIATELY after finishing the step
+- **ALWAYS** include ALL items in the array (existing + new) in each call
+- **NEVER** remove items from the list — only change the status
 
-### 10.4 Exemplo no Pipeline
+### 10.4 Pipeline Example
 
 ```
-# Orquestrador inicia pipeline
+# Orchestrator starts pipeline
 manage_todo_list([
-  {id: 1, title: "Classificar solicitação", status: "in-progress"},
-  {id: 2, title: "Criar issue no GitHub", status: "not-started"},
-  {id: 3, title: "HITL: aprovação da issue", status: "not-started"},
-  {id: 4, title: "Criar branch", status: "not-started"},
-  {id: 5, title: "Planejamento (subagente)", status: "not-started"},
-  {id: 6, title: "Implementação (subagente)", status: "not-started"},
-  {id: 7, title: "Revisão (subagente)", status: "not-started"},
+  {id: 1, title: "Classify request", status: "in-progress"},
+  {id: 2, title: "Create GitHub issue", status: "not-started"},
+  {id: 3, title: "HITL: issue approval", status: "not-started"},
+  {id: 4, title: "Create branch", status: "not-started"},
+  {id: 5, title: "Planning (subagent)", status: "not-started"},
+  {id: 6, title: "Implementation (subagent)", status: "not-started"},
+  {id: 7, title: "Review (subagent)", status: "not-started"},
   {id: 8, title: "Commit + Push", status: "not-started"},
-  {id: 9, title: "Criar PR", status: "not-started"},
-  {id: 10, title: "HITL: revisão do PR", status: "not-started"},
+  {id: 9, title: "Create PR", status: "not-started"},
+  {id: 10, title: "HITL: PR review", status: "not-started"},
   {id: 11, title: "Checkout main", status: "not-started"},
 ])
 ```
 
-### 10.5 Integração com o Harness
+### 10.5 Integration with the Harness
 
-A tool `todos` deve estar presente nas listas de `tools` de TODOS os agentes do pipeline:
+The `todo` tool must be present in the `tools` lists of ALL pipeline agents:
 
 ```yaml
 tools:
   - "read"
   - "search"
   - "edit"
-  - "todos"            # ← Obrigatório para execução sequencial
-  - "vscode/askQuestions"  # ← Obrigatório para comunicar com o usuário
-```
-
-E nos corpos dos agentes, a regra deve ser explícita:
-
-```markdown
-## Workflow Rules
-- SEMPRE use a tool `todos` para criar e gerenciar a lista de tarefas
-- Planeje TODOS os passos ANTES de começar a executar
-- Apenas UM passo in-progress por vez
-- Marque completed IMEDIATAMENTE ao terminar cada passo
+  - "todo"            # ← Mandatory for sequential execution
+  - "vscode/askQuestions"  # ← Mandatory for user communication
 ```

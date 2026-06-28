@@ -1,51 +1,51 @@
----
+﻿---
 name: seo-otimization
-description: "Conhecimento técnico de SEO para a landing page Zan.IA (SvelteKit). Fornece templates de meta tags, Open Graph, Twitter Card, Structured Data (JSON-LD), hierarquia de headings e checklist de performance SEO. Use quando: otimizar SEO, configurar meta tags, adicionar structured data, ou auditar acessibilidade semântica."
-argument-hint: "[opcional] Escopo: 'meta-tags', 'open-graph', 'structured-data', 'headings', 'completo'"
+description: "Technical SEO knowledge for landing pages (SvelteKit). Provides templates for meta tags, Open Graph, Twitter Card, Structured Data (JSON-LD), heading hierarchy, and SEO performance checklist. Use when: optimizing SEO, configuring meta tags, adding structured data, or auditing semantic accessibility."
+argument-hint: "[optional] Scope: 'meta-tags', 'open-graph', 'structured-data', 'headings', 'complete'"
 user-invocable: true
 disable-model-invocation: false
 ---
 
-# Skill: SEO Optimization — Zan.IA (SvelteKit)
+# Skill: SEO Optimization — Landing Page (SvelteKit)
 
-Conhecimento técnico reutilizável para otimização de SEO na landing page Zan.IA.
+Reusable technical knowledge for SEO optimization on landing pages.
 
-## Templates de Meta Tags
+## Meta Tag Templates
 
-### Meta Tags Essenciais (`src/app.html`)
+### Essential Meta Tags (`src/app.html`)
 
 ```html
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Zan.IA — Deep Tech Systems | Agentes de IA, Automação e Mídia</title>
-  <meta name="description" content="A Zan.IA desenvolve sistemas web inteligentes, agentes de IA e automação para transformar seu negócio. Conheça nossas soluções em desenvolvimento web, chatbots e criação de mídia.">
+  <title>[Company Name] — [Slogan]</title>
+  <meta name="description" content="[Company description with keyword and call-to-action.]">
   <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://www.zan.ia.br/">
+  <link rel="canonical" href="[SITE_URL]">
 </head>
 ```
 
 ### Open Graph (`src/app.html`)
 
 ```html
-<meta property="og:title" content="Zan.IA — Deep Tech Systems">
-<meta property="og:description" content="Sistemas web inteligentes, agentes de IA e automação para transformar seu negócio.">
-<meta property="og:image" content="https://www.zan.ia.br/assets/images/og-image.jpg">
+<meta property="og:title" content="[Company Name] — [Slogan]">
+<meta property="og:description" content="[Company description.]">
+<meta property="og:image" content="[SITE_URL]/assets/images/og-image.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:url" content="https://www.zan.ia.br/">
+<meta property="og:url" content="[SITE_URL]">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="pt_BR">
-<meta property="og:site_name" content="Zan.IA">
+<meta property="og:site_name" content="[Company Name]">
 ```
 
 ### Twitter Card
 
 ```html
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Zan.IA — Deep Tech Systems">
-<meta name="twitter:description" content="Sistemas web inteligentes, agentes de IA e automação.">
-<meta name="twitter:image" content="https://www.zan.ia.br/assets/images/og-image.jpg">
+<meta name="twitter:title" content="[Company Name] — [Slogan]">
+<meta name="twitter:description" content="[Short description.]">
+<meta name="twitter:image" content="[SITE_URL]/assets/images/og-image.jpg">
 ```
 
 ## Structured Data (JSON-LD)
@@ -57,10 +57,10 @@ Conhecimento técnico reutilizável para otimização de SEO na landing page Zan
 {
   "@context": "https://schema.org",
   "@type": "Organization",
-  "name": "Zan.IA",
-  "alternateName": "Zan IA",
-  "url": "https://www.zan.ia.br/",
-  "description": "Deep Tech Systems — desenvolvimento web, agentes de IA, automação e criação de mídia.",
+  "name": "[Company Name]",
+  "alternateName": "[Alternative Name]",
+  "url": "[SITE_URL]",
+  "description": "Deep Tech Systems — web development, AI agents, automation and media creation.",
   "contactPoint": {
     "@type": "ContactPoint",
     "contactType": "sales",
@@ -77,67 +77,67 @@ Conhecimento técnico reutilizável para otimização de SEO na landing page Zan
 {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  "name": "Zan.IA",
-  "url": "https://www.zan.ia.br/",
-  "description": "Deep Tech Systems — desenvolvimento web, agentes de IA, automação e criação de mídia.",
+  "name": "[Company Name]",
+  "url": "[SITE_URL]",
+  "description": "Deep Tech Systems — web development, AI agents, automation and media creation.",
   "inLanguage": "pt-BR"
 }
 </script>
 ```
 
-## Hierarquia de Headings
+## Heading Hierarchy
 
-| Nível | Componente | Exemplo |
+| Level | Component | Example |
 |-------|-----------|---------|
-| `<h1>` | `Hero.svelte` | Único por página — título principal |
-| `<h2>` | `Solutions.svelte`, `Differential.svelte`, `Authority.svelte`, `Testimonials.svelte` | Títulos de seção |
-| `<h3>` | Cards dentro de cada seção | Títulos de cards/serviços |
+| `<h1>` | `Hero.svelte` | Single per page — main title |
+| `<h2>` | `Solutions.svelte`, `Differential.svelte`, `Authority.svelte`, `Testimonials.svelte` | Section titles |
+| `<h3>` | Cards within each section | Card/service titles |
 
-### Regras
-- **NUNCA** pular níveis (h1 → h3 sem h2)
-- **NUNCA** usar heading para estilo visual (usar classes CSS)
-- **SEMPRE** usar `aria-label` no `<section>` correspondente
-- Headings devem conter palavras-chave relevantes naturalmente
+### Rules
+- **NEVER** skip levels (h1 → h3 without h2)
+- **NEVER** use heading for visual style (use CSS classes)
+- **ALWAYS** use `aria-label` on the corresponding `<section>`
+- Headings should naturally contain relevant keywords
 
-## Performance SEO
+## SEO Performance
 
-### Fontes
+### Fonts
 ```html
-<!-- Preconnect às origens de fontes -->
+<!-- Preconnect to font origins -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 ```
-- Usar `font-display: swap` nas URLs do Google Fonts (`&display=swap`)
+- Use `font-display: swap` in Google Fonts URLs (`&display=swap`)
 
-### Imagens
-- `fetchpriority="high"` na imagem hero (acima da dobra)
-- `loading="lazy"` em todas as imagens abaixo da dobra
-- `width` e `height` explícitos para evitar CLS (Cumulative Layout Shift)
-- `decoding="async"` para imagens não-críticas
+### Images
+- `fetchpriority="high"` on hero image (above the fold)
+- `loading="lazy"` on all below-the-fold images
+- Explicit `width` and `height` to prevent CLS (Cumulative Layout Shift)
+- `decoding="async"` for non-critical images
 
 ### Robots.txt (`static/robots.txt`)
 ```
 User-agent: *
 Allow: /
-Sitemap: https://www.zan.ia.br/sitemap.xml
+Sitemap: [SITE_URL]/sitemap.xml
 ```
 
-## Checklist de Acessibilidade Semântica
+## Semantic Accessibility Checklist
 
 - [ ] `<html lang="pt-BR">`
-- [ ] `<h1>` único na página
-- [ ] Headings em ordem hierárquica (sem pular níveis)
-- [ ] Todas as imagens com `alt` descritivo (ou `alt=""` para decorativas)
-- [ ] Links externos com `rel="noopener noreferrer"`
-- [ ] `aria-label` em elementos interativos sem texto visível
-- [ ] `aria-current="page"` no link de navegação ativo
-- [ ] Contraste de cor adequado (texto sobre fundo escuro)
-- [ ] `prefers-reduced-motion` respeitado nas animações
+- [ ] Single `<h1>` on the page
+- [ ] Headings in hierarchical order (no skipping levels)
+- [ ] All images with descriptive `alt` (or `alt=""` for decorative)
+- [ ] External links with `rel="noopener noreferrer"`
+- [ ] `aria-label` on interactive elements without visible text
+- [ ] `aria-current="page"` on active navigation link
+- [ ] Adequate color contrast (text on dark background)
+- [ ] `prefers-reduced-motion` respected in animations
 
-## Referências
+## References
 
 - Meta tags: `src/app.html`
-- Estrutura semântica: `src/routes/+layout.svelte`, `src/routes/+page.svelte`
-- Componentes: `src/lib/components/*.svelte`
-- Prompt de ação: `.github/prompts/otimizar-seo.prompt.md`
-- Conteúdo institucional: `docs/INSTITUCIONAL.md`
+- Semantic structure: `src/routes/+layout.svelte`, `src/routes/+page.svelte`
+- Components: `src/lib/components/*.svelte`
+- Action prompt: `.github/prompts/otimizar-seo.prompt.md`
+- Institutional content: `docs/INSTITUCIONAL.md`

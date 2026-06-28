@@ -18,6 +18,10 @@ Cada arquivo de plano deve conter:
 - Riscos identificados
 - Checklist de verificação
 
+## Template
+Use `_template.md` como base para novos planos. O agente `planejador` preenche
+os placeholders `{...}` automaticamente com dados da issue.
+
 ## Ciclo de Vida
 1. **Criado** pelo `planejador` durante a fase de planejamento
 2. **Lido** pelo `implementador` durante a implementação

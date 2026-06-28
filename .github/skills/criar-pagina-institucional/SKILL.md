@@ -1,26 +1,26 @@
----
+﻿---
 name: criar-pagina-institucional
-description: 'Cria novas páginas institucionais como componentes Svelte seguindo o padrão visual do site Zan.IA (SvelteKit). Use quando: precisar adicionar landing pages, páginas de serviço, páginas institucionais, ou seções que sigam o design system existente (glass panels, paleta Material Design 3, tipografia Space Grotesk/Geist/JetBrains Mono).'
-argument-hint: 'Descrição da página a criar (ex: "página de preços", "landing page do serviço de chatbots")'
+description: 'Creates new institutional pages as Svelte components following the landing page visual standard (SvelteKit). Use when: needing to add landing pages, service pages, institutional pages, or sections that follow the existing design system (glass panels, Material Design 3 palette, Space Grotesk/Geist/JetBrains Mono typography).'
+argument-hint: 'Description of the page to create (e.g., "pricing page", "chatbot service landing page")'
 user-invocable: true
 disable-model-invocation: false
 ---
 
-# Criar Página Institucional — Zan.IA (SvelteKit)
+# Create Institutional Page — Landing Page (SvelteKit)
 
-Gera um novo componente Svelte ou rota seguindo o design system Zan.IA.
+Generates a new Svelte component or route following the landing page design system.
 
-## Quando Usar
-- Adicionar novas páginas ao site SvelteKit
-- Criar landing pages de serviço
-- Adicionar seções institucionais (ex: "Política de Privacidade")
-- Qualquer página que precise seguir o padrão visual existente
+## When to Use
+- Add new pages to the SvelteKit site
+- Create service landing pages
+- Add institutional sections (e.g., "Privacy Policy")
+- Any page that needs to follow the existing visual pattern
 
-## Design System (consulte `src/lib/app.css`)
+## Design System (see `src/lib/app.css`)
 
 ### Design Tokens
 ```css
-/* Cores - Material Design 3 Dark */
+/* Colors - Material Design 3 Dark */
 --color-surface: #0c1324;
 --color-surface-container: #191f31;
 --color-background: #0c1324;
@@ -30,101 +30,101 @@ Gera um novo componente Svelte ou rota seguindo o design system Zan.IA.
 --color-on-primary: #00363f;
 --color-outline-variant: #3b494c;
 
-/* Fontes */
+/* Fonts */
 --font-display: 'Space Grotesk', sans-serif;
 --font-body: 'Geist', sans-serif;
 --font-code: 'JetBrains Mono', monospace;
 
-/* Espaçamentos */
+/* Spacing */
 --spacing-gutter: 24px;
 --spacing-margin-mobile: 16px;
 --spacing-margin-desktop: 64px;
 ```
 
-### Componentes Reutilizáveis
+### Reusable Components
 
-| Componente | Classe | Descrição |
+| Component | Class | Description |
 |---|---|---|
-| **Glass Panel** | `.glass-panel` | Global em `app.css` — blur(24px), border sutil |
-| **Ícone Material** | `<span class="material-symbols-outlined">nome</span>` | Google Material Symbols |
-| **Grid de Cards** | CSS grid 3 cols (responsive) | `grid-template-columns: repeat(3, 1fr)` |
+| **Glass Panel** | `.glass-panel` | Global in `app.css` — blur(24px), subtle border |
+| **Material Icon** | `<span class="material-symbols-outlined">name</span>` | Google Material Symbols |
+| **Card Grid** | CSS grid 3 cols (responsive) | `grid-template-columns: repeat(3, 1fr)` |
 
-### Template de Componente Svelte
+### Svelte Component Template
 
 ```svelte
 <script lang="ts">
-  // Props e estado
+  // Props and state
   interface Props {
     title: string;
   }
   let { title }: Props = $props();
 </script>
 
-<section class="nova-pagina" aria-label="{title}">
-  <div class="nova-pagina__inner">
-    <div class="nova-pagina__header">
-      <h2 class="nova-pagina__title">{title}</h2>
-      <p class="nova-pagina__subtitle">Subtítulo descritivo</p>
+<section class="new-page" aria-label="{title}">
+  <div class="new-page__inner">
+    <div class="new-page__header">
+      <h2 class="new-page__title">{title}</h2>
+      <p class="new-page__subtitle">Descriptive subtitle</p>
     </div>
 
-    <div class="nova-pagina__grid">
-      <div class="nova-pagina__card glass-panel">
-        <span class="material-symbols-outlined nova-pagina__icon">icon_name</span>
-        <h3 class="nova-pagina__card-title">Título do Card</h3>
-        <p class="nova-pagina__card-desc">Descrição</p>
+    <div class="new-page__grid">
+      <div class="new-page__card glass-panel">
+        <span class="material-symbols-outlined new-page__icon">icon_name</span>
+        <h3 class="new-page__card-title">Card Title</h3>
+        <p class="new-page__card-desc">Description</p>
       </div>
     </div>
   </div>
 </section>
 
 <style>
-  .nova-pagina {
+  .new-page {
     padding: 96px var(--spacing-margin-mobile);
   }
-  .nova-pagina__inner {
+  .new-page__inner {
     max-width: var(--spacing-container-max);
     margin: 0 auto;
   }
-  .nova-pagina__header {
+  .new-page__header {
     text-align: center;
     margin-bottom: 64px;
     display: flex;
     flex-direction: column;
     gap: 16px;
   }
-  .nova-pagina__title {
+  .new-page__title {
     font-family: var(--font-display);
     font-size: var(--font-size-headline-lg);
     color: var(--color-on-surface);
   }
-  .nova-pagina__subtitle {
+  .new-page__subtitle {
     font-family: var(--font-body);
     font-size: var(--font-size-body-md);
     color: var(--color-on-surface);
     opacity: 0.7;
   }
-  .nova-pagina__grid {
+  .new-page__grid {
     display: grid;
     grid-template-columns: 1fr;
     gap: var(--spacing-gutter);
   }
   @media (min-width: 768px) {
-    .nova-pagina__grid {
+    .new-page__grid {
       grid-template-columns: repeat(3, 1fr);
     }
   }
-  .nova-pagina__card {
+  .new-page__card {
     display: flex;
     flex-direction: column;
     gap: 24px;
     padding: 32px;
   }
-  .nova-pagina__card-title {
+  .new-page__card-title {
     font-family: var(--font-display);
     font-size: var(--font-size-headline-md);
     color: var(--color-on-surface);
   }
-  .nova-pagina__card-desc {
+  .new-page__card-desc {
     font-family: var(--font-body);
     font-size: var(--font-size-body-md);
     color: var(--color-on-surface);
@@ -133,21 +133,21 @@ Gera um novo componente Svelte ou rota seguindo o design system Zan.IA.
 </style>
 ```
 
-## Procedimento
+## Procedure
 
-1. **Briefing**: Entenda o propósito da página
-2. **Crie o componente**: `src/lib/components/NomePagina.svelte`
-3. **Registre a rota** (se for página separada):
-   - Crie `src/routes/nome-pagina/+page.svelte`
-   - Adicione `src/routes/nome-pagina/+page.js` com `export const prerender = true;`
-4. **Use scoped CSS**: `<style>` no próprio componente
-5. **Design tokens**: Sempre `var(--color-*)`, `var(--font-*)`, `var(--spacing-*)`
-6. **Glass panels**: Use a classe global `.glass-panel`
-7. **Responsividade**: Mobile-first, breakpoint 768px
-8. **Ícones**: Material Symbols Outlined
+1. **Briefing**: Understand the page purpose
+2. **Create the component**: `src/lib/components/PageName.svelte`
+3. **Register the route** (if separate page):
+   - Create `src/routes/page-name/+page.svelte`
+   - Add `src/routes/page-name/+page.js` with `export const prerender = true;`
+4. **Use scoped CSS**: `<style>` in the component itself
+5. **Design tokens**: Always `var(--color-*)`, `var(--font-*)`, `var(--spacing-*)`
+6. **Glass panels**: Use the global `.glass-panel` class
+7. **Responsiveness**: Mobile-first, 768px breakpoint
+8. **Icons**: Material Symbols Outlined
 
-## Arquivos de Referência
-- `src/lib/components/*.svelte` — componentes existentes (padrão visual)
-- `src/lib/app.css` — design tokens globais
-- `AGENTS.md` — convenções de código, stack
-- `docs/INSTITUCIONAL.md` — conteúdo institucional
+## Reference Files
+- `src/lib/components/*.svelte` — existing components (visual pattern)
+- `src/lib/app.css` — global design tokens
+- `AGENTS.md` — code conventions, stack
+- `docs/INSTITUCIONAL.md` — institutional content

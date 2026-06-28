@@ -1,118 +1,100 @@
----
-description: "Inicia o pipeline de melhoria/refatoração na landing page Zan.IA. Cria issue, branch improve/, planeja, implementa, revisa e abre PR."
-argument-hint: "Descreva a melhoria desejada (ex: 'Otimizar o carregamento das fontes Google...')"
+﻿---
+description: "Initiates the improvement/refactoring pipeline on the landing page. Creates issue, improve/ branch, plans, implements, reviews, and opens PR."
+argument-hint: "Describe the desired improvement (e.g., 'Optimize Google Fonts loading...')"
 agent: "orquestrador"
 ---
 
-# Iniciar Pipeline de Melhoria
+# Start Improvement Pipeline
 
-Inicie o pipeline completo de melhoria seguindo o fluxo definido em `.github/instructions/pipeline-workflow.instructions.md`.
+Start the complete improvement pipeline following the flow defined in `.github/instructions/pipeline-workflow.instructions.md`.
 
-## Procedimento
+## Procedure
 
-### 1. Entender a Melhoria
+### 1. Understand the Improvement
 
-Se a descrição do usuário estiver incompleta, use `vscode_askQuestions` para esclarecer:
+If the user's description is incomplete, use `vscode_askQuestions` to clarify:
 
 ```
-- header: "Situação Atual"
-  question: "O que está funcionando mal ou poderia ser melhor?"
-- header: "Melhoria Esperada"
-  question: "Qual o resultado desejado após a melhoria?"
-- header: "Impacto"
-  question: "Quais áreas do site serão afetadas?"
+- header: "Current Situation"
+  question: "What is working poorly or could be better?"
+- header: "Expected Improvement"
+  question: "What is the desired result after the improvement?"
+- header: "Impact"
+  question: "Which areas of the site will be affected?"
   options:
-    - label: "Apenas performance/build"
+    - label: "Only performance/build"
     - label: "Visual/UX"
-    - label: "Código/arquitetura"
-    - label: "SEO/acessibilidade"
+    - label: "Code/architecture"
+    - label: "SEO/accessibility"
 ```
 
-### 2. Criar Issue de Melhoria
+### 2. Create Improvement Issue
 
-Crie uma issue no GitHub `zan-ia/landpage` com:
+Create a GitHub issue in the project with:
 
-**Título:** `improve: [descrição curta da melhoria]`
+**Title:** `improve: [short improvement description]`
 
-**Corpo:**
+**Body:**
 ```markdown
-### Situação Atual
-[Como está hoje — o que pode ser melhorado]
+### Current Situation
+[How it is today — what can be improved]
 
-### Melhoria Proposta
-[O que será feito para melhorar]
+### Proposed Improvement
+[What will be done to improve]
 
-### Benefícios Esperados
-- [benefício 1]
-- [benefício 2]
+### Expected Benefits
+- [benefit 1]
+- [benefit 2]
 
-### Impacto
-- **Componentes afetados:** [lista]
-- **Risco:** [baixo | médio | alto]
-- **Build/Deploy:** [sim | não] afeta o processo de build
+### Impact
+- **Affected components:** [list]
+- **Risk:** [low | medium | high]
+- **Build/Deploy:** [yes | no] affects the build process
 ```
 
-### 3. HITL — Aprovação da Issue
+### 3. HITL — Issue Approval
 
-🛑 **PARE e aguarde.** Apresente a issue ao usuário e aguarde aprovação explícita antes de prosseguir.
+🛑 **STOP and wait.** Present the issue to the user and wait for explicit approval before proceeding.
 
-### 4. Seguir o Pipeline
+### 4. Follow the Pipeline
 
-Após aprovação, execute o pipeline completo:
+After approval, execute the complete pipeline:
 
-1. Criar branch `improve/descricao-curta` a partir de `main`
-2. Invocar `planejador` (subagente) — para refatorações CSS, considere usar o agente `refactor-css`; para performance, considere o agente `performance-auditor`
-3. Invocar `implementador` (subagente) para executar a melhoria
-4. Invocar `revisor` (subagente) para validar
-5. Se critical/major → re-planejar (máx. 3x)
-6. Commit com `improve:` + push
-7. Criar PR com `Closes #N`
-8. HITL — aguardar revisão do PR
+1. Create branch `improve/short-description` from `main`
+2. Invoke `planejador` (subagent) — for CSS refactoring, consider using the `refactor-css` agent; for performance, consider the `performance-auditor` agent
+3. Invoke `implementador` (subagent) to execute the improvement
+4. Invoke `revisor` (subagent) to validate
+5. If critical/major → re-plan (max. 3x)
+6. Commit with `improve:` + push
+7. Create PR with `Closes #N`
+8. HITL — wait for PR review
 
 ---
 
-## Tipos Comuns de Melhoria
+## Common Improvement Types
 
 ### Performance
-- Otimização de imagens (usar skill `otimizar-imagens`)
-- Fontes: verificar `display=swap` e `preconnect`
-- CSS: verificar `will-change` e `contain`
-- JS chunks: analisar `build/_app/immutable/chunks/`
-- Agente recomendado: `performance-auditor`
+- Image optimization (use `otimizar-imagens` skill)
+- Fonts: check `display=swap` and `preconnect`
+- CSS: check `will-change` and `contain`
+- JS chunks: analyze `build/_app/immutable/chunks/`
+- Recommended agent: `performance-auditor`
 
 ### CSS / Design
-- Extrair padrões duplicados para `app.css`
-- Corrigir cores hardcoded → design tokens
-- Ajustar glass-panel, shadows, animações
-- Agente recomendado: `refactor-css`
+- Extract duplicated patterns to `app.css`
+- Fix hardcoded colors → design tokens
+- Adjust glass-panel, shadows, animations
+- Recommended agent: `refactor-css`
 
-### Código / Arquitetura
-- Migrar `export let` → `$props()` (Svelte 5 Runes)
-- Reorganizar componentes
-- Melhorar nomes e documentação
-- Agente recomendado: `planejador` + `implementador`
-
----
-
-## Template de Commit (Melhoria)
-```
-improve(Testimonials): otimizar performance do carrossel
-
-Substitui requestAnimationFrame por CSS scroll-snap nativo
-para reduzir consumo de CPU durante auto-play.
-Adiciona contain: layout style paint nos cards.
-Reduz will-change para apenas durante drag ativo.
-
-Closes #44
-```
+### Code / Architecture
+- Migrate `export let` → `$props()` (Svelte 5 Runes)
+- Reorganize components
+- Improve names and documentation
+- Recommended agent: `planejador` + `implementador`
 
 ---
 
-## Referências
-- Pipeline completo: `.github/instructions/pipeline-workflow.instructions.md`
-- Uso de ferramentas: `.github/instructions/tool-usage.instructions.md`
-- Skill de otimização de imagens: `otimizar-imagens`
-- Skill de comparação CSS: `css-comparison-workflow`
-- Agente de performance: `performance-auditor`
-- Agente de refatoração CSS: `refactor-css`
-- Convenções de código: `AGENTS.md`
+## Commit Template (Improvement)
+```
+improve(Testimonials): optimize carousel performance
+```

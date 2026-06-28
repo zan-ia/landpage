@@ -1,37 +1,37 @@
 ---
 name: "TypeScript"
-description: "TypeScript conventions for the Zan.IA SvelteKit project. Use when: writing or editing .ts files, adding type definitions, or working with SvelteKit TypeScript configuration."
+description: "TypeScript conventions for the SvelteKit landing page project. Use when: writing or editing .ts files, adding type definitions, or working with SvelteKit TypeScript configuration."
 applyTo: "src/**/*.ts"
 ---
 
-# TypeScript — Convenções SvelteKit
+# TypeScript — SvelteKit Conventions
 
-## Configuração do Projeto
+## Project Configuration
 
-- `tsconfig.json` estende `./.svelte-kit/tsconfig.json`
-- `strict: true` — todas as verificações estritas ativas
-- `moduleResolution: "bundler"` — resolução de módulos moderna
-- `rewriteRelativeImportExtensions: true` — importações sem extensão `.ts`
-- `esModuleInterop: true` — compatibilidade com módulos CommonJS
+- `tsconfig.json` extends `./.svelte-kit/tsconfig.json`
+- `strict: true` — all strict checks active
+- `moduleResolution: "bundler"` — modern module resolution
+- `rewriteRelativeImportExtensions: true` — imports without `.ts` extension
+- `esModuleInterop: true` — CommonJS module compatibility
 
-## Regras de Importação
+## Import Rules
 
 ```typescript
-// ✅ Correto — sem extensão de arquivo
+// ✅ Correct — no file extension
 import { base } from '$app/paths';
 import type { PageData } from './$types';
 
-// ✅ Correto — alias $lib mapeia para src/lib/
+// ✅ Correct — $lib alias maps to src/lib/
 import { something } from '$lib/index';
 
-// ❌ Errado — extensões .ts no import
+// ❌ Wrong — .ts extensions in import
 import { something } from '$lib/index.ts';
 ```
 
-## Tipos e Interfaces
+## Types and Interfaces
 
 ```typescript
-// ✅ Prefira interface para objetos públicos, type para unions/utilitários
+// ✅ Prefer interface for public objects, type for unions/utilities
 interface ServiceItem {
   icon: string;
   title: string;
@@ -40,25 +40,25 @@ interface ServiceItem {
 
 type ServiceCategory = 'web' | 'ai' | 'media' | 'automation';
 
-// ✅ Sempre tipar props e retornos de funções
+// ✅ Always type function props and returns
 function buildServiceUrl(category: ServiceCategory, id: string): string {
   return `/services/${category}/${id}`;
 }
 
-// ❌ Errado — any explícito (evite)
+// ❌ Wrong — explicit any (avoid)
 function process(data: any): any { ... }
 ```
 
-## Arquivos de Declaração
+## Declaration Files
 
-- `src/app.d.ts` — declarações globais do app SvelteKit
-- Mantenha tipos específicos de domínio próximos ao código que os usa
-- Use `declare global` apenas em `app.d.ts`
+- `src/app.d.ts` — global SvelteKit app declarations
+- Keep domain-specific types close to the code that uses them
+- Use `declare global` only in `app.d.ts`
 
-## Convenções Gerais
+## General Conventions
 
-1. **SEMPRE** use `strict` types — sem `any` desnecessário
-2. **SEMPRE** defina tipos de retorno em funções exportadas
-3. **NUNCA** adicione `// @ts-ignore` ou `// @ts-nocheck` sem justificativa explícita
-4. **SEMPRE** use `import type` para imports apenas de tipo
-5. **SEMPRE** use optional chaining (`?.`) e nullish coalescing (`??`) para valores potencialmente nulos
+1. **ALWAYS** use `strict` types — no unnecessary `any`
+2. **ALWAYS** define return types on exported functions
+3. **NEVER** add `// @ts-ignore` or `// @ts-nocheck` without explicit justification
+4. **ALWAYS** use `import type` for type-only imports
+5. **ALWAYS** use optional chaining (`?.`) and nullish coalescing (`??`) for potentially null values

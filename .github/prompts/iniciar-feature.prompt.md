@@ -1,93 +1,93 @@
----
-description: "Inicia o pipeline de nova funcionalidade na landing page Zan.IA. Cria issue, branch feat/, planeja, implementa, revisa e abre PR."
-argument-hint: "Descreva a nova funcionalidade (ex: 'Adicionar uma seção de preços com 3 planos...')"
+﻿---
+description: "Initiates the new feature pipeline on the landing page. Creates issue, feat/ branch, plans, implements, reviews, and opens PR."
+argument-hint: "Describe the new feature (e.g., 'Add a pricing section with 3 plans...')"
 agent: "orquestrador"
 ---
 
-# Iniciar Pipeline de Feature
+# Start Feature Pipeline
 
-Inicie o pipeline completo de nova funcionalidade seguindo o fluxo definido em `.github/instructions/pipeline-workflow.instructions.md`.
+Start the complete new feature pipeline following the flow defined in `.github/instructions/pipeline-workflow.instructions.md`.
 
-## Procedimento
+## Procedure
 
-### 1. Entender a Feature
+### 1. Understand the Feature
 
-Se a descrição do usuário estiver incompleta, use `vscode_askQuestions` para esclarecer:
+If the user's description is incomplete, use `vscode_askQuestions` to clarify:
 
 ```
-- header: "Escopo da Feature"
-  question: "Quais são os limites desta funcionalidade?"
-- header: "Critérios de Aceitação"
-  question: "Como saberemos que a feature está pronta?"
-- header: "Prioridade"
-  question: "Esta feature substitui algo existente ou é totalmente nova?"
+- header: "Feature Scope"
+  question: "What are the boundaries of this feature?"
+- header: "Acceptance Criteria"
+  question: "How will we know the feature is ready?"
+- header: "Priority"
+  question: "Does this feature replace something existing or is it entirely new?"
   options:
-    - label: "Feature totalmente nova"
-    - label: "Substitui/estende algo existente"
-    - label: "Variação de um componente existente"
+    - label: "Entirely new feature"
+    - label: "Replaces/extends something existing"
+    - label: "Variation of an existing component"
 ```
 
-### 2. Criar Issue de Feature
+### 2. Create Feature Issue
 
-Crie uma issue no GitHub `zan-ia/landpage` com:
+Create a GitHub issue in the project with:
 
-**Título:** `feat: [descrição curta da funcionalidade]`
+**Title:** `feat: [short feature description]`
 
-**Corpo:**
+**Body:**
 ```markdown
-### Motivação
-[Por que esta feature é necessária? Qual problema resolve?]
+### Motivation
+[Why is this feature needed? What problem does it solve?]
 
-### Descrição
-[O que será implementado, em detalhes]
+### Description
+[What will be implemented, in detail]
 
-### Critérios de Aceitação
-- [ ] Critério 1
-- [ ] Critério 2
-- [ ] Critério 3
+### Acceptance Criteria
+- [ ] Criterion 1
+- [ ] Criterion 2
+- [ ] Criterion 3
 
-### Design de Referência
-[Links para inspirações, mockups, ou componentes similares no site]
+### Reference Design
+[Links to inspirations, mockups, or similar components on the site]
 
-### Componentes Afetados
-- [lista de componentes existentes que serão modificados]
+### Affected Components
+- [list of existing components that will be modified]
 ```
 
-### 3. HITL — Aprovação da Issue
+### 3. HITL — Issue Approval
 
-🛑 **PARE e aguarde.** Apresente a issue ao usuário e aguarde aprovação explícita antes de prosseguir.
+🛑 **STOP and wait.** Present the issue to the user and wait for explicit approval before proceeding.
 
-### 4. Seguir o Pipeline
+### 4. Follow the Pipeline
 
-Após aprovação, execute o pipeline completo:
+After approval, execute the complete pipeline:
 
-1. Criar branch `feat/descricao-curta` a partir de `main`
-2. Invocar `planejador` (subagente) — ele deve consultar skills `criar-section` ou `criar-pagina-institucional` se for novo componente
-3. Invocar `implementador` (subagente) para construir a feature
-4. Invocar `revisor` (subagente) para validar
-5. Se critical/major → re-planejar (máx. 3x)
-6. Commit com `feat:` + push
-7. Criar PR com `Closes #N`
-8. HITL — aguardar revisão do PR
+1. Create branch `feat/short-description` from `main`
+2. Invoke `planejador` (subagent) — it should consult `criar-section` or `criar-pagina-institucional` skills if it's a new component
+3. Invoke `implementador` (subagent) to build the feature
+4. Invoke `revisor` (subagent) to validate
+5. If critical/major → re-plan (max. 3x)
+6. Commit with `feat:` + push
+7. Create PR with `Closes #N`
+8. HITL — wait for PR review
 
 ---
 
-## Template de Commit (Feature)
+## Commit Template (Feature)
 ```
-feat(Solutions): adicionar seção de planos e preços
+feat(Solutions): add pricing plans section
 
-Nova seção Precos.svelte com 3 cards de plano (Básico, Pro, Enterprise).
-Cada card usa glass-panel com destaque diferenciado para o plano Pro.
-Integrado ao +page.svelte entre Solutions e Differential.
+New Precos.svelte section with 3 plan cards (Basic, Pro, Enterprise).
+Each card uses glass-panel with differentiated highlight for the Pro plan.
+Integrated into +page.svelte between Solutions and Differential.
 
 Closes #43
 ```
 
 ---
 
-## Referências
-- Pipeline completo: `.github/instructions/pipeline-workflow.instructions.md`
-- Uso de ferramentas: `.github/instructions/tool-usage.instructions.md`
-- Skill de criação de seção: `criar-section`
-- Skill de criação de página: `criar-pagina-institucional`
-- Convenções de código: `AGENTS.md`
+## References
+- Complete pipeline: `.github/instructions/pipeline-workflow.instructions.md`
+- Tool usage: `.github/instructions/tool-usage.instructions.md`
+- Section creation skill: `criar-section`
+- Page creation skill: `criar-pagina-institucional`
+- Code conventions: `AGENTS.md`

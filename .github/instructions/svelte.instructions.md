@@ -4,62 +4,62 @@ description: "Svelte 5 Runes mode conventions for .svelte files. Use when: writi
 applyTo: "src/**/*.svelte"
 ---
 
-# Svelte 5 Runes — Convenções
+# Svelte 5 Runes — Conventions
 
-Todos os componentes Svelte usam **Runes mode** (Svelte 5). Não use padrões de Svelte 4 (`export let`, `onMount`, `onDestroy`, reactive `$:`).
+All Svelte components use **Runes mode** (Svelte 5). Do not use Svelte 4 patterns (`export let`, `onMount`, `onDestroy`, reactive `$:`).
 
-## Runes Obrigatórias
+## Required Runes
 
-### `$props()` — Props do Componente
+### `$props()` — Component Props
 
 ```svelte
-<!-- ✅ Correto -->
+<!-- ✅ Correct -->
 <script lang="ts">
   let { title, items = [], variant = "default" } = $props();
 </script>
 
-<!-- ❌ Errado (Svelte 4 legacy) -->
+<!-- ❌ Wrong (Svelte 4 legacy) -->
 <script lang="ts">
   export let title: string;
   export let items: any[] = [];
 </script>
 ```
 
-### `$state()` — Estado Reativo
+### `$state()` — Reactive State
 
 ```svelte
-<!-- ✅ Correto -->
+<!-- ✅ Correct -->
 <script lang="ts">
   let isOpen = $state(false);
   let activeIndex = $state(0);
 </script>
 
-<!-- ❌ Errado -->
+<!-- ❌ Wrong -->
 <script lang="ts">
-  let isOpen = false;  // não é reativo sem $state
+  let isOpen = false;  // not reactive without $state
 </script>
 ```
 
-### `$derived()` — Valores Computados
+### `$derived()` — Computed Values
 
 ```svelte
-<!-- ✅ Correto -->
+<!-- ✅ Correct -->
 <script lang="ts">
   let count = $state(0);
   let doubled = $derived(count * 2);
 </script>
 
-<!-- ❌ Errado -->
+<!-- ❌ Wrong -->
 <script lang="ts">
   let count = 0;
   $: doubled = count * 2;  // Svelte 4 legacy
 </script>
 ```
 
-### `$effect()` — Efeitos Colaterais
+### `$effect()` — Side Effects
 
 ```svelte
-<!-- ✅ Correto — sempre com cleanup quando necessário -->
+<!-- ✅ Correct — always with cleanup when needed -->
 <script lang="ts">
   $effect(() => {
     const handler = () => console.log('scroll');
@@ -68,7 +68,7 @@ Todos os componentes Svelte usam **Runes mode** (Svelte 5). Não use padrões de
   });
 </script>
 
-<!-- ❌ Errado (Svelte 4 legacy) -->
+<!-- ❌ Wrong (Svelte 4 legacy) -->
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
   onMount(() => {
@@ -80,27 +80,27 @@ Todos os componentes Svelte usam **Runes mode** (Svelte 5). Não use padrões de
 </script>
 ```
 
-## Regras de Ouro
+## Golden Rules
 
-1. **NUNCA** use `export let` — sempre `$props()`
-2. **NUNCA** use `onMount` / `onDestroy` — use `$effect()` com return de cleanup
-3. **NUNCA** use `$:` reactive statements — use `$derived()` ou `$effect()`
-4. **SEMPRE** retorne a função de cleanup em `$effect()` quando registrar listeners, timers ou subscriptions
-5. **SEMPRE** use `<script lang="ts">` — TypeScript é obrigatório em componentes
-6. **SEMPRE** use `{base}` do `$app/paths` para referências a assets: `src="{base}/assets/images/..."`
+1. **NEVER** use `export let` — always `$props()`
+2. **NEVER** use `onMount` / `onDestroy` — use `$effect()` with cleanup return
+3. **NEVER** use `$:` reactive statements — use `$derived()` or `$effect()`
+4. **ALWAYS** return the cleanup function in `$effect()` when registering listeners, timers, or subscriptions
+5. **ALWAYS** use `<script lang="ts">` — TypeScript is mandatory in components
+6. **ALWAYS** use `{base}` from `$app/paths` for asset references: `src="{base}/assets/images/..."`
 
-## Importações
+## Imports
 
 ```svelte
 <script lang="ts">
-  import { base } from '$app/paths';           // para assets
-  import { page } from '$app/stores';           // para dados de rota (se necessário)
+  import { base } from '$app/paths';           // for assets
+  import { page } from '$app/stores';           // for route data (if needed)
 </script>
 ```
 
 ## Scoped CSS
 
-Cada componente tem seu próprio `<style>` com escopo automático do Svelte. Use:
+Each component has its own `<style>` with Svelte's automatic scoping. Use:
 - Design tokens: `var(--color-*)`, `var(--font-*)`, `var(--spacing-*)`
-- BEM-like naming: `componente__elemento--modificador`
-- Media queries para responsividade (breakpoint 768px)
+- BEM-like naming: `component__element--modifier`
+- Media queries for responsiveness (768px breakpoint)

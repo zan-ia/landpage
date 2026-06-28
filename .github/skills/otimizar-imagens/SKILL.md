@@ -1,40 +1,40 @@
----
+﻿---
 name: otimizar-imagens
-description: "Otimiza imagens da landing page Zan.IA (SvelteKit). Converte para formatos modernos (WebP/AVIF), gera srcset com múltiplas resoluções, aplica lazy loading, e sugere compressão."
-argument-hint: "Caminho da imagem ou diretório a otimizar (ex: 'static/assets/images/hero.jpg', 'todas as imagens do projeto')"
+description: "Optimizes landing page images (SvelteKit). Converts to modern formats (WebP/AVIF), generates srcset with multiple resolutions, applies lazy loading, and suggests compression."
+argument-hint: "Image path or directory to optimize (e.g., 'static/assets/images/hero.jpg', 'all project images')"
 user-invocable: true
 disable-model-invocation: false
 ---
 
-# Skill: Otimização de Imagens (SvelteKit)
+# Skill: Image Optimization (SvelteKit)
 
-Skill para gerenciar e otimizar todas as imagens do projeto Zan.IA.
+Skill to manage and optimize all project images.
 
-## Localização dos Assets
+## Asset Location
 
 ```
-static/assets/images/     ← Coloque as imagens aqui
-  └── hero.webp           ← Referencie como /assets/images/hero.webp
+static/assets/images/     ← Place images here
+  └── hero.webp           ← Reference as /assets/images/hero.webp
 ```
 
-Nos componentes Svelte:
+In Svelte components:
 ```svelte
 <img src="/assets/images/hero.webp" alt="..." />
 ```
 
-## Workflow de Otimização
+## Optimization Workflow
 
-### 1. Conversão para Formatos Modernos
+### 1. Conversion to Modern Formats
 
 ```bash
-# WebP (qualidade 80)
+# WebP (quality 80)
 cwebp -q 80 input.jpg -o static/assets/images/output.webp
 
-# AVIF (qualidade 60)
+# AVIF (quality 60)
 avifenc -s 8 -q 60 input.jpg -o static/assets/images/output.avif
 ```
 
-### 2. Imagem com Fallback (Svelte)
+### 2. Image with Fallback (Svelte)
 
 ```svelte
 <picture>
@@ -42,7 +42,7 @@ avifenc -s 8 -q 60 input.jpg -o static/assets/images/output.avif
   <source srcset="/assets/images/hero.webp" type="image/webp">
   <img
     src="/assets/images/hero.jpg"
-    alt="Zan.IA — Deep Tech Systems"
+    alt="[Company Name] — [Slogan]"
     loading="lazy"
     width="1200"
     height="630"
@@ -51,12 +51,12 @@ avifenc -s 8 -q 60 input.jpg -o static/assets/images/output.avif
 </picture>
 ```
 
-### 3. Imagens Críticas (acima da dobra)
+### 3. Critical Images (above the fold)
 
 ```svelte
 <img
   src="/assets/images/hero.webp"
-  alt="Hero Zan.IA"
+  alt="[Company Name]"
   fetchpriority="high"
   width="1200"
   height="630"
@@ -64,44 +64,44 @@ avifenc -s 8 -q 60 input.jpg -o static/assets/images/output.avif
 >
 ```
 
-### 4. Convenções de Nomenclatura
+### 4. Naming Conventions
 
 ```
 static/assets/images/
-├── hero.webp          # Hero principal (acima da dobra)
+├── hero.webp          # Main hero (above the fold)
 ├── hero.jpg           # Fallback
-├── servico-sistemas.webp
-├── servico-agentes.webp
-├── servico-midia.webp
+├── service-systems.webp
+├── service-agents.webp
+├── service-media.webp
 └── og-image.jpg       # Open Graph (1200x630px)
 ```
 
-## Checklist por Imagem
+## Per-Image Checklist
 
-- [ ] Local: `static/assets/images/` (não `build/assets/images/`)
-- [ ] Referência: `/assets/images/nome.ext` (path absoluto a partir da raiz)
-- [ ] Formato: WebP + fallback JPEG/PNG
-- [ ] Tamanho: < 100kB (ideal), < 200kB (aceitável)
-- [ ] Dimensões: `width` + `height` explícitos
-- [ ] `loading="lazy"` em imagens abaixo da dobra
-- [ ] `fetchpriority="high"` apenas na hero
-- [ ] `alt` descritivo
+- [ ] Location: `static/assets/images/` (not `build/assets/images/`)
+- [ ] Reference: `/assets/images/name.ext` (absolute path from root)
+- [ ] Format: WebP + JPEG/PNG fallback
+- [ ] Size: < 100kB (ideal), < 200kB (acceptable)
+- [ ] Dimensions: explicit `width` + `height`
+- [ ] `loading="lazy"` on below-the-fold images
+- [ ] `fetchpriority="high"` only on hero
+- [ ] Descriptive `alt`
 
-## Procedimento
+## Procedure
 
-1. **Mapeie** todas as imagens referenciadas nos componentes `src/lib/components/*.svelte`
-2. **Identifique** quais estão em CDN externo vs. locais
-3. **Converta** para WebP e coloque em `static/assets/images/`
-4. **Atualize** os `src` nos componentes Svelte
-5. **Remova** dependências de CDNs externos de imagens
-6. **Verifique** visualmente com `npm run dev`
+1. **Map** all images referenced in components `src/lib/components/*.svelte`
+2. **Identify** which are on external CDN vs. local
+3. **Convert** to WebP and place in `static/assets/images/`
+4. **Update** `src` in Svelte components
+5. **Remove** external CDN image dependencies
+6. **Verify** visually with `npm run dev`
 
-## Tolerâncias
+## Tolerances
 
-| Cenário | Ação |
+| Scenario | Action |
 |---------|------|
-| Imagem heróica > 200kB | Comprimir para < 100kB |
-| Imagem decorativa > 100kB | Redimensionar + comprimir |
-| PNG com transparência | WebP suporta alpha, converter |
-| GIF animado | Converter para WebP animado ou video MP4 |
-| SVG | Manter SVG (vetorial), otimizar com SVGO se > 10kB |
+| Hero image > 200kB | Compress to < 100kB |
+| Decorative image > 100kB | Resize + compress |
+| PNG with transparency | WebP supports alpha, convert |
+| Animated GIF | Convert to animated WebP or MP4 video |
+| SVG | Keep SVG (vector), optimize with SVGO if > 10kB |

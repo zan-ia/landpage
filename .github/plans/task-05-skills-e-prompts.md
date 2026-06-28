@@ -14,7 +14,7 @@ Criar/validar skills (conhecimento especializado) e prompts (comandos customizad
    - Invoca automaticamente os agentes corretos
 
 2. **`criar-pagina-institucional/SKILL.md`** — Criação de páginas:
-   - Padrão visual do site Zan.IA (glass panels, MD3, tipografia)
+   - Padrão visual da landing page (glass panels, MD3, tipografia)
    - Quando usar: novas landing pages, páginas de serviço, páginas institucionais
    - Como estruturar o componente Svelte + scoped CSS
 
@@ -25,7 +25,7 @@ Criar/validar skills (conhecimento especializado) e prompts (comandos customizad
 
 4. **`css-comparison-workflow/SKILL.md`** — Comparação DEV vs LIVE:
    - Fluxo para verificar equivalência visual
-   - Usar browser tools para comparar localhost:5173 com www.zan.ia.br
+   - Usar browser tools para comparar localhost:5173 com o site de produção
    - Extrair computed styles, capturar screenshots, relatar diferenças
 
 5. **`otimizar-imagens/SKILL.md`** — Otimização de imagens:

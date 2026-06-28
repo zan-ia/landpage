@@ -1,50 +1,50 @@
-# Zan.IA Website — Agent Guidelines
+﻿# Institutional Landing Page — Agent Guidelines
 
 ## Project Overview
 
-Landing page institucional para **Zan.IA** — empresa de tecnologia focada em desenvolvimento web, agentes de IA, automação e criação de mídia assistida por inteligência artificial.
+Institutional landing page.
 
-> Consulte [`docs/INSTITUCIONAL.md`](./docs/INSTITUCIONAL.md) para visão completa da empresa, serviços e diferenciais.
+> See [`docs/INSTITUCIONAL.md`](./docs/INSTITUCIONAL.md) for complete company overview, services, and differentiators. This document is the official source of project information.
 
 ## Tech Stack
 
-| Camada | Tecnologia |
+| Layer | Technology |
 |--------|-----------|
 | **Framework** | SvelteKit 5 (Runes mode) |
 | **Build** | Vite + `@sveltejs/adapter-static` |
-| **Markup** | Componentes Svelte com scoped CSS |
-| **Estilos** | Scoped `<style>` por componente + `app.css` global (design tokens) |
-| **Ícones** | Google Material Symbols Outlined |
-| **Tipografia** | Space Grotesk, Geist, JetBrains Mono (Google Fonts) |
-| **Tema** | Dark mode (Material Design 3) |
+| **Markup** | Svelte components with scoped CSS |
+| **Styles** | Scoped `<style>` per component + global `app.css` (design tokens) |
+| **Icons** | Google Material Symbols Outlined |
+| **Typography** | Space Grotesk, Geist, JetBrains Mono (Google Fonts) |
+| **Theme** | Dark mode (Material Design 3) |
 | **Deploy** | GitHub Pages + GitHub Actions |
 
 ## Architecture
 
-- **SvelteKit 5** com Runes mode (reatividade via `$state`, `$effect`, `$props`)
-- **Static site generation** via `@sveltejs/adapter-static` — output em `build/`
-- **Scoped CSS nativo:** cada componente Svelte tem seu próprio `<style>`, sem conflitos de classe
-- **Único CSS global:** `src/lib/app.css` com design tokens (variáveis CSS), reset e utilitários compartilhados (glass-panel, animações)
-- **Sem Tailwind CSS:** utilidades substituídas por classes CSS escopadas + variáveis de design token
+- **SvelteKit 5** with Runes mode (reactivity via `$state`, `$effect`, `$props`)
+- **Static site generation** via `@sveltejs/adapter-static` — output in `build/`
+- **Native scoped CSS:** each Svelte component has its own `<style>`, no class conflicts
+- **Single global CSS:** `src/lib/app.css` with design tokens (CSS variables), reset, and shared utilities (glass-panel, animations)
+- **No Tailwind CSS:** utilities replaced by scoped CSS classes + design token variables
 
 ## Build & Deploy
 
 ```bash
-npm run dev      # Desenvolvimento em localhost:5173
-npm run build    # Gera build/ com saída estática
-npm run preview  # Preview do build local
-# Deploy automático via GitHub Actions ao push na branch main
+npm run dev      # Development at localhost:5173
+npm run build    # Generates build/ with static output
+npm run preview  # Build preview locally
+# Automatic deploy via GitHub Actions on push to main branch
 # workflow: .github/workflows/deploy.yml
-# Servido de: ./build/
+# Served from: ./build/
 ```
 
-## Estrutura de Arquivos
+## File Structure
 
 ```
-zania-website/
+[project-name]/
 ├── src/
 │   ├── lib/
-│   │   ├── components/        # Componentes Svelte com <style> escopado
+│   │   ├── components/        # Svelte components with scoped <style>
 │   │   │   ├── Header.svelte
 │   │   │   ├── Hero.svelte
 │   │   │   ├── Authority.svelte
@@ -53,27 +53,28 @@ zania-website/
 │   │   │   ├── Testimonials.svelte
 │   │   │   ├── CTA.svelte
 │   │   │   └── Footer.svelte
-│   │   └── app.css            # CSS global (design tokens + reset + utilitários)
+│   │   └── app.css            # Global CSS (design tokens + reset + utilities)
 │   ├── routes/
-│   │   ├── +layout.svelte     # Layout principal (Header + Footer)
+│   │   ├── +layout.svelte     # Main layout (Header + Footer)
 │   │   ├── +layout.js         # Config: prerender = true
-│   │   └── +page.svelte       # Home page (monta todos os componentes)
-│   └── app.html               # Template HTML (fontes, meta)
+│   │   └── +page.svelte       # Home page (assembles all components)
+│   └── app.html               # HTML template (fonts, meta)
 ├── static/
-│   └── assets/images/         # Imagens locais
-├── build/                     # Output do build (gerado, não versionar)
+│   └── assets/images/         # Local images
+├── build/                     # Build output (generated, do not version)
 ├── .github/
-│   ├── copilot-instructions.md  # Regras críticas (askQuestions + todos)
+│   ├── copilot-instructions.md  # Critical rules (askQuestions + todo)
 │   ├── ISSUES.md
-│   ├── agents/              # Agentes especializados
+│   ├── agents/              # Specialized agents
 │   │   ├── criador-conteudo.agent.md
-│   │   ├── performance-auditor.agent.md
-│   │   ├── refactor-css.agent.md
-│   │   ├── orquestrador.agent.md
-│   │   ├── planejador.agent.md
+│   │   ├── engenheiro-de-harness.agent.md
 │   │   ├── implementador.agent.md
+│   │   ├── orquestrador.agent.md
+│   │   ├── performance-auditor.agent.md
+│   │   ├── planejador.agent.md
+│   │   ├── refactor-css.agent.md
 │   │   └── revisor.agent.md
-│   ├── instructions/         # Regras automáticas (applyTo)
+│   ├── instructions/         # Automatic rules (applyTo)
 │   │   ├── css.instructions.md
 │   │   ├── deploy.instructions.md
 │   │   ├── html.instructions.md
@@ -83,7 +84,9 @@ zania-website/
 │   │   ├── svelte.instructions.md
 │   │   ├── tool-usage.instructions.md
 │   │   └── typescript.instructions.md
-│   ├── prompts/              # Comandos customizados
+│   ├── hooks/                # Lifecycle hooks
+│   │   └── validate-permissions.json
+│   ├── prompts/              # Custom commands
 │   │   ├── adicionar-depoimento.prompt.md
 │   │   ├── adicionar-servico.prompt.md
 │   │   ├── iniciar-bugfix.prompt.md
@@ -91,14 +94,15 @@ zania-website/
 │   │   ├── iniciar-melhoria.prompt.md
 │   │   ├── otimizar-seo.prompt.md
 │   │   └── revisar.prompt.md
-│   ├── skills/               # Conhecimento especializado
+│   ├── skills/               # Specialized knowledge
 │   │   ├── criar-pagina-institucional/SKILL.md
 │   │   ├── criar-section/SKILL.md
 │   │   ├── css-comparison-workflow/SKILL.md
 │   │   ├── otimizar-imagens/SKILL.md
+│   │   ├── harness-engineering-reference/SKILL.md
 │   │   ├── pipeline-orquestracao/SKILL.md
 │   │   └── seo-otimization/SKILL.md
-│   ├── plans/                # Planos de implementação
+│   ├── plans/                # Implementation plans
 │   │   └── README.md
 │   └── workflows/
 │       └── deploy.yml        # Build + Deploy GitHub Pages
@@ -108,185 +112,262 @@ zania-website/
 └── AGENTS.md
 ```
 
-## Convenções de Código
+## Code Conventions
 
-- **Componentes Svelte:** Usar Runes mode (`$state()`, `$effect()`, `$props()`)
-- **Scoped CSS:** Cada componente tem `<style>` próprio — sem classes globais, sem conflitos
-- **Design Tokens:** Usar variáveis CSS `--color-*`, `--font-*`, `--spacing-*` de `app.css`
-- **Animações:** `@keyframes` definidos em `app.css`; usar classes `.animate-*` quando necessário
-- **Ícones:** `<span class="material-symbols-outlined">icon_name</span>`
-- **Imagens:** Referenciar como `/assets/images/nome.ext` (mapeado de `static/assets/images/`)
-- **Responsividade:** Breakpoint mobile em 768px via media queries nos componentes
-- **Glass panels:** Classe global `.glass-panel` com backdrop-filter e borda sutil
+- **Svelte Components:** Use Runes mode (`$state()`, `$effect()`, `$props()`)
+- **Scoped CSS:** Each component has its own `<style>` — no global classes, no conflicts
+- **Design Tokens:** Use CSS variables `--color-*`, `--font-*`, `--spacing-*` from `app.css`
+- **Animations:** `@keyframes` defined in `app.css`; use `.animate-*` classes when needed
+- **Icons:** `<span class="material-symbols-outlined">icon_name</span>`
+- **Images:** Reference as `/assets/images/name.ext` (mapped from `static/assets/images/`)
+- **Responsiveness:** Mobile breakpoint at 768px via media queries in components
+- **Glass panels:** Global class `.glass-panel` with backdrop-filter and subtle border
 
 ## GitHub Workflow (Issues & PRs)
 
-### Auto-close de Issues
-- Incluir `Closes #N` (ou `Fixes`/`Resolves`) no corpo do PR — GitHub fecha a issue automaticamente ao mergear.
-- **Verificar** se a issue foi fechada após o merge. Se não, fechar manualmente com `state=closed`, `reason=completed`.
+### Auto-close Issues
+- Include `Closes #N` (or `Fixes`/`Resolves`) in the PR body — GitHub closes the issue automatically on merge.
+- **Verify** if the issue was closed after merge. If not, close manually with `state=closed`, `reason=completed`.
 
-### Fluxo Recomendado
-1. Criar branch a partir de `main` (`feat/nome-descritivo`)
-2. Fazer commit com mensagem descritiva (imperativo, < 72 chars)
-3. Incluir `Closes #N` no corpo do PR
-4. Abrir PR apontando para `main`
-5. Após merge, confirmar que a issue foi fechada
+### Recommended Flow
+1. Create branch from `main` (`feat/descriptive-name`)
+2. Commit with descriptive message (imperative, < 72 chars)
+3. Include `Closes #N` in PR body
+4. Open PR targeting `main`
+5. After merge, confirm the issue was closed
 
-## Canais de Contato
+## Contact Channels
 
-- WhatsApp (CTA principal): link direto para número da empresa
-- Footer: links institucionais
+- WhatsApp (main CTA): direct link to company number
+- Footer: institutional links
 
 ---
 
-## Orquestração de Agentes
+## Agent Orchestration
 
-O projeto utiliza um sistema de **4 agentes de pipeline** para desenvolvimento automatizado com qualidade:
+The project uses a system of **5 pipeline agents + 3 support agents + 1 harness engineer** for automated quality-driven development:
 
-| Agente | Papel | Ferramentas |
-|--------|-------|-------------|
-| `orquestrador` | Coordena o fluxo completo — issue → branch → planejar → implementar → revisar → commit → PR | Todas |
-| `planejador` | Analisa issues e codebase, gera planos detalhados em `.github/plans/` | read, search, web |
-| `implementador` | Executa planos, faz alterações cirúrgicas, verifica build | read, search, edit, execute |
-| `revisor` | Analisa diff vs plano, verifica 10 dimensões de qualidade, classifica issues | read, search |
+| Agent | Role | Archetype | Tools |
+|--------|-------|-----------|-------------|
+| `orquestrador` | Coordinates the complete flow — issue → branch → plan → implement → review → commit → PR | Coordinator | All |
+| `planejador` | Analyzes issues and codebase, generates detailed plans in `.github/plans/` | Worker (read-only) | read, search, web |
+| `implementador` | Executes plans, makes surgical changes, verifies build | Worker | read, search, edit, execute |
+| `revisor` | Analyzes diff vs plan, verifies 10 quality dimensions, classifies issues | Auditor (read-only) | read, search |
+| `engenheiro-de-harness` | Audits, maintains, and iteratively refines all harness components. Applies agent taxonomy, KPIs, prompt engineering, context budget, and error recovery patterns. Uses Chronicle for data-driven decisions. | Specialist | read, search, edit, session_store_sql, memory/*, vscode/memory, agent |
 
-### Fluxo do Pipeline
+### Support Agents
+
+| Agent | Role | Archetype | Tools |
+|--------|-------|-----------|-------------|
+| `criador-conteudo` | Generates and updates institutional content (texts, descriptions, testimonials) | Specialist | read, search |
+| `performance-auditor` | Audits Core Web Vitals, asset loading, blocking resources | Auditor | read, search, browser |
+| `refactor-css` | Refactors scoped CSS, extracts patterns to `app.css`, audits design tokens | Specialist | read, search, edit |
+
+### Pipeline Flow
 ```
-Usuário → /iniciar-bugfix|feature|melhoria
-  → Orquestrador analisa → Cria Issue → HITL
-  → Cria Branch → Planejador → Implementador → Revisor
-  → [loop máx. 3x se critical/major]
+User → /iniciar-bugfix|feature|improvement
+  → Orchestrator analyzes → Creates Issue → HITL
+  → Creates Branch → Planner → Implementer → Reviewer
+  → [loop max. 3x if critical/major]
   → Commit → PR → HITL → Merge → Checkout main
 ```
 
-### Como Iniciar
-- `/iniciar-bugfix` — para correção de bugs
-- `/iniciar-feature` — para novas funcionalidades
-- `/iniciar-melhoria` — para melhorias e refatorações
-
-### Agentes de Suporte
-
-Além dos 4 agentes de pipeline, o projeto conta com 3 agentes especializados para tarefas específicas:
-
-| Agente | Papel | Ferramentas |
-|--------|-------|-------------|
-| `criador-conteudo` | Gera e atualiza conteúdos institucionais (textos, descrições, depoimentos) | read, search |
-| `performance-auditor` | Audita Core Web Vitals, carregamento de assets, blocking resources | read, search, browser |
-| `refactor-css` | Refatora CSS escopado, extrai padrões para `app.css`, audita design tokens | read, search, edit |
-
-### Skill de Orquestração
-O skill `pipeline-orquestracao` (em `.github/skills/pipeline-orquestracao/SKILL.md`) contém o conhecimento completo do pipeline e é carregado automaticamente quando o usuário menciona pipeline, bugfix, feature, melhoria, corrigir, ou implementar.
+### How to Start
+- `/iniciar-bugfix` — for bug fixes
+- `/iniciar-feature` — for new features
+- `/iniciar-melhoria` — for improvements and refactoring
 
 ---
 
-## Uso de Ferramentas
+## Agent Taxonomy
 
-Regras estritas para uso de cada ferramenta do Copilot (definidas em `.github/instructions/tool-usage.instructions.md`):
+Every agent in the Zan.IA harness fits exactly one archetype. This classification governs tool permissions, invocation patterns, and design constraints.
 
-| Ferramenta | Regra Principal |
+| Archetype | Purpose | Tool Profile | Invocation | Examples |
+|-----------|---------|-------------|------------|----------|
+| **Coordinator** | Orchestrates multi-agent workflows, manages HITL gates, tracks pipeline state | Full toolkit + `agent` | User-facing + subagent-invocable | `orquestrador` |
+| **Worker** | Executes a specific pipeline phase — structured input → structured output | Domain-specific | Subagent-invocable | `planejador`, `implementador` |
+| **Specialist** | Deep domain expertise, operates independently or on-demand | Domain-specific tools | User-invocable or on-demand | `criador-conteudo`, `refactor-css`, `engenheiro-de-harness` |
+| **Auditor** | Read-only analysis, produces reports — NEVER modifies files | read, search | On-demand or post-cycle | `revisor`, `performance-auditor` |
+| **Gatekeeper** | Enforces quality gates automatically | read, search, hooks | Automatic (hooks) | *(future)* |
+
+### Agent Body Standards
+All `.agent.md` bodies follow the **7-Point Prompt Engineering Template**:
+1. **Role** — Identity, domain expertise, primary output
+2. **Constraints** — NEVER rules first, ALWAYS rules second
+3. **Context Sources** — Prioritized files/docs to consult before acting
+4. **Procedure** — Numbered steps with decision branches and edge cases
+5. **Patterns & Examples** — ✅ Correct / ❌ Wrong pairs
+6. **Output Format** — File path, structure, success criteria
+7. **Reference Files** — Canonical file list with descriptions
+
+See `.github/skills/harness-engineering-reference/SKILL.md` for complete agent design reference.
+
+### Harness Performance (KPIs)
+| KPI | Healthy Range |
+|-----|---------------|
+| Pipeline Success Rate | > 80% |
+| First-Pass Quality | > 60% |
+| Review Loop Count | < 1.5 avg |
+| Session Turns per Task | < 30 |
+| Checkpoint Rate | > 70% |
+| Quality Gate Compliance | 100% |
+
+---
+
+## Harness Review Workflow (Post-Issue Cycle)
+
+After each issue→PR cycle, the `engenheiro-de-harness` agent performs a harness review:
+
+```
+Issue → Branch → Plan → Implement → Review → PR
+                                                  │
+                                                  ▼
+                                         ┌──────────────────┐
+                                         │ HARNESS REVIEW    │
+                                         │ (engenheiro-de-  │
+                                         │  harness)         │
+                                         │                   │
+                                         │ 1. Query Chronicle│
+                                         │ 2. Static analysis│
+                                         │ 3. Detect patterns│
+                                         │ 4. If issues found│
+                                         │    → create       │
+                                         │    separate PR    │
+                                         └──────────────────┘
+```
+
+### Trigger conditions for separate harness PR:
+- Anti-pattern detected in >= 2 sessions for the same agent
+- File thrashing detected (same file read >5 times across sessions)
+- Static analysis violation — broken handoff/agents references
+- Chronicle inverted check — tool used but not declared by agent
+- Session took >30 turns without checkpoint
+- `npm run check` or `npm run build` not run in session with edits
+- Failure-side repetition — user frustration + same agent + same file in >= 2 sessions
+
+### Separate Harness PR Convention
+- **Branch:** `harness/fix-description` or `harness/improve-agent-name`
+- **Commit:** `harness: fix tool permissions for agent X`
+- **PR title:** `🔧 Harness: <description>`
+- **PR body:** Include Chronicle evidence (query results, patterns found)
+
+---
+
+## Tool Usage
+
+Strict rules for using each Copilot tool (defined in `.github/instructions/tool-usage.instructions.md`):
+
+| Tool | Main Rule |
 |-----------|----------------|
-| **`vscode_askQuestions`** | OBRIGATÓRIO para qualquer ambiguidade. Nunca assuma preferências do usuário. |
-| **Browser** | Usar para documentação oficial, comparação DEV vs LIVE. Sempre validar URLs. |
-| **Terminal** | Comandos não-destrutivos. Build e lint antes de concluir. |
-| **Edição** | Ler antes de editar. Alterações mínimas. Verificar erros após cada edição. |
-| **Busca** | Buscar antes de assumir que algo não existe. |
-| **Memória** | Usar `/memories/session/pipeline-state.md` para rastrear estado do pipeline. |
-| **Subagentes** | Preferir agentes especializados (`planejador`, `implementador`, `revisor`, `Explore`). |
+| **`vscode_askQuestions`** | MANDATORY for any ambiguity. Never assume user preferences. |
+| **Browser** | Use for official documentation, DEV vs LIVE comparison. Always validate URLs. |
+| **Terminal** | Non-destructive commands. Build and lint before concluding. |
+| **Editing** | Read before editing. Minimal changes. Check errors after each edit. |
+| **Search** | Search before assuming something doesn't exist. |
+| **Memory** | Use `/memories/session/pipeline-state.md` to track pipeline state. |
+| **Subagents** | Prefer specialized agents (`planejador`, `implementador`, `revisor`, `Explore`). |
 
 ---
 
-## Harness Copilot — Primitivas de Customização
+## Harness Copilot — Customization Primitives
 
-O VS Code oferece **7 primitivas** que formam o harness completo. Todos os agentes do projeto DEVM compreender estas primitivas para tomar decisões corretas.
+VS Code offers **7 primitives** that form the complete harness. All project agents MUST understand these primitives to make correct decisions.
 
-### Tabela de Primitivas
+### Primitives Table
 
-| Primitiva | Arquivo | Onde | Ativação |
+| Primitive | File | Location | Activation |
 |-----------|---------|------|----------|
-| **Agent Instructions** | `AGENTS.md` | Raiz | Sempre-on (todo o workspace) |
-| **File Instructions** | `*.instructions.md` | `.github/instructions/` | `applyTo` (glob) ou `description` (semântico) |
-| **Custom Agents** | `*.agent.md` | `.github/agents/` | Seletor de agente ou `runSubagent` |
+| **Agent Instructions** | `AGENTS.md` | Root | Always-on (entire workspace) |
+| **File Instructions** | `*.instructions.md` | `.github/instructions/` | `applyTo` (glob) or `description` (semantic) |
+| **Custom Agents** | `*.agent.md` | `.github/agents/` | Agent selector or `runSubagent` |
 | **Prompts** | `*.prompt.md` | `.github/prompts/` | Slash command (`/`) |
-| **Skills** | `SKILL.md` | `.github/skills/<nome>/` | Slash command ou detecção automática |
-| **Hooks** | `*.json` | `.github/hooks/` | Eventos de ciclo de vida (`PreToolUse`, etc.) |
-| **MCP Servers** | Config JSON | `.vscode/` ou settings | Ferramentas MCP sob demanda |
+| **Skills** | `SKILL.md` | `.github/skills/<name>/` | Slash command or automatic detection |
+| **Hooks** | `*.json` | `.github/hooks/` | Lifecycle events (`PreToolUse`, etc.) |
+| **MCP Servers** | Config JSON | `.vscode/` or settings | MCP tools on demand |
 
-### Hierarquia de Carregamento e Prioridade
+### Loading Hierarchy and Priority
 
 ```
-💡 Sempre-on: AGENTS.md → diretrizes globais
-📁 Por arquivo: *.instructions.md → regras específicas (applyTo)
-🎯 Sob demanda: Skills, Prompts, Custom Agents, MCP
-🤖 Automático: Hooks → eventos do ciclo de vida
+💡 Always-on: AGENTS.md → global guidelines
+📁 Per-file: *.instructions.md → specific rules (applyTo)
+🎯 On-demand: Skills, Prompts, Custom Agents, MCP
+🤖 Automatic: Hooks → lifecycle events
 ```
-**Prioridade (conflitos):** Perfil do usuário > Workspace (`.github/`, `AGENTS.md`) > Organização.
+**Priority (conflicts):** User profile > Workspace (`.github/`, `AGENTS.md`) > Organization.
 
-### Mapa do Pipeline no Harness
+### Pipeline Map on the Harness
 
 ```
 AGENTS.md + tool-usage.instructions.md + pipeline-workflow.instructions.md
   → orquestrador.agent.md
     → planejador | implementador | revisor | Explore
 ```
-Skills e Prompts carregados sob demanda conforme o contexto.
+Skills and Prompts loaded on demand according to context.
 
-### Controle de Invocação de Agentes
+### Agent Invocation Control
 
-Cada `.agent.md` controla como pode ser invocado via frontmatter:
+Each `.agent.md` controls how it can be invoked via frontmatter:
 
-| Campo | Efeito |
+| Field | Effect |
 |-------|--------|
-| `user-invocable: false` | Oculta do seletor de agentes, mas ainda é subagentável |
-| `disable-model-invocation: true` | Impede que outros agentes usem como subagente |
-| `agents: ["nome1", "nome2"]` | Lista explícita de subagentes permitidos |
-| `tools: ["read", "search"]` | Restringe ferramentas do agente |
+| `user-invocable: false` | Hidden from agent selector, but still subagent-invocable |
+| `disable-model-invocation: true` | Prevents other agents from using as subagent |
+| `agents: ["name1", "name2"]` | Explicit list of allowed subagents |
+| `tools: ["read", "search"]` | Restricts agent tools |
 
-**Regra:** Listar um agente em `agents` sobrescreve `disable-model-invocation: true`.
+**Rules:**
+- Listing an agent in `agents` overrides `disable-model-invocation: true`.
+- When `agents` is specified (even if empty), the `"agent"` tool MUST be included in `tools`. This is the tool that enables subagent invocation (`runSubagent`).
 
 ### Fork Mode (Skills)
 
-Skills com `context: fork` executam em subagente isolado — útil para tarefas que leem muitos arquivos. Requer `github.copilot.chat.skillTool.enabled`.
+Skills with `context: fork` execute in an isolated subagent — useful for tasks that read many files. Requires `github.copilot.chat.skillTool.enabled`.
 
-### Padrões de Orquestração
+### Orchestration Patterns
 
-- **Coordinator + Worker:** `orquestrador` delega para workers especializados com ferramentas mínimas (princípio do menor privilégio). Workers retornam apenas resultado final; coordenador sintetiza.
-- **Handoffs:** Transições interativas entre agentes via botões UI — `send: false` preenche o prompt, `send: true` envia automaticamente.
+- **Coordinator + Worker:** `orquestrador` delegates to specialized workers with minimal tools (principle of least privilege). Workers return only final result; coordinator synthesizes.
+- **Handoffs:** Interactive transitions between agents via UI buttons — `send: false` fills the prompt, `send: true` sends automatically.
 
 ---
 
-## Pipeline CI/CD via Agentes
+## CI/CD Pipeline via Agents
 
-### Ciclo Plan → Implement → Review
+### Plan → Implement → Review Cycle
 
-1. **Plan (Planejador):** Analisa a issue, explora a codebase, gera plano em `.github/plans/issue-{N}-{slug}.md`
-2. **Implement (Implementador):** Executa o plano passo a passo, alterações cirúrgicas, verifica `npm run check` e `npm run build`
-3. **Review (Revisor):** Analisa diff contra o plano, verifica 10 dimensões de qualidade (código, arquitetura, design, legibilidade, performance, manutenibilidade, especificidade, dependências, testes, acessibilidade), classifica issues como critical/major/minor
-4. **Loop:** Se critical ou major → re-planejar (máx. 3 iterações). Se minor → documentar no PR como follow-up.
+1. **Plan (Planner):** Analyzes the issue, explores the codebase, generates plan in `.github/plans/issue-{N}-{slug}.md`
+2. **Implement (Implementer):** Executes the plan step by step, surgical changes, verifies `npm run check` and `npm run build`
+3. **Review (Reviewer):** Analyzes diff against plan, verifies 10 quality dimensions (code, architecture, design, readability, performance, maintainability, specificity, dependencies, tests, accessibility), classifies issues as critical/major/minor
+4. **Loop:** If critical or major → re-plan (max. 3 iterations). If minor → document in PR as follow-up.
+5. **Harness Review (Harness Engineer):** After PR creation, queries Chronicle for session patterns, runs static analysis, detects anti-patterns. If issues found → creates separate harness improvement PR.
 
 ### Human-in-the-Loop (HITL)
-- 🛑 **Após criação da issue** — usuário revisa e aprova
-- 🛑 **Após criação do PR** — usuário revisa diff e faz merge
+- 🛑 **After issue creation** — user reviews and approves
+- 🛑 **After PR creation** — user reviews diff and merges
 
-### Convenções
+### Conventions
 
-| Convenção | Padrão |
+| Convention | Standard |
 |-----------|--------|
-| **Branch** | `fix/`, `feat/`, `improve/` + slug em minúsculas |
+| **Branch** | `fix/`, `feat/`, `improve/` + lowercase slug |
 | **Commit** | [Conventional Commits](https://www.conventionalcommits.org/): `fix:`, `feat:`, `improve:` |
-| **PR** | Incluir `Closes #N` no corpo |
-| **Issue** | Template específico por tipo (bug/feature/melhoria) |
-| **Plano** | `.github/plans/issue-{N}-{slug}.md` |
-| **Estado** | `/memories/session/pipeline-state.md` |
-| **Revisão** | Máx. 3 iterações; critical/major → re-planeja; minor → documenta |
+| **PR** | Include `Closes #N` in body |
+| **Issue** | Type-specific template (bug/feature/improvement) |
+| **Plan** | `.github/plans/issue-{N}-{slug}.md` |
+| **State** | `/memories/session/pipeline-state.md` |
+| **Review** | Max. 3 iterations; critical/major → re-plan; minor → document |
+| **Harness PR** | `harness/` prefix, separate from feature PR |
 
-### Arquivos do Pipeline
-- `.github/instructions/pipeline-workflow.instructions.md` — fluxo completo
-- `.github/instructions/tool-usage.instructions.md` — regras de ferramentas
-- `.github/agents/orquestrador.agent.md` — agente coordenador
-- `.github/agents/planejador.agent.md` — agente de planejamento
-- `.github/agents/implementador.agent.md` — agente de implementação
-- `.github/agents/revisor.agent.md` — agente de revisão
-- `.github/prompts/iniciar-bugfix.prompt.md` — prompt de entrada para bugs
-- `.github/prompts/iniciar-feature.prompt.md` — prompt de entrada para features
-- `.github/prompts/iniciar-melhoria.prompt.md` — prompt de entrada para melhorias
-- `.github/skills/pipeline-orquestracao/SKILL.md` — skill de orquestração
+### Pipeline Files
+- `.github/instructions/pipeline-workflow.instructions.md` — complete flow
+- `.github/instructions/tool-usage.instructions.md` — tool rules
+- `.github/agents/orquestrador.agent.md` — coordinator agent
+- `.github/agents/planejador.agent.md` — planning agent
+- `.github/agents/implementador.agent.md` — implementation agent
+- `.github/agents/revisor.agent.md` — review agent
+- `.github/agents/engenheiro-de-harness.agent.md` — harness engineer agent
+- `.github/prompts/iniciar-bugfix.prompt.md` — bugfix entry prompt
+- `.github/prompts/iniciar-feature.prompt.md` — feature entry prompt
+- `.github/prompts/iniciar-melhoria.prompt.md` — improvement entry prompt
+- `.github/skills/harness-engineering-reference/SKILL.md` — harness engineering reference
+- `.github/skills/pipeline-orquestracao/SKILL.md` — orchestration skill

@@ -1,92 +1,92 @@
----
-description: "Inicia o pipeline de correção de bug na landing page Zan.IA. Cria issue, branch fix/, planeja, implementa, revisa e abre PR."
-argument-hint: "Descreva o bug encontrado (ex: 'O header fica com cores erradas no mobile...')"
+﻿---
+description: "Initiates the bugfix pipeline on the landing page. Creates issue, fix/ branch, plans, implements, reviews, and opens PR."
+argument-hint: "Describe the bug found (e.g., 'The header shows wrong colors on mobile...')"
 agent: "orquestrador"
 ---
 
-# Iniciar Pipeline de Bugfix
+# Start Bugfix Pipeline
 
-Inicie o pipeline completo de correção de bug seguindo o fluxo definido em `.github/instructions/pipeline-workflow.instructions.md`.
+Start the complete bugfix pipeline following the flow defined in `.github/instructions/pipeline-workflow.instructions.md`.
 
-## Procedimento
+## Procedure
 
-### 1. Entender o Bug
+### 1. Understand the Bug
 
-Se a descrição do usuário estiver incompleta ou ambígua, use `vscode_askQuestions` **obrigatoriamente** para esclarecer:
+If the user's description is incomplete or ambiguous, use `vscode_askQuestions` **mandatorily** to clarify:
 
 ```
-- header: "Passos para Reproduzir"
-  question: "Quais passos exatos levam ao bug?"
-- header: "Comportamento Esperado"
-  question: "O que deveria acontecer em vez do bug?"
-- header: "Ambiente"
-  question: "Em qual navegador/dispositivo o bug ocorre?"
+- header: "Steps to Reproduce"
+  question: "What exact steps lead to the bug?"
+- header: "Expected Behavior"
+  question: "What should happen instead of the bug?"
+- header: "Environment"
+  question: "In which browser/device does the bug occur?"
 ```
 
-### 2. Criar Issue de Bug
+### 2. Create Bug Issue
 
-Crie uma issue no GitHub `zan-ia/landpage` com:
+Create a GitHub issue in the project with:
 
-**Título:** `fix: [descrição curta do bug]`
+**Title:** `fix: [short bug description]`
 
-**Corpo:**
+**Body:**
 ```markdown
-### Descrição do Bug
-[Descrição clara e concisa]
+### Bug Description
+[Clear and concise description]
 
-### Passos para Reproduzir
+### Steps to Reproduce
 1. 
 2. 
 3. 
 
-### Comportamento Esperado
-[O que deveria acontecer]
+### Expected Behavior
+[What should happen]
 
-### Comportamento Atual
-[O que está acontecendo de errado]
+### Current Behavior
+[What is happening wrong]
 
-### Ambiente
-- SO: Windows 11
-- Navegador: Chrome/Edge/Firefox
-- Dispositivo: Desktop/Mobile
+### Environment
+- OS: Windows 11
+- Browser: Chrome/Edge/Firefox
+- Device: Desktop/Mobile
 - Branch: main
 ```
 
-### 3. HITL — Aprovação da Issue
+### 3. HITL — Issue Approval
 
-🛑 **PARE e aguarde.** Apresente a issue ao usuário e aguarde aprovação explícita antes de prosseguir.
+🛑 **STOP and wait.** Present the issue to the user and wait for explicit approval before proceeding.
 
-### 4. Seguir o Pipeline
+### 4. Follow the Pipeline
 
-Após aprovação, execute o pipeline completo:
+After approval, execute the complete pipeline:
 
-1. Criar branch `fix/descricao-curta` a partir de `main`
-2. Invocar `planejador` (subagente) para analisar e planejar
-3. Invocar `implementador` (subagente) para corrigir o bug
-4. Invocar `revisor` (subagente) para validar a correção
-5. Se critical/major → re-planejar (máx. 3x)
-6. Commit com `fix:` + push
-7. Criar PR com `Closes #N`
-8. HITL — aguardar revisão do PR
+1. Create branch `fix/short-description` from `main`
+2. Invoke `planejador` (subagent) to analyze and plan
+3. Invoke `implementador` (subagent) to fix the bug
+4. Invoke `revisor` (subagent) to validate the fix
+5. If critical/major → re-plan (max. 3x)
+6. Commit with `fix:` + push
+7. Create PR with `Closes #N`
+8. HITL — wait for PR review
 
 ---
 
-## Template de Commit (Bugfix)
+## Commit Template (Bugfix)
 ```
-fix(Header): corrigir cores do glass-panel no mobile
+fix(Header): fix glass-panel colors on mobile
 
-O backdrop-filter não estava sendo aplicado corretamente em
-dispositivos móveis devido à ausência do prefixo -webkit-.
+The backdrop-filter was not being applied correctly on
+mobile devices due to missing -webkit- prefix.
 
-Corrigido adicionando o prefixo e verificando compatibilidade
-cross-browser.
+Fixed by adding the prefix and checking cross-browser
+compatibility.
 
 Closes #42
 ```
 
 ---
 
-## Referências
-- Pipeline completo: `.github/instructions/pipeline-workflow.instructions.md`
-- Uso de ferramentas: `.github/instructions/tool-usage.instructions.md`
-- Convenções de código: `AGENTS.md`
+## References
+- Complete pipeline: `.github/instructions/pipeline-workflow.instructions.md`
+- Tool usage: `.github/instructions/tool-usage.instructions.md`
+- Code conventions: `AGENTS.md`

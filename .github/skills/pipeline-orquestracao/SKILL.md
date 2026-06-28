@@ -1,170 +1,189 @@
----
+﻿---
 name: pipeline-orquestracao
-description: "Orquestra o pipeline completo de desenvolvimento da landing page Zan.IA: Plan→Implement→Review com HITL. Use quando: iniciar qualquer tarefa de desenvolvimento (bugfix, feature, melhoria) que precise passar pelo ciclo completo de qualidade — criação de issue, planejamento, implementação, revisão e PR. Também use quando mencionar: pipeline, bugfix, corrigir bug, nova feature, implementar funcionalidade, melhoria, refatoração, fluxo de trabalho, orquestração, code review automatizado."
-argument-hint: "[bugfix | feature | melhoria] — descreva a tarefa..."
+description: "Orchestrates the complete Zan.IA landing page development pipeline: Plan→Implement→Review with HITL. Use when: initiating any development task (bugfix, feature, improvement) that needs to go through the complete quality cycle — issue creation, planning, implementation, review, and PR. Also use when mentioning: pipeline, bugfix, fix bug, new feature, implement functionality, improvement, refactoring, workflow, orchestration, automated code review."
+argument-hint: "[bugfix | feature | improvement] — describe the task..."
 user-invocable: true
 disable-model-invocation: false
 ---
 
-# Pipeline de Orquestração — Zan.IA
+# Orchestration Pipeline — Zan.IA
 
-Skill de orquestração do pipeline de desenvolvimento CI/CD gerenciado por agentes do Copilot.
+CI/CD development pipeline orchestration skill managed by Copilot agents.
 
-## Visão Geral
+## Overview
 
-O pipeline implementa um ciclo **Plan → Implement → Review** com **Human-in-the-Loop (HITL)** nos pontos críticos (aprovação da issue, revisão do PR). O fluxo é coordenado pelo agente `orquestrador` e executado por 3 subagentes especializados.
+The pipeline implements a **Plan → Implement → Review** cycle with **Human-in-the-Loop (HITL)** at critical points (issue approval, PR review). The pipeline consists of **4 pipeline agents** (`orquestrador`, `planejador`, `implementador`, `revisor`) and **3 support agents** (`criador-conteudo`, `performance-auditor`, `refactor-css`).
 
 ```
-USUÁRIO → /iniciar-bugfix|feature|melhoria
+USER → /iniciar-bugfix|feature|improvement
     │
     ▼
-ORQUESTRADOR
-    ├─ (1) Analisa → Classifica → Cria Issue → 🛑 HITL
-    ├─ (2) Cria Branch (fix|feat|improve/...)
-    ├─ (3) PLANEJADOR (subagente) → Plano em .github/plans/
-    ├─ (4) IMPLEMENTADOR (subagente) → Código + Build
-    ├─ (5) REVISOR (subagente) → Relatório de qualidade
-    │       └─ Loop máx. 3x se critical/major
-    ├─ (6) Commit (Conventional) + Push
-    ├─ (7) Cria PR (Closes #N) → 🛑 HITL
-    └─ (8) Checkout main
+ORCHESTRATOR
+    ├─ (Phase 0) User input → classifies type
+    ├─ (Phase 1) Creates Issue → 🛑 HITL
+    ├─ (Phase 2) Creates Branch (fix|feat|improve/...)
+    ├─ (Phase 3) PLANNER (subagent) → Plan in .github/plans/
+    ├─ (Phase 4) IMPLEMENTER (subagent) → Code + Build
+    ├─ (Phase 5) REVIEWER (subagent) → Quality report
+    ├─ (Phase 6) Decision → loop max. 3x if critical/major
+    ├─ (Phase 7) Commit (Conventional) + Push + PR (Closes #N) → 🛑 HITL
+    └─ (Phase 8) Checkout main
 ```
 
 ---
 
-## Como Usar
+## How to Use
 
 ### Via Slash Command
-Digite `/` no chat e selecione um dos prompts:
-- `/iniciar-bugfix` — para correção de bugs
-- `/iniciar-feature` — para novas funcionalidades
-- `/iniciar-melhoria` — para melhorias e refatorações
+Type `/` in chat and select one of the prompts:
+- `/iniciar-bugfix` — for bug fixes
+- `/iniciar-feature` — for new features
+- `/iniciar-melhoria` — for improvements and refactoring
 
-### Via Menção Direta
-Mencione o tipo de tarefa e a descrição:
-- "Corrigir o bug das cores no header mobile"
-- "Adicionar uma seção de depoimentos na página"
-- "Melhorar o carregamento das fontes do Google"
+### Via Direct Mention
+Mention the task type and description:
+- "Fix the header colors bug on mobile"
+- "Add a testimonials section to the page"
+- "Improve Google Fonts loading"
 
-O skill será carregado automaticamente e o fluxo do pipeline será iniciado.
+The skill will be loaded automatically and the pipeline flow will be initiated.
 
 ---
 
-## Agentes do Pipeline
+## Pipeline Agents
 
-| Agente | Papel | Ferramentas |
+### Pipeline Agents
+
+| Agent | Role | Tools |
 |--------|-------|-------------|
-| `orquestrador` | Coordenador — gerencia o fluxo completo | Todas |
-| `planejador` | Analista — explora codebase e cria plano | read, search, web |
-| `implementador` | Desenvolvedor — executa o plano | read, search, edit, execute |
-| `revisor` | QA — analisa diff e verifica qualidade | read, search |
+| `orquestrador` | Coordinator — manages the complete flow | All |
+| `planejador` | Analyst — explores codebase and creates plan | read, search, web |
+| `implementador` | Developer — executes the plan | read, search, edit, execute |
+| `revisor` | QA — analyzes diff and verifies quality | read, search |
+
+### Support Agents
+
+| Agent | Role | Tools |
+|--------|-------|-------------|
+| `criador-conteudo` | Generates and updates institutional content | read, search |
+| `performance-auditor` | Audits Core Web Vitals and performance | read, search, browser |
+| `refactor-css` | Refactors scoped CSS and audits tokens | read, search, edit |
 
 ---
 
-## Convenções
+## Conventions
 
 ### Branches
-| Tipo | Prefixo | Exemplo |
+| Type | Prefix | Example |
 |------|---------|---------|
-| Bugfix | `fix/` | `fix/corrigir-cores-header` |
-| Feature | `feat/` | `feat/adicionar-secao-precos` |
-| Melhoria | `improve/` | `improve/otimizar-fontes` |
+| Bugfix | `fix/` | `fix/fix-header-colors` |
+| Feature | `feat/` | `feat/add-pricing-section` |
+| Improvement | `improve/` | `improve/optimize-fonts` |
 
 ### Commits (Conventional Commits)
 ```
-fix(Header): corrigir cores do glass-panel
-feat(Solutions): adicionar seção de preços
-improve(Testimonials): otimizar carrossel
+fix(Header): fix glass-panel colors
+feat(Solutions): add pricing section
+improve(Testimonials): optimize carousel
 
 Closes #N
 ```
 
 ### Issues
-- Título com prefixo: `fix:`, `feat:`, `improve:`
-- Template específico por tipo (bug/feature/melhoria)
-- `Closes #N` no PR para auto-close
+- Title with prefix: `fix:`, `feat:`, `improve:`
+- Type-specific template (bug/feature/improvement)
+- `Closes #N` in PR for auto-close
 
 ---
 
-## Checklist de Qualidade (Revisor)
+## Quality Checklist (Reviewer)
 
-| Dimensão | Verifica |
+> See `.github/agents/revisor.agent.md` for the detailed checklist with sub-checks per dimension.
+
+| Dimension | Verifies |
 |----------|----------|
-| Código | Scoped CSS, design tokens, BEM, Svelte 5 Runes, sem Tailwind, sem hex |
-| Arquitetura | Composição correta, imports, layout intacto |
-| Design | Glass-panel, tipografia (Space Grotesk/Geist/JetBrains Mono), paleta MD3 |
-| Legibilidade | Nomes descritivos, código limpo, português |
-| Performance | `will-change` só durante interação, `contain`, animações `transform`/`opacity` |
-| Manutenibilidade | Padrões consistentes, reutilização de tokens, sem duplicação |
-| Especificidade | Baixa, sem `!important`, sem seletores de ID |
-| Dependências | Material Symbols + Google Fonts apenas, sem novas CDN |
-| Testes | `npm run check` e `npm run build` passam, critérios da issue atendidos |
-| Acessibilidade | ARIA labels, heading hierarchy, alt texts, reduced motion |
+| Code | Scoped CSS, design tokens, BEM, Svelte 5 Runes, no Tailwind, no hex |
+| Architecture | Correct composition, imports, layout intact |
+| Design | Glass-panel, typography (Space Grotesk/Geist/JetBrains Mono), MD3 palette |
+| Readability | Descriptive names, clean code, Portuguese |
+| Performance | `will-change` only during interaction, `contain`, `transform`/`opacity` animations |
+| Maintainability | Consistent patterns, token reuse, no duplication |
+| Specificity | Low, no `!important`, no ID selectors |
+| Dependencies | Material Symbols + Google Fonts only, no new CDN |
+| Tests | `npm run check` and `npm run build` pass, issue criteria met |
+| Accessibility | ARIA labels, heading hierarchy, alt texts, reduced motion |
 
 ---
 
-## Pontos de HITL (Human-in-the-Loop)
+## HITL Points (Human-in-the-Loop)
 
-🛑 O pipeline **SEMPRE** para e aguarda o usuário em:
-1. **Após criação da issue** — usuário revisa título, descrição, e escopo
-2. **Após criação do PR** — usuário revisa diff, comentários do revisor, e faz merge
-
----
-
-## Regras do Loop de Revisão
-
-- Issues **CRITICAL** (bug funcional, build quebrado) → re-planejar
-- Issues **MAJOR** (violação de padrão, design inconsistente) → re-planejar
-- Issues **MINOR** (estilo, naming) → documentar no PR como follow-up
-- **Máximo 3 iterações** — se não passar, documentar riscos e forçar PR com ressalvas
+🛑 The pipeline ALWAYS stops and waits for the user at:
+1. **After issue creation** — user reviews title, description, and scope
+2. **After PR creation** — user reviews diff, reviewer comments, and merges
 
 ---
 
-## Arquivos de Plano
+## Review Loop Rules
 
-Planos são salvos em `.github/plans/issue-{N}-{slug}.md` com:
-- Resumo da abordagem
-- Arquivos a modificar/criar
-- Padrões a seguir
-- Ordem de implementação
-- Riscos identificados
-- Checklist de verificação
+- **CRITICAL** issues (functional bug, broken build) → re-plan
+- **MAJOR** issues (pattern violation, inconsistent design) → re-plan
+- **MINOR** issues (style, naming) → document in PR as follow-up
+- **Maximum 3 iterations** — if it fails, document risks and force PR with caveats
 
 ---
 
-## Referências
+## Plan Files
 
-- **Pipeline workflow detalhado:** `.github/instructions/pipeline-workflow.instructions.md`
-- **Regras de uso de ferramentas:** `.github/instructions/tool-usage.instructions.md`
-- **Convenções de código:** `AGENTS.md`
+Plans are saved to `.github/plans/issue-{N}-{slug}.md` with:
+- Approach summary
+- Files to modify/create
+- Patterns to follow
+- Implementation order
+- Identified risks
+- Verification checklist
+
+---
+
+## References
+
+- **Detailed pipeline workflow:** `.github/instructions/pipeline-workflow.instructions.md`
+- **Tool usage rules:** `.github/instructions/tool-usage.instructions.md`
+- **Code conventions:** `AGENTS.md`
 - **Design system:** `src/lib/app.css`
-- **Informações institucionais:** `docs/INSTITUCIONAL.md`
+- **Institutional information:** `docs/INSTITUCIONAL.md`
 
-### Prompts de Entrada
+### Entry Prompts
 - `/iniciar-bugfix` — `.github/prompts/iniciar-bugfix.prompt.md`
 - `/iniciar-feature` — `.github/prompts/iniciar-feature.prompt.md`
 - `/iniciar-melhoria` — `.github/prompts/iniciar-melhoria.prompt.md`
 
-### Agentes do Pipeline
+### Pipeline Agents
 - `orquestrador` — `.github/agents/orquestrador.agent.md`
 - `planejador` — `.github/agents/planejador.agent.md`
 - `implementador` — `.github/agents/implementador.agent.md`
 - `revisor` — `.github/agents/revisor.agent.md`
 
-### Skills Relacionados
-- `criar-section` — criar novas seções
-- `criar-pagina-institucional` — criar páginas institucionais
-- `css-comparison-workflow` — comparar DEV vs LIVE
-- `otimizar-imagens` — otimizar imagens
-- `seo-otimization` — conhecimento técnico de SEO (meta tags, structured data)
+### Support Agents
+- `criador-conteudo` — `.github/agents/criador-conteudo.agent.md`
+- `performance-auditor` — `.github/agents/performance-auditor.agent.md`
+- `refactor-css` — `.github/agents/refactor-css.agent.md`
 
-### Prompts de Entrada
-- `/iniciar-bugfix` — `.github/prompts/iniciar-bugfix.prompt.md`
-- `/iniciar-feature` — `.github/prompts/iniciar-feature.prompt.md`
-- `/iniciar-melhoria` — `.github/prompts/iniciar-melhoria.prompt.md`
+### Related Skills
+- `criar-section` — create new sections
+- `criar-pagina-institucional` — create institutional pages
+- `css-comparison-workflow` — compare DEV vs LIVE
+- `otimizar-imagens` — optimize images
+- `seo-otimization` — technical SEO knowledge (meta tags, structured data)
 
-### Prompts de Ação Direta
+### Direct Action Prompts
 - `/adicionar-depoimento` — `.github/prompts/adicionar-depoimento.prompt.md`
 - `/adicionar-servico` — `.github/prompts/adicionar-servico.prompt.md`
 - `/otimizar-seo` — `.github/prompts/otimizar-seo.prompt.md`
 - `/revisar` — `.github/prompts/revisar.prompt.md`
+
+---
+
+## Related Documentation
+- Detailed pipeline: `.github/instructions/pipeline-workflow.instructions.md`
+- Review criteria: `.github/agents/revisor.agent.md`
+- Agent guide: `AGENTS.md` (Agent Orchestration section)
