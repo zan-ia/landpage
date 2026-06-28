@@ -1,5 +1,8 @@
 <script lang="ts">
-	// ── Tipos ──
+	import { tick } from 'svelte';
+	import testimonials from '$lib/data/testimonials.json';
+
+	// ── Types ──
 	interface Testimonial {
 		stars: number;
 		text: string;
@@ -8,78 +11,62 @@
 		role: string;
 	}
 
-	const testimonials: Testimonial[] = [
-		{
-			stars: 5,
-			text: "A Zan.IA transformou nossa operação. O que levava dias agora é feito em minutos com os agentes de IA. O ROI foi imediato.",
-			initials: "RS",
-			name: "Roberto S.",
-			role: "CEO, TechFlow"
-		},
-		{
-			stars: 5,
-			text: "A qualidade da Fábrica de Mídia é impressionante. Conseguimos escalar nossa produção de conteúdo sem perder a essência da marca.",
-			initials: "ML",
-			name: "Marina L.",
-			role: "Diretora de Marketing"
-		},
-		{
-			stars: 5,
-			text: "Sistemas robustos e suporte excepcional. A Zan.IA é o parceiro tecnológico que toda empresa moderna precisa ter ao seu lado.",
-			initials: "AT",
-			name: "André T.",
-			role: "CTO, Nexus Corp"
-		},
-		{
-			stars: 5,
-			text: "Os agentes de IA da Zan.IA reduziram nosso tempo de resposta ao cliente em 80%. A integração com nossos sistemas foi surpreendentemente rápida.",
-			initials: "CG",
-			name: "Carla G.",
-			role: "Head de CX, Vértice Digital"
-		},
-		{
-			stars: 5,
-			text: "Migrar nossa infraestrutura legada para a nuvem com a Zan.IA foi uma das melhores decisões que tomamos. Zero downtime, performance 3x maior.",
-			initials: "PF",
-			name: "Paulo F.",
-			role: "Diretor de TI, Construtora Nova Era"
-		},
-		{
-			stars: 5,
-			text: "A Fábrica de Mídia IA produziu 200 variações de criativos em 48 horas. Nossa equipe interna levaria semanas. Resultado absurdo.",
-			initials: "LB",
-			name: "Luciana B.",
-			role: "CMO, Ecom Brands"
-		}
-	];
+	const typed = testimonials as Testimonial[];
+	const total = typed.length;
 
-	const total = testimonials.length;
-
-	// ── Refs ──
+	// ── Reactive State ──
 	let carouselEl = $state<HTMLElement>();
 	let sectionEl = $state<HTMLElement>();
-	let currentIndex = $state(0);
+	let scrollLeft = $state(0);
+	let cardsPerView = $state<number>(1);
+	let step = $state<number>(0);
 	let isHovering = $state(false);
 	let prefersReducedMotion = $state(false);
 	let isInViewport = $state(false);
 	let autoPlayActive = $state(true);
-
-	// ── Drag state ──
 	let isDragging = $state(false);
+	let noSnap = $state(false);
+
+	// ── Non-reactive state ──
 	let startX = 0;
 	let scrollLeftStart = 0;
-	let scrollEndTimer: ReturnType<typeof setTimeout> | undefined;
-	let scrollEndHandled = false;
-	let isProgrammaticScroll = false;
-	// Momentum tracking
 	let lastMoveX = 0;
 	let lastMoveTime = 0;
 	let momentumFrame: number | undefined;
+	let isJumping = false;
+	let animationFrameId: number | undefined;
+	let keyboardResumeTimer: ReturnType<typeof setTimeout> | undefined;
+	let jumpFallbackTimer: ReturnType<typeof setTimeout> | undefined;
 
-	// ── Cached card step (invalidado no resize) ──
-	let cachedStep = 0;
+	// ── Derived: displayBlock ──
+	// Repete itens até largura ≥ (cardsPerView + 2) × cardWidth
+	// Cap: displayBlock.length ≤ testimonials.length × 2
+	let displayBlock = $derived.by(() => {
+		if (!typed.length) return [];
+		const needed = Math.max(1, Math.ceil((cardsPerView + 2) / total));
+		const copies = Math.min(needed, 2);
+		return Array.from({ length: copies }, () => typed).flat();
+	});
 
-	// ── prefers-reduced-motion detection ──
+	let blockLen = $derived(displayBlock.length);
+
+	// ── Derived: tripleBlock ──
+	let tripleBlock = $derived([...displayBlock, ...displayBlock, ...displayBlock]);
+
+	// ── Derived: realIndex ──
+	let realIndex = $derived.by(() => {
+		if (!blockLen || !step) return 0;
+		return (Math.round(scrollLeft / step) % blockLen) % total;
+	});
+
+	// ── Derived: live region text ──
+	let liveRegionText = $derived.by(() => {
+		const t = typed[realIndex];
+		if (!t) return '';
+		return `Depoimento ${realIndex + 1} de ${total}: ${t.name}, ${t.role}`;
+	});
+
+	// ── prefers-reduced-motion ──
 	function checkReducedMotion() {
 		prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 	}
@@ -105,59 +92,128 @@
 		return () => observer.disconnect();
 	});
 
-	// ── Largura de um card + gap (com cache e ResizeObserver) ──
-	function cardStep(): number {
-		if (cachedStep > 0) return cachedStep;
-		if (!carouselEl) return 474;
-		const card = carouselEl.querySelector('.testimonial__card');
-		if (!card) return 474;
-		const style = getComputedStyle(carouselEl);
-		const gap = parseFloat(style.columnGap) || parseFloat(style.gap) || 24;
-		cachedStep = card.clientWidth + gap;
-		return cachedStep;
-	}
-
-	function invalidateStepCache() {
-		cachedStep = 0;
-	}
-
-	// ── ResizeObserver: recalcula step quando viewport muda ──
+	// ── Single ResizeObserver no container do carrossel ──
 	$effect(() => {
 		if (!carouselEl) return;
-		const card = carouselEl.querySelector('.testimonial__card');
-		if (!card) return;
 
-		const observer = new ResizeObserver(() => {
-			invalidateStepCache();
-			// Re-posiciona no card real atual após resize
-			const step = cardStep();
-			carouselEl?.scrollTo({ left: (currentIndex + 1) * step, behavior: 'instant' });
-		});
-		observer.observe(card);
+		function updateMetrics() {
+			if (!carouselEl) return;
+			const containerWidth = carouselEl.clientWidth;
+			const firstCard = carouselEl.querySelector('.testimonial__card') as HTMLElement | null;
+			if (!firstCard) return;
+
+			const cardWidth = firstCard.offsetWidth;
+			const gap = 24;
+			const newStep = cardWidth + gap;
+			const availableWidth = containerWidth - 32; // padding: 16px each side
+			const newCardsPerView = Math.max(1, Math.floor(availableWidth / newStep));
+
+			if (newStep !== step || newCardsPerView !== cardsPerView) {
+				const savedIndex = realIndex;
+				step = newStep;
+				cardsPerView = newCardsPerView;
+
+				// Restore position after resize
+				requestAnimationFrame(() => {
+					if (!carouselEl) return;
+					const target = blockLen * step + savedIndex * step;
+					carouselEl.scrollTo({ left: target, behavior: 'instant' });
+					scrollLeft = carouselEl.scrollLeft;
+				});
+			}
+		}
+
+		const observer = new ResizeObserver(updateMetrics);
+		observer.observe(carouselEl);
+		// Initial measurement
+		updateMetrics();
 		return () => observer.disconnect();
 	});
 
-	// ── Navegação para o card real (índice 1-based: 0 = clone do último, 1..total = reais, total+1 = clone do primeiro) ──
+	// ── Initial scroll position (middle block start) ──
+	let initDone = false;
+
+	$effect(() => {
+		if (!carouselEl || !step || !blockLen || initDone) return;
+
+		tick().then(() => {
+			if (!carouselEl) return;
+			const target = blockLen * step;
+			carouselEl.scrollTo({ left: target, behavior: 'instant' });
+			scrollLeft = carouselEl.scrollLeft;
+			initDone = true;
+		});
+	});
+
+	// ── Navegação ──
 	function goToReal(index: number, smooth = true) {
-		if (!carouselEl) return;
-		// Não rouba foco de elementos interativos (inputs, textareas, etc.)
+		if (!carouselEl || !blockLen) return;
+		// Não rouba foco de elementos interativos
 		const activeTag = document.activeElement?.tagName;
 		if (activeTag === 'INPUT' || activeTag === 'TEXTAREA' || activeTag === 'SELECT') return;
-		const step = cardStep();
-		// Os cards reais começam na posição 1 (índice 0 é o clone do último)
-		const scrollTarget = (index + 1) * step;
-		isProgrammaticScroll = true;
-		carouselEl.scrollTo({ left: scrollTarget, behavior: smooth ? 'smooth' : 'instant' });
-		currentIndex = index;
-		// Limpa a flag após a animação de scroll terminar (~500ms para smooth)
-		setTimeout(() => { isProgrammaticScroll = false; }, smooth ? 600 : 50);
+
+		const target = (blockLen + index) * step;
+		isJumping = true;
+		carouselEl.scrollTo({ left: target, behavior: smooth && !prefersReducedMotion ? 'smooth' : 'instant' });
+		scrollLeft = target;
+
+		const releaseJump = () => {
+			isJumping = false;
+		};
+		carouselEl.addEventListener('scrollend', releaseJump, { once: true });
+		// Fallback timeout for browsers without scrollend support
+		if (jumpFallbackTimer) clearTimeout(jumpFallbackTimer);
+		jumpFallbackTimer = setTimeout(releaseJump, smooth ? 500 : 80);
 	}
 
-	/** Avança para o próximo card real */
+	/** Avança para o próximo depoimento real */
 	function goNext() {
-		if (!carouselEl) return;
-		const nextIndex = (currentIndex + 1) % total;
-		goToReal(nextIndex);
+		const next = (realIndex + 1) % total;
+		goToReal(next, true);
+	}
+
+	// ── Scroll Handler com Boundary Detection ──
+	function scrollHandler() {
+		if (!carouselEl || isDragging || isJumping) return;
+
+		const currentScroll = carouselEl.scrollLeft;
+		scrollLeft = currentScroll;
+
+		const blockWidth = blockLen * step;
+		if (!blockWidth) return;
+
+		// Block 1 → jump to block 2
+		if (currentScroll < blockWidth) {
+			isJumping = true;
+			noSnap = true;
+			const newScroll = currentScroll + blockWidth;
+			carouselEl.scrollLeft = newScroll;
+			scrollLeft = newScroll;
+
+			const releaseJump = () => {
+				isJumping = false;
+				noSnap = false;
+			};
+			requestAnimationFrame(releaseJump);
+			if (jumpFallbackTimer) clearTimeout(jumpFallbackTimer);
+			jumpFallbackTimer = setTimeout(releaseJump, 80);
+		}
+		// Block 3 → jump to block 2
+		else if (currentScroll >= 2 * blockWidth) {
+			isJumping = true;
+			noSnap = true;
+			const newScroll = currentScroll - blockWidth;
+			carouselEl.scrollLeft = newScroll;
+			scrollLeft = newScroll;
+
+			const releaseJump = () => {
+				isJumping = false;
+				noSnap = false;
+			};
+			requestAnimationFrame(releaseJump);
+			if (jumpFallbackTimer) clearTimeout(jumpFallbackTimer);
+			jumpFallbackTimer = setTimeout(releaseJump, 80);
+		}
 	}
 
 	// ── Drag via Pointer Events ──
@@ -171,13 +227,12 @@
 		carouselEl.setPointerCapture(e.pointerId);
 		carouselEl.style.cursor = 'grabbing';
 		carouselEl.style.userSelect = 'none';
-		// Aplica will-change somente durante interação
+		// Apply will-change during interaction
 		carouselEl.querySelectorAll('.testimonial__card').forEach(card => {
 			(card as HTMLElement).style.willChange = 'transform';
 		});
-		stopAutoPlay();
-		// Cancela momentum anterior se existir
 		if (momentumFrame) { cancelAnimationFrame(momentumFrame); momentumFrame = undefined; }
+		stopAutoPlay();
 	}
 
 	function onPointerMove(e: PointerEvent) {
@@ -185,51 +240,60 @@
 		e.preventDefault();
 		const dx = startX - e.clientX;
 		carouselEl.scrollLeft = scrollLeftStart + dx;
-		// Track velocity
+		scrollLeft = carouselEl.scrollLeft;
 		lastMoveX = e.clientX;
 		lastMoveTime = performance.now();
 	}
 
-	/** Finaliza drag e faz snap para o card mais próximo, com momentum */
 	function finishDrag() {
 		if (!isDragging || !carouselEl) return;
 		isDragging = false;
 		carouselEl.style.cursor = '';
 		carouselEl.style.userSelect = '';
-		// Remove will-change após interação
+		// Remove will-change
 		carouselEl.querySelectorAll('.testimonial__card').forEach(card => {
 			(card as HTMLElement).style.willChange = '';
 		});
 
-		// Calcula velocidade do swipe (px/ms)
+		// Calculate swipe velocity
 		const dt = performance.now() - lastMoveTime;
 		const velocity = dt > 0 && dt < 300 ? (startX - lastMoveX) / dt : 0;
-		const step = cardStep();
-
-		// Aplica momentum: se velocidade alta, avança/recua cards extras
-		let targetRawIdx: number;
 		const absVelocity = Math.abs(velocity);
+
+		const currentScroll = carouselEl.scrollLeft;
+		let targetIdx = Math.round(currentScroll / step);
+
+		// Momentum: skip extra cards on fast swipe
 		if (absVelocity > 0.3) {
-			// Swipe rápido: conta quantos cards pular baseado na velocidade
 			const extraCards = Math.min(Math.floor(absVelocity * 8), total - 1);
 			const direction = velocity > 0 ? 1 : -1;
-			const currentRaw = carouselEl.scrollLeft / step;
-			targetRawIdx = Math.round(currentRaw) + direction * extraCards;
-		} else {
-			targetRawIdx = Math.round(carouselEl.scrollLeft / step);
+			targetIdx += direction * extraCards;
 		}
 
-		// Mapeia para índice real (0..total-1)
-		if (targetRawIdx <= 0) {
-			currentIndex = total - 1;
-		} else if (targetRawIdx > total) {
-			currentIndex = 0;
-		} else {
-			currentIndex = targetRawIdx - 1;
+		// Normalize to middle block
+		const blockWidth = blockLen * step;
+		if (targetIdx < blockLen) {
+			targetIdx += blockLen;
+		} else if (targetIdx >= 2 * blockLen) {
+			targetIdx -= blockLen;
 		}
-		// Snap suave para a posição correta
-		goToReal(currentIndex);
-		// Reinicia auto-play após drag
+
+		// Smooth scroll to target
+		isJumping = true;
+		noSnap = true;
+		carouselEl.scrollTo({ left: targetIdx * step, behavior: 'smooth' });
+		scrollLeft = targetIdx * step;
+
+		const releaseJump = () => {
+			isJumping = false;
+			noSnap = false;
+			carouselEl?.removeEventListener('scrollend', releaseJump);
+		};
+		carouselEl.addEventListener('scrollend', releaseJump, { once: true });
+		if (jumpFallbackTimer) clearTimeout(jumpFallbackTimer);
+		jumpFallbackTimer = setTimeout(releaseJump, 500);
+
+		// Resume auto-play after drag
 		if (!isHovering && autoPlayActive) startAutoPlay();
 	}
 
@@ -237,12 +301,10 @@
 		finishDrag();
 	}
 
-	/** Pointer sai do carrossel durante drag — finaliza o drag */
 	function onPointerLeave(_e: PointerEvent) {
 		if (isDragging) finishDrag();
 	}
 
-	/** Browser cancelou o pointer (gesto do sistema, etc.) */
 	function onPointerCancel(_e: PointerEvent) {
 		if (isDragging) finishDrag();
 	}
@@ -253,20 +315,15 @@
 		if (e.key === 'ArrowLeft') {
 			e.preventDefault();
 			stopAutoPlay();
-			const prevIndex = (currentIndex - 1 + total) % total;
-			goToReal(prevIndex);
-			// Reinicia auto-play com delay para permitir navegação consecutiva
+			goToReal((realIndex - 1 + total) % total);
 			if (!isHovering) scheduleAutoPlayResume();
 		} else if (e.key === 'ArrowRight') {
 			e.preventDefault();
 			stopAutoPlay();
-			const nextIndex = (currentIndex + 1) % total;
-			goToReal(nextIndex);
+			goToReal((realIndex + 1) % total);
 			if (!isHovering) scheduleAutoPlayResume();
 		}
 	}
-
-	let keyboardResumeTimer: ReturnType<typeof setTimeout> | undefined;
 
 	function scheduleAutoPlayResume() {
 		if (keyboardResumeTimer) clearTimeout(keyboardResumeTimer);
@@ -278,58 +335,7 @@
 		}, 3000);
 	}
 
-	// ── Scroll tracking (debounced para funcionar como fallback do scrollend) ──
-	function scrollHandler() {
-		if (!carouselEl || isDragging) return;
-
-		// Reseta a guarda de dupla-execução
-		scrollEndHandled = false;
-
-		// Debounce: detecta fim do scroll após 150ms de inatividade
-		if (scrollEndTimer) clearTimeout(scrollEndTimer);
-		scrollEndTimer = setTimeout(() => {
-			if (!scrollEndHandled) handleScrollEnd();
-		}, 150);
-	}
-
-	/** Lógica de wrap infinito — executa após o scroll parar */
-	function handleScrollEnd() {
-		if (!carouselEl || isDragging || scrollEndHandled || isProgrammaticScroll) return;
-		scrollEndHandled = true;
-		const step = cardStep();
-		const scrollLeft = carouselEl.scrollLeft;
-		const maxScroll = carouselEl.scrollWidth - carouselEl.clientWidth;
-
-		// Wrap forward: passou do último card real → volta para o primeiro real
-		if (scrollLeft >= maxScroll - step * 0.5) {
-			isProgrammaticScroll = true;
-			carouselEl.scrollTo({ left: step, behavior: 'instant' });
-			currentIndex = 0;
-			setTimeout(() => { isProgrammaticScroll = false; }, 50);
-		}
-		// Wrap backward: voltou para o clone do último → pula para o último real
-		else if (scrollLeft <= step * 0.5) {
-			isProgrammaticScroll = true;
-			carouselEl.scrollTo({ left: total * step, behavior: 'instant' });
-			currentIndex = total - 1;
-			setTimeout(() => { isProgrammaticScroll = false; }, 50);
-		}
-		// Posição normal: calcula índice real
-		else {
-			const rawIdx = Math.round(scrollLeft / step) - 1;
-			currentIndex = Math.max(0, Math.min(rawIdx, total - 1));
-		}
-	}
-
-	/** scrollend nativo (Chrome 114+) — fallback para browsers modernos */
-	function onNativeScrollEnd() {
-		if (!carouselEl || isDragging) return;
-		handleScrollEnd();
-	}
-
-	// ── Auto-play ──
-	let animationFrameId: number | undefined;
-
+	// ── Auto-play (requestAnimationFrame) ──
 	function startAutoPlay() {
 		if (prefersReducedMotion) return;
 		stopAutoPlay();
@@ -370,20 +376,7 @@
 		}
 	}
 
-	// ── Lifecycle ──
-	// Inicializa posição no primeiro card real (pula o clone inicial)
-	$effect(() => {
-		if (!carouselEl) return;
-		// Pequeno delay para garantir que o layout foi calculado
-		const raf = requestAnimationFrame(() => {
-			if (!carouselEl) return;
-			const step = cardStep();
-			carouselEl.scrollTo({ left: step, behavior: 'instant' });
-			currentIndex = 0;
-		});
-		return () => cancelAnimationFrame(raf);
-	});
-
+	// ── Autoplay lifecycle ──
 	$effect(() => {
 		if (isInViewport && !isHovering && !prefersReducedMotion) {
 			autoPlayActive = true;
@@ -394,137 +387,107 @@
 		}
 	});
 
+	// ── Cleanup ──
 	$effect(() => {
 		return () => {
 			stopAutoPlay();
-			if (scrollEndTimer) clearTimeout(scrollEndTimer);
 			if (keyboardResumeTimer) clearTimeout(keyboardResumeTimer);
 			if (momentumFrame) cancelAnimationFrame(momentumFrame);
+			if (jumpFallbackTimer) clearTimeout(jumpFallbackTimer);
 		};
-	});
-
-	// ── Anúncio para screen readers (aria-live) ──
-	let liveRegionText = $state('');
-	$effect(() => {
-		const t = testimonials[currentIndex];
-		if (t) {
-			liveRegionText = `Depoimento ${currentIndex + 1} de ${total}: ${t.name}, ${t.role}`;
-		}
 	});
 </script>
 
-<section
-	class="testimonials"
-	aria-label="Depoimentos de parceiros"
-	aria-roledescription="carrossel"
-	bind:this={sectionEl}
-	onmouseenter={onSectionEnter}
-	onmouseleave={onSectionLeave}
->
-	<div class="testimonials__inner">
-		<div class="testimonials__header">
-			<h2 class="testimonials__title">O que nossos parceiros dizem</h2>
-			<p class="testimonials__subtitle">Histórias de transformação digital impulsionadas por IA.</p>
-		</div>
-		<div class="testimonials__carousel-wrapper">
-			<!-- Fade gradients nas bordas para indicar scroll horizontal -->
-			<div class="testimonials__fade testimonials__fade--left" aria-hidden="true"></div>
-			<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-			<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-			<div
-				class="testimonials__carousel"
-				class:testimonials__carousel--reduced={prefersReducedMotion}
-				role="group"
-				aria-label="Depoimentos"
-				tabindex="0"
-				bind:this={carouselEl}
-				onpointerdown={onPointerDown}
-				onpointermove={onPointerMove}
-				onpointerup={onPointerUp}
-				onpointerleave={onPointerLeave}
-				onpointercancel={onPointerCancel}
-				onscroll={scrollHandler}
-				onscrollend={onNativeScrollEnd}
-				onkeydown={onKeyDown}
-			>
-			<!-- Clone do último card (início, aria-hidden) -->
-			<div class="testimonial__card glass-panel" aria-hidden="true">
-				<div class="testimonial__stars">
-					{#each Array(testimonials[total - 1].stars) as _}
-						<span class="material-symbols-outlined testimonial__star">star</span>
-					{/each}
-				</div>
-				<p class="testimonial__text">{testimonials[total - 1].text}</p>
-				<div class="testimonial__author">
-					<div class="testimonial__avatar">{testimonials[total - 1].initials}</div>
-					<div>
-						<div class="testimonial__name">{testimonials[total - 1].name}</div>
-						<div class="testimonial__role">{testimonials[total - 1].role}</div>
-					</div>
-				</div>
+{#if !testimonials || testimonials.length === 0}
+	<!-- Empty guard clause: renderiza fallback silencioso -->
+{:else}
+	<section
+		class="testimonials"
+		aria-label="Depoimentos de parceiros"
+		aria-roledescription="carrossel"
+		bind:this={sectionEl}
+		onmouseenter={onSectionEnter}
+		onmouseleave={onSectionLeave}
+	>
+		<div class="testimonials__inner">
+			<div class="testimonials__header">
+				<h2 class="testimonials__title">O que nossos parceiros dizem</h2>
+				<p class="testimonials__subtitle">Histórias de transformação digital impulsionadas por IA.</p>
 			</div>
 
-			<!-- Cards reais -->
-			{#each testimonials as t, i}
+			<div class="testimonials__carousel-wrapper">
+				<!-- Fade left gradient -->
+				<div class="testimonials__fade testimonials__fade--left" aria-hidden="true"></div>
+
+				<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+				<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 				<div
-					class="testimonial__card glass-panel"
+					class="testimonials__carousel"
+					class:testimonials__carousel--reduced={prefersReducedMotion}
+					class:testimonials__carousel--no-snap={noSnap}
 					role="group"
-					aria-roledescription="slide"
-					aria-label={`Depoimento ${i + 1} de ${total}`}
+					aria-label="Depoimentos"
+					tabindex="0"
+					bind:this={carouselEl}
+					onpointerdown={onPointerDown}
+					onpointermove={onPointerMove}
+					onpointerup={onPointerUp}
+					onpointerleave={onPointerLeave}
+					onpointercancel={onPointerCancel}
+					onscroll={scrollHandler}
+					onkeydown={onKeyDown}
 				>
-					<div class="testimonial__stars">
-						{#each Array(t.stars) as _}
-							<span class="material-symbols-outlined testimonial__star">star</span>
-						{/each}
-					</div>
-					<p class="testimonial__text">{t.text}</p>
-					<div class="testimonial__author">
-						<div class="testimonial__avatar">{t.initials}</div>
-						<div>
-							<div class="testimonial__name">{t.name}</div>
-							<div class="testimonial__role">{t.role}</div>
+					{#each tripleBlock as t, idx}
+						{@const idxInBlock = idx % blockLen}
+						{@const isBlock1 = idx < blockLen}
+						{@const isBlock3 = idx >= 2 * blockLen}
+						{@const isMiddle = !isBlock1 && !isBlock3}
+						<div
+							class="testimonial__card glass-panel"
+							aria-hidden={isBlock1 || isBlock3}
+							role={isMiddle ? 'group' : null}
+							aria-roledescription={isMiddle ? 'slide' : null}
+							aria-label={isMiddle ? `Depoimento ${(idxInBlock % total) + 1} de ${total}` : null}
+						>
+							<div class="testimonial__stars">
+								{#each Array(t.stars) as _}
+									<span class="material-symbols-outlined testimonial__star">star</span>
+								{/each}
+							</div>
+							<p class="testimonial__text">{t.text}</p>
+							<div class="testimonial__author">
+								<div class="testimonial__avatar">{t.initials}</div>
+								<div>
+									<div class="testimonial__name">{t.name}</div>
+									<div class="testimonial__role">{t.role}</div>
+								</div>
+							</div>
 						</div>
-					</div>
-				</div>
-			{/each}
-
-			<!-- Clone do primeiro card (fim, aria-hidden) -->
-			<div class="testimonial__card glass-panel" aria-hidden="true">
-				<div class="testimonial__stars">
-					{#each Array(testimonials[0].stars) as _}
-						<span class="material-symbols-outlined testimonial__star">star</span>
 					{/each}
 				</div>
-				<p class="testimonial__text">{testimonials[0].text}</p>
-				<div class="testimonial__author">
-					<div class="testimonial__avatar">{testimonials[0].initials}</div>
-					<div>
-						<div class="testimonial__name">{testimonials[0].name}</div>
-						<div class="testimonial__role">{testimonials[0].role}</div>
-					</div>
-				</div>
+
+				<!-- Fade right gradient -->
+				<div class="testimonials__fade testimonials__fade--right" aria-hidden="true"></div>
 			</div>
+
+			<!-- Região aria-live para screen readers -->
+			<div class="testimonials__sr-only" aria-live="polite" aria-atomic="true">{liveRegionText}</div>
+
+			<!-- Dots de navegação -->
+			<div class="testimonials__dots">
+				{#each typed as _, i}
+					<button
+						class="testimonials__dot"
+						class:testimonials__dot--active={i === realIndex}
+						class:testimonials__dot--pulsing={i === realIndex && !isHovering && autoPlayActive}
+						onclick={() => goToReal(i)}
+						aria-label={`Depoimento ${i + 1}`}
+					></button>
+				{/each}
 			</div>
-			<!-- Fade direito -->
-			<div class="testimonials__fade testimonials__fade--right" aria-hidden="true"></div>
 		</div>
-		<!-- Região aria-live para screen readers anunciarem mudança de slide -->
-		<div class="testimonials__sr-only" aria-live="polite" aria-atomic="true">
-			{liveRegionText}
-		</div>
-		<div class="testimonials__dots">
-			{#each testimonials as _, i}
-				<button
-					class="testimonials__dot"
-					class:testimonials__dot--active={i === currentIndex}
-					class:testimonials__dot--pulsing={i === currentIndex && !isHovering && autoPlayActive}
-					onclick={() => goToReal(i)}
-					aria-label={`Depoimento ${i + 1}`}
-				></button>
-			{/each}
-		</div>
-	</div>
-</section>
+	</section>
+{/if}
 
 <style>
 	.testimonials {
@@ -607,6 +570,11 @@
 		display: none;
 	}
 
+	/* ── No snap (during boundary jumps) ── */
+	.testimonials__carousel--no-snap {
+		scroll-snap-type: none;
+	}
+
 	/* ── Reduzido: sem scroll-snap, sem animação ── */
 	.testimonials__carousel--reduced {
 		scroll-snap-type: none;
@@ -648,7 +616,7 @@
 	}
 
 	.testimonial__card:hover {
-		box-shadow: 0 0 30px rgba(0, 224, 255, 0.15);
+		box-shadow: var(--shadow-glow-primary);
 	}
 
 	@media (min-width: 768px) {
@@ -702,7 +670,7 @@
 
 	.testimonial__name {
 		font-family: var(--font-display);
-		font-size: 16px;
+		font-size: var(--font-size-body-md);
 		color: var(--color-on-surface);
 	}
 
