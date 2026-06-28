@@ -63,6 +63,8 @@ zania-website/
 │   └── assets/images/         # Imagens locais
 ├── build/                     # Output do build (gerado, não versionar)
 ├── .github/
+│   ├── copilot-instructions.md  # Regras críticas (askQuestions + todos)
+│   ├── ISSUES.md
 │   ├── agents/              # Agentes especializados
 │   │   ├── criador-conteudo.agent.md
 │   │   ├── performance-auditor.agent.md
@@ -73,28 +75,31 @@ zania-website/
 │   │   └── revisor.agent.md
 │   ├── instructions/         # Regras automáticas (applyTo)
 │   │   ├── css.instructions.md
-│   │   ├── html.instructions.md
 │   │   ├── deploy.instructions.md
-│   │   ├── style-architecture.instructions.md
+│   │   ├── html.instructions.md
+│   │   ├── pipeline-workflow.instructions.md
 │   │   ├── project-organization.instructions.md
+│   │   ├── style-architecture.instructions.md
+│   │   ├── svelte.instructions.md
 │   │   ├── tool-usage.instructions.md
-│   │   └── pipeline-workflow.instructions.md
+│   │   └── typescript.instructions.md
 │   ├── prompts/              # Comandos customizados
 │   │   ├── adicionar-depoimento.prompt.md
 │   │   ├── adicionar-servico.prompt.md
-│   │   ├── otimizar-seo.prompt.md
 │   │   ├── iniciar-bugfix.prompt.md
 │   │   ├── iniciar-feature.prompt.md
-│   │   └── iniciar-melhoria.prompt.md
+│   │   ├── iniciar-melhoria.prompt.md
+│   │   ├── otimizar-seo.prompt.md
+│   │   └── revisar.prompt.md
 │   ├── skills/               # Conhecimento especializado
 │   │   ├── criar-pagina-institucional/SKILL.md
 │   │   ├── criar-section/SKILL.md
 │   │   ├── css-comparison-workflow/SKILL.md
 │   │   ├── otimizar-imagens/SKILL.md
-│   │   └── pipeline-orquestracao/SKILL.md
+│   │   ├── pipeline-orquestracao/SKILL.md
+│   │   └── seo-otimization/SKILL.md
 │   ├── plans/                # Planos de implementação
 │   │   └── README.md
-│   ├── ISSUES.md
 │   └── workflows/
 │       └── deploy.yml        # Build + Deploy GitHub Pages
 ├── svelte.config.js
@@ -159,6 +164,16 @@ Usuário → /iniciar-bugfix|feature|melhoria
 - `/iniciar-feature` — para novas funcionalidades
 - `/iniciar-melhoria` — para melhorias e refatorações
 
+### Agentes de Suporte
+
+Além dos 4 agentes de pipeline, o projeto conta com 3 agentes especializados para tarefas específicas:
+
+| Agente | Papel | Ferramentas |
+|--------|-------|-------------|
+| `criador-conteudo` | Gera e atualiza conteúdos institucionais (textos, descrições, depoimentos) | read, search |
+| `performance-auditor` | Audita Core Web Vitals, carregamento de assets, blocking resources | read, search, browser |
+| `refactor-css` | Refatora CSS escopado, extrai padrões para `app.css`, audita design tokens | read, search, edit |
+
 ### Skill de Orquestração
 O skill `pipeline-orquestracao` (em `.github/skills/pipeline-orquestracao/SKILL.md`) contém o conhecimento completo do pipeline e é carregado automaticamente quando o usuário menciona pipeline, bugfix, feature, melhoria, corrigir, ou implementar.
 
@@ -196,7 +211,7 @@ O VS Code oferece **7 primitivas** que formam o harness completo. Todos os agent
 | **Hooks** | `*.json` | `.github/hooks/` | Eventos de ciclo de vida (`PreToolUse`, etc.) |
 | **MCP Servers** | Config JSON | `.vscode/` ou settings | Ferramentas MCP sob demanda |
 
-### Hierarquia de Carregamento
+### Hierarquia de Carregamento e Prioridade
 
 ```
 💡 Sempre-on: AGENTS.md → diretrizes globais
@@ -204,32 +219,16 @@ O VS Code oferece **7 primitivas** que formam o harness completo. Todos os agent
 🎯 Sob demanda: Skills, Prompts, Custom Agents, MCP
 🤖 Automático: Hooks → eventos do ciclo de vida
 ```
-
-### Prioridade (conflitos)
-
-1. **Perfil do usuário** (maior prioridade)
-2. **Workspace** (`.github/`, `AGENTS.md`)
-3. **Organização** (GitHub org-level, menor prioridade)
+**Prioridade (conflitos):** Perfil do usuário > Workspace (`.github/`, `AGENTS.md`) > Organização.
 
 ### Mapa do Pipeline no Harness
 
 ```
-AGENTS.md (diretrizes globais)
-  + tool-usage.instructions.md (regras de ferramentas)
-  + pipeline-workflow.instructions.md (fluxo do pipeline)
-  + css.instructions.md, html.instructions.md, ... (regras específicas)
-       │
-       ▼
-  orquestrador.agent.md  ← Agente coordenador
-       │
-       ├── planejador.agent.md   ← Subagente read-only
-       ├── implementador.agent.md ← Subagente executor
-       ├── revisor.agent.md       ← Subagente read-only
-       └── Explore (built-in)     ← Subagente de exploração
-       
-  Skills (pipeline-orquestracao, criar-section, ...) ← Sob demanda
-  Prompts (/iniciar-bugfix, /iniciar-feature, ...) ← Slash commands
+AGENTS.md + tool-usage.instructions.md + pipeline-workflow.instructions.md
+  → orquestrador.agent.md
+    → planejador | implementador | revisor | Explore
 ```
+Skills e Prompts carregados sob demanda conforme o contexto.
 
 ### Controle de Invocação de Agentes
 
@@ -246,40 +245,12 @@ Cada `.agent.md` controla como pode ser invocado via frontmatter:
 
 ### Fork Mode (Skills)
 
-Skills com `context: fork` no frontmatter executam em um **subagente dedicado**:
-```yaml
----
-name: css-comparison-workflow
-context: fork  # Executa em subagente isolado
----
-```
-
-- Só o resultado final retorna ao agente pai
-- Ideal para skills que leem muitos arquivos ou produzem relatórios
-- Experimental: requer `github.copilot.chat.skillTool.enabled`
+Skills com `context: fork` executam em subagente isolado — útil para tarefas que leem muitos arquivos. Requer `github.copilot.chat.skillTool.enabled`.
 
 ### Padrões de Orquestração
 
-**Coordinator + Worker** (usado no pipeline):
-- `orquestrador` coordena o fluxo, delega para workers especializados
-- Cada worker tem ferramentas mínimas (princípio do menor privilégio)
-- Workers retornam apenas resultado final; coordenador sintetiza
-
-**Handoffs** (transições interativas entre agentes):
-```yaml
-handoffs:
-  - label: "Iniciar Implementação"
-    agent: implementador
-    prompt: "Implemente o plano acima."
-    send: false
-```
-- Botões interativos para o usuário avançar no fluxo
-- `send: false` = só preenche o próximo prompt
-- `send: true` = envia automaticamente
-
-**Multi-Perspectiva** (revisão paralela):
-- Múltiplos subagentes rodam em paralelo com perspectivas diferentes
-- Resultados são sintetizados pelo coordenador
+- **Coordinator + Worker:** `orquestrador` delega para workers especializados com ferramentas mínimas (princípio do menor privilégio). Workers retornam apenas resultado final; coordenador sintetiza.
+- **Handoffs:** Transições interativas entre agentes via botões UI — `send: false` preenche o prompt, `send: true` envia automaticamente.
 
 ---
 

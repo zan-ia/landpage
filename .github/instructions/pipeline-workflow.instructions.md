@@ -235,16 +235,25 @@ Recomendação: RE-PLANEJAR (2 issues críticos)
 
 **Classificação de Severidade:**
 
-| Nível | Definição | Ação |
-|-------|-----------|------|
-| 🔴 **CRITICAL** | Bug funcional, segurança, quebra de build, violação grave de arquitetura | **Força re-planejamento** |
-| 🟡 **MAJOR** | Violação de padrão, design inconsistente, performance degradada | **Força re-planejamento** |
-| 🟢 **MINOR** | Estilo, documentação, naming, melhorias cosméticas | **Documentar no PR** como follow-up |
+| Nível | Definição |
+|-------|-----------|
+| 🔴 **CRITICAL** | Bug funcional, segurança, quebra de build, violação grave de arquitetura |
+| 🟡 **MAJOR** | Violação de padrão, design inconsistente, performance degradada |
+| 🟢 **MINOR** | Estilo, documentação, naming, melhorias cosméticas |
+
+**Matriz de Decisão (4 Status Possíveis):**
+
+| Status do Relatório | Condição | Ação do Orquestrador |
+|---------------------|----------|----------------------|
+| **APROVADO** | Nenhum issue encontrado | Prosseguir para Fase 7 (Commit/PR) |
+| **ALTERACOES** | Apenas MINOR | Prosseguir para Fase 7; documentar follow-ups no corpo do PR |
+| **ALTERACOES** | CRITICAL ou MAJOR presente | Voltar para Fase 3 (Re-planejar) |
+| **REJEITADO** | Issues estruturais graves (ex.: abordagem inválida) | Voltar para Fase 3 (Re-planejar com nova estratégia) |
 
 **Regras do loop de revisão:**
-1. Se há issues CRITICAL ou MAJOR → re-planejar (volta para Fase 3)
-2. Se apenas MINOR → documentar no PR e prosseguir
-3. **Máximo 3 iterações** de revisão → se não passar, documenta riscos conhecidos e força aprovação com ressalvas
+1. **Máximo 3 iterações** do ciclo (Fase 3 → 4 → 5 → 6)
+2. Se a 3ª iteração ainda tiver CRITICAL/MAJOR → documentar riscos conhecidos no PR e prosseguir com ressalvas
+3. O orquestrador controla o contador de iterações em `pipeline-state.md`
 
 ---
 

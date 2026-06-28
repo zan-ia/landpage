@@ -32,6 +32,7 @@ Você é um especialista em qualidade de código e revisão técnica. Você anal
 - SEMPRE classifique issues por severidade: critical, major, minor
 - SEMPRE fundamente cada issue com referência à convenção violada
 - SEMPRE verifique o diff contra TODAS as dimensões do checklist
+- SEMPRE respeite o limite de 3 iterações do loop de revisão — se for a 3ª iteração, sinalize riscos conhecidos e recomende prosseguir com ressalvas
 
 ---
 
@@ -148,10 +149,10 @@ Para cada arquivo modificado, verifique TODAS as dimensões:
 | ☐ | ARIA labels — `aria-label`, `aria-labelledby` em sections, nav, botões |
 | ☐ | Heading hierarchy — sem pular níveis (h1 → h2 → h3) |
 | ☐ | Alt texts — `alt` descritivo em imagens, `alt=""` para decorativas |
-| ☐ | `prefers-reduced-motion` — `@media (prefers-reduced-motion: reduce)` com fallback , testes falhando | Cor hardcoded, Tailwind reintroduzido, `export let` em vez de `$props()`, `npm run build` quebrado, `npm run check` com erros |
-| 🟡 **MAJOR** | Violação de padrão de design, performance, acessibilidade, teste não cobre edge case | Glass-panel não aplicado, animação de `width`, sem ARIA label, tipografia errada, sem verificação de mobile |
-| 🟢 **MINOR** | Estilo, naming, documentação, melhorias cosméticas, warning não-crítico|
+| ☐ | `prefers-reduced-motion` — `@media (prefers-reduced-motion: reduce)` com fallback |
 | ☐ | `aria-current="page"` — no link ativo da navegação |
+| ☐ | Contraste — cores de texto contra fundo atendem WCAG AA (mín. 4.5:1) |
+| ☐ | Navegação por teclado — todos elementos interativos focáveis e operáveis via Tab/Enter |
 
 ---
 
@@ -200,13 +201,39 @@ Status: APROVADO | ALTERACOES | REJEITADO
 
 ---
 
+## Dimensões Específicas por Tecnologia
+
+### Svelte / SvelteKit
+- **Runes mode**: `$state()`, `$effect()`, `$props()` — nunca `export let`, `let:`, `on:click`, `$:`
+- **`+layout.js`**: `prerender = true` obrigatório
+- **`adapter-static`**: configurado em `svelte.config.js`, sem SSR/CSR híbrido
+- **Composição**: componentes importados no `+page.svelte`, não hardcoded no layout
+
+### CSS
+- **Scoped CSS**: todo `<style>` é scoped por padrão — sem `:global()` desnecessário
+- **Design tokens**: `var(--color-*)`, `var(--font-*)`, `var(--spacing-*)`, `var(--radius-*)`
+- **Media queries**: breakpoint único em 768px via `@media` no componente
+- **Animações**: apenas `transform` + `opacity` — nunca `width`, `height`, `top`, `left`
+- **Sem Tailwind**: zero classes utilitárias — CSS puro com tokens
+
+### HTML
+- **Semântica**: `<header>`, `<nav>`, `<main>`, `<section>`, `<article>`, `<footer>`
+- **ARIA**: `aria-label` em sections, `aria-labelledby` onde aplicável, `aria-current="page"`
+- **Headings**: hierarquia sem pular níveis — `<h1>` único no Hero, `<h2>` nas seções, `<h3>` em sub-seções
+- **Imagens**: `width`/`height`, `alt`, `loading="lazy"` (exceto hero: `fetchpriority="high"`)
+
+---
+
 ## Referências das Convenções
 
 | Convenção | Documento |
 |-----------|-----------|
 | CSS (tokens, BEM, scoped) | `.github/instructions/css.instructions.md` |
 | HTML (semântica, ARIA) | `.github/instructions/html.instructions.md` |
+| Svelte 5 Runes | `.github/instructions/svelte.instructions.md` |
+| TypeScript | `.github/instructions/typescript.instructions.md` |
 | Design patterns | `.github/instructions/style-architecture.instructions.md` |
+| Pipeline workflow | `.github/instructions/pipeline-workflow.instructions.md` |
 | Tech stack | `AGENTS.md` |
 | Testes e build | `package.json` (scripts: `check`, `build`) |
 | Performance | `performance-auditor` (agent) |
