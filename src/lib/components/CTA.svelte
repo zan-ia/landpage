@@ -1,11 +1,17 @@
-<section class="cta">
+<script lang="ts">
+	import site from '$lib/data/site.json';
+
+	const whatsappUrl = `https://wa.me/${site.whatsapp.phone}?text=${encodeURIComponent(site.whatsapp.message)}`;
+</script>
+
+<section class="cta" id="contato">
 	<div class="cta__card glass-panel">
 		<h2 class="cta__title">Pronto para liderar a revolução no seu setor?</h2>
 		<p class="cta__text">Nossa equipe de especialistas está pronta para diagnosticar sua infraestrutura atual.</p>
 		<!-- svelte-ignore a11y_invalid_attribute -->
-		<a class="cta__button" href="#">
+		<a class="cta__button" href={whatsappUrl} target="_blank" rel="noopener noreferrer">
 			<span class="material-symbols-outlined">chat</span>
-			Falar com Especialista no WhatsApp
+			{site.whatsapp.label}
 		</a>
 	</div>
 </section>
@@ -48,8 +54,8 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 12px;
-		background: #25D366;
-		color: #fff;
+		background: var(--color-whatsapp);
+		color: var(--color-on-whatsapp);
 		font-family: var(--font-display);
 		font-size: var(--font-size-headline-md);
 		padding: 20px 32px;

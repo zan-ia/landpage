@@ -1,0 +1,67 @@
+{
+	"hero": {
+		"badgeIcon": "smart_toy",
+		"badgeText": "Next-Gen AI Workforce",
+		"title": "Agentes & Automação",
+		"highlight": "de Próxima Geração",
+		"subtitle": "Escalabilidade infinita com força de trabalho digital inteligente que processa dados em tempo real e antecipa as necessidades do seu negócio.",
+		"primaryCta": {
+			"label": "Solicitar Demonstração",
+			"icon": "chat"
+		},
+		"secondaryCta": {
+			"label": "Ver Documentação",
+			"href": "#capacidades",
+			"icon": "description"
+		}
+	},
+	"capabilities": {
+		"sectionTitle": "Capacidades Cognitivas",
+		"cards": [
+			{
+				"icon": "support_agent",
+				"title": "Atendimento 24/7",
+				"description": "Resolução instantânea de tickets e suporte multicanal com compreensão de linguagem natural em 40+ idiomas.",
+				"features": ["NLP Avançado", "Multi-plataforma"]
+			},
+			{
+				"icon": "trending_up",
+				"title": "Vendas Inteligentes",
+				"description": "Qualificação de leads preditiva e fechamento automático. Identificação de padrões de compra em escala.",
+				"features": ["Lead Scoring IA", "Automação de Funil"],
+				"featured": true
+			},
+			{
+				"icon": "settings_input_component",
+				"title": "Gestão Operacional",
+				"description": "Automação de fluxos de trabalho complexos e integração de silos de dados para decisões rápidas.",
+				"features": ["ETL Automático", "Orchestration Engine"]
+			}
+		]
+	},
+	"performance": {
+		"sectionTitle": "Arquitetura de Alta Performance",
+		"metrics": [
+			{ "value": "< 200", "unit": "ms", "label": "Latência de Resposta" },
+			{ "value": "99.9", "unit": "%", "label": "Acurácia Neural" },
+			{ "value": "12B", "unit": "+", "label": "Parâmetros Processados" },
+			{ "value": "SOC2", "unit": "", "label": "Certificação de Segurança" }
+		]
+	},
+	"connectivity": {
+		"sectionTitle": "Conectividade Total",
+		"subtitle": "Sua infraestrutura atual, potencializada por IA.",
+		"items": [
+			{ "icon": "hub", "label": "ERP/CRM" },
+			{ "icon": "api", "label": "Webhooks" },
+			{ "icon": "chat", "label": "Slack / WA" },
+			{ "icon": "sync", "label": "Cloud Sync" }
+		]
+	},
+	"cta": {
+		"title": "Inicie sua Transformação Digital com Zan.IA",
+		"text": "Nossos especialistas estão prontos para desenhar a arquitetura de agentes perfeita para seu modelo de negócio.",
+		"buttonIcon": "chat_bubble",
+		"responseTime": "Atendimento Imediato"
+	}
+}
