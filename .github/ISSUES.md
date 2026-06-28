@@ -1,4 +1,4 @@
-# Análise de Refatoração - Zan.IA Website
+# Análise de Refatoração — Landing Page
 
 **Data:** 2026-06-25  
 **Arquivo analisado:** `build/index.html`
@@ -192,7 +192,7 @@ customElements.define('zan-hero', ZanHero);
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ZAN.IA | Deep Tech Systems</title>
+  <title>[Nome da Empresa] | [Slogan]</title>
   <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
@@ -271,8 +271,8 @@ O HTML contém **2 imagens** referenciadas de URLs externas do Google (aida-publ
 |---------|---------|--------|
 | `cover.png` | 1.6 MB | ✅ Local |
 | `logo.png` | 1.4 MB | ✅ Local |
-| `zania.favicon.ico` | 26 KB | ✅ Local |
-| `zania.logo.ico` | 9 KB | ✅ Local |
+| `favicon.ico` | 26 KB | ✅ Local |
+| `logo.ico` | 9 KB | ✅ Local |
 
 ### Comandos para download
 

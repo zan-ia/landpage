@@ -3,19 +3,19 @@ description: "Use when: navigating the project structure, adding new files/direc
 applyTo: "src/**"
 ---
 
-# Organização de Projeto — SvelteKit
+# Project Organization — SvelteKit
 
-## 1. Estrutura de Diretórios
+## 1. Directory Structure
 
 ```
-zania-website/
-├── src/                            # 🔧 Fonte (SvelteKit)
-│   ├── app.html                    # Template HTML (fontes, meta tags)
-│   ├── app.d.ts                    # Tipos TypeScript
+[project-name]/
+├── src/                            # 🔧 Source (SvelteKit)
+│   ├── app.html                    # HTML template (fonts, meta tags)
+│   ├── app.d.ts                    # TypeScript types
 │   ├── lib/
-│   │   ├── app.css                 # CSS global (design tokens + reset + utilitários)
+│   │   ├── app.css                 # Global CSS (design tokens + reset + utilities)
 │   │   ├── index.ts                # Re-exports
-│   │   └── components/             # Componentes Svelte (cada um com <style> escopado)
+│   │   └── components/             # Svelte components (each with scoped <style>)
 │   │       ├── Header.svelte
 │   │       ├── Hero.svelte
 │   │       ├── Authority.svelte
@@ -26,81 +26,95 @@ zania-website/
 │   │       └── Footer.svelte
 │   └── routes/
 │       ├── +layout.js              # Config: prerender = true
-│       ├── +layout.svelte          # Layout principal (Header + Footer)
-│       └── +page.svelte            # Home page (monta todos os componentes)
-├── static/                         # Assets estáticos (copiados para build/)
+│       ├── +layout.svelte          # Main layout (Header + Footer)
+│       └── +page.svelte            # Home page (assembles all components)
+├── static/                         # Static assets (copied to build/)
 │   ├── robots.txt
 │   └── assets/
-│       └── images/                 # Imagens (referenciar como /assets/images/...)
-├── build/                          # 🚀 Output do build (gerado, NÃO versionar)
+│       └── images/                 # Images (reference as /assets/images/...)
+├── build/                          # 🚀 Build output (generated, DO NOT version)
 │   ├── index.html
 │   ├── 404.html
-│   └── _app/immutable/...          # JS/CSS com hash
-├── docs/                           # 📄 Documentação institucional
+│   └── _app/immutable/...          # Hashed JS/CSS
+├── docs/                           # 📄 Institutional documentation
 │   └── INSTITUCIONAL.md
-├── .github/                        # Agentes, skills, instruções, CI/CD
+├── .github/                        # Agents, skills, instructions, CI/CD
 │   ├── agents/
 │   ├── instructions/
 │   ├── prompts/
 │   ├── skills/
 │   └── workflows/
 │       └── deploy.yml              # Build + Deploy GitHub Pages
-├── svelte.config.js                # Config SvelteKit + adapter-static
-├── vite.config.ts                  # Config Vite
-├── package.json                    # Dependências e scripts
-├── AGENTS.md                       # Diretrizes para AI agents
+├── svelte.config.js                # SvelteKit + adapter-static config
+├── vite.config.ts                  # Vite config
+├── package.json                    # Dependencies and scripts
+├── AGENTS.md                       # AI agent guidelines
 └── README.md
 ```
 
-### Convenções de Diretório
+### Directory Conventions
 
-| Caminho | Propósito | Editar? |
+| Path | Purpose | Edit? |
 |---------|-----------|---------|
-| `src/lib/components/` | Componentes Svelte (fonte) | ✅ Sim |
-| `src/lib/app.css` | CSS global (tokens + reset) | ✅ Sim |
-| `src/routes/` | Rotas e layout SvelteKit | ✅ Sim |
-| `src/app.html` | Template HTML (meta, fontes) | ✅ Sim |
-| `static/` | Assets estáticos | ✅ Sim |
-| `build/` | Output de produção (gerado) | ❌ Não |
-| `docs/` | Documentação institucional | ✅ Sim |
-| `.github/` | Sistema agentico + CI/CD | ✅ Sim |
+| `src/lib/components/` | Svelte components (source) | ✅ Yes |
+| `src/lib/app.css` | Global CSS (tokens + reset) | ✅ Yes |
+| `src/routes/` | SvelteKit routes and layout | ✅ Yes |
+| `src/app.html` | HTML template (meta, fonts) | ✅ Yes |
+| `static/` | Static assets | ✅ Yes |
+| `build/` | Production output (generated) | ❌ No |
+| `docs/` | Institutional documentation | ✅ Yes |
+| `.github/` | Agent system + CI/CD | ✅ Yes |
 
-## 2. Stack Tecnológica
+## 2. Tech Stack
 
-| Camada | Tecnologia |
+| Layer | Technology |
 |--------|-----------|
 | **Framework** | SvelteKit 5 (Runes mode) |
 | **Build** | Vite + `@sveltejs/adapter-static` |
-| **Markup** | Componentes Svelte com scoped CSS |
-| **Estilos** | Scoped `<style>` por componente + `app.css` global |
-| **Ícones** | Google Material Symbols Outlined |
-| **Tipografia** | Space Grotesk, Geist, JetBrains Mono (Google Fonts) |
-| **Tema** | Dark mode (Material Design 3) |
+| **Markup** | Svelte components with scoped CSS |
+| **Styles** | Scoped `<style>` per component + global `app.css` |
+| **Icons** | Google Material Symbols Outlined |
+| **Typography** | Space Grotesk, Geist, JetBrains Mono (Google Fonts) |
+| **Theme** | Dark mode (Material Design 3) |
 | **Deploy** | GitHub Pages + GitHub Actions |
-| **Sem Tailwind** | CSS vanilla com design tokens |
+| **No Tailwind** | Vanilla CSS with design tokens |
 
 ## 3. Scripts
 
 ```bash
-npm run dev       # Dev server em localhost:5173 (HMR)
-npm run build     # Build de produção → build/
-npm run preview   # Preview do build (localhost:4173)
-npm run check     # Type-check com svelte-check
+npm run dev       # Dev server at localhost:5173 (HMR)
+npm run build     # Production build → build/
+npm run preview   # Build preview (localhost:4173)
+npm run check     # Type-check with svelte-check
 ```
 
-## 4. Convenções de Código
+## 4. Code Conventions
 
-### Componentes Svelte (Runes Mode)
-- `$state()` para variáveis reativas
-- `$effect()` para efeitos colaterais
-- `$props()` para props de componente
-- `bind:this={elementRef}` para refs de DOM
+### Svelte Components (Runes Mode)
+- `$state()` for reactive variables
+- `$effect()` for side effects
+- `$props()` for component props
+- `bind:this={elementRef}` for DOM refs
 
 ### CSS
-- Scoped `<style>` em cada componente (sem conflitos)
-- Classes BEM-like: `componente__elemento--modificador`
+- Scoped `<style>` in each component (no conflicts)
+- BEM-like classes: `component__element--modifier`
 - Design tokens via `var(--color-*)`, `var(--font-*)`, `var(--spacing-*)`
-- Breakpoint único: 768px (`@media (min-width: 768px)`)
+- Single breakpoint: 768px (`@media (min-width: 768px)`)
+
+### Dependency Rules (Import Direction)
+
+```
+src/lib/components/  ──import──▶  src/lib/  (app.css, index.ts)
+src/lib/components/  ──import──▶  $lib/components/  (other components)
+src/routes/          ──import──▶  $lib/components/  (✅ allowed)
+src/lib/components/  ──import──▶  src/routes/       (❌ forbidden)
+```
+
+- **Components in `src/lib/components/` NEVER import routes (`src/routes/`)** — dependency is unidirectional
+- **Routes import components**, never the reverse
+- `app.css` is imported by the layout (`+layout.svelte`), not by individual components
+- Components can import other components via `$lib/components/Name.svelte`
 
 ### Imports
 ```typescript
@@ -108,9 +122,9 @@ import Header from '$lib/components/Header.svelte';
 import type { PageData } from './$types';
 ```
 
-## 5. IDs de Seção
+## 5. Section IDs
 
-| ID | Componente |
+| ID | Component |
 |----|-----------|
 | `#hero` | `Hero.svelte` |
 | `#solutions` | `Solutions.svelte` |
@@ -119,26 +133,26 @@ import type { PageData } from './$types';
 | `#testimonials` | `Testimonials.svelte` |
 | `#contact` | `CTA.svelte` |
 
-## 6. Dependências Externas (CDN)
+## 6. External Dependencies (CDN)
 
-Apenas Google Fonts e Material Symbols (carregados via `src/app.html`):
+Only Google Fonts and Material Symbols (loaded via `src/app.html`):
 
-| Recurso | CDN | Justificativa |
+| Resource | CDN | Justification |
 |---------|-----|---------------|
 | Google Fonts | `fonts.googleapis.com` | Space Grotesk, Geist, JetBrains Mono |
-| Material Symbols | `fonts.googleapis.com` | Ícones (Outlined) |
+| Material Symbols | `fonts.googleapis.com` | Icons (Outlined) |
 
-### Ao Adicionar Novo Recurso
-1. Prefira assets locais em `static/`
-2. Se CDN for inevitável, adicione `rel="preconnect"` no `<head>`
-3. Documente no `AGENTS.md`
+### When Adding a New Resource
+1. Prefer local assets in `static/`
+2. If CDN is unavoidable, add `rel="preconnect"` in `<head>`
+3. Document in `AGENTS.md`
 
-## 7. Limites e Restrições
+## 7. Limits and Constraints
 
-| Aspecto | Limite | Motivo |
+| Aspect | Limit | Reason |
 |---------|--------|--------|
-| Tamanho do build | < 200kB (HTML+CSS+JS inicial) | Core Web Vitals |
-| Imagens | < 200kB cada | LCP |
-| Dependências CDN | 2 (Google Fonts + Symbols) | Autonomia |
-| Breakpoints | 1 (768px) | Simplicidade |
-| Componentes | < 300 linhas cada | Manutenibilidade |
+| Build size | < 200kB (initial HTML+CSS+JS) | Core Web Vitals |
+| Images | < 200kB each | LCP |
+| CDN Dependencies | 2 (Google Fonts + Symbols) | Autonomy |
+| Breakpoints | 1 (768px) | Simplicity |
+| Components | < 300 lines each | Maintainability |

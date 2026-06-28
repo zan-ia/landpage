@@ -1,25 +1,26 @@
+﻿---
+description: "Adds a new service card to the Solutions section of the landing page. Edits the services array in the Svelte component."
+argument-hint: "Service name, Material icon and description (e.g., 'Chatbot Development - smart_toy: We create intelligent chatbots...')"
+agent: "criador-conteudo"
 ---
-description: "Adiciona um novo card de serviço na seção Solutions do site Zan.IA. Edita o array de serviços no componente Svelte."
-argument-hint: "Nome do serviço, ícone Material e descrição (ex: 'Desenvolvimento de Chatbots - smart_toy: Criamos chatbots inteligentes...')"
----
 
-# Adicionar Card de Serviço
+# Add Service Card
 
-Adicione uma nova entrada ao array de serviços no componente `src/lib/components/Solutions.svelte`.
+Add a new entry to the services array in the `src/lib/components/Solutions.svelte` component.
 
-## Template do Objeto (TypeScript)
+## Object Template (TypeScript)
 
 ```typescript
 {
-  icon: "smart_toy",          // Nome do ícone Material Symbols
-  title: "Título do Serviço",
-  description: "Descrição do serviço em 2-3 frases destacando o benefício."
+  icon: "smart_toy",          // Material Symbols icon name
+  title: "Service Title",
+  description: "Service description in 2-3 sentences highlighting the benefit."
 }
 ```
 
-## Template Visual (Svelte)
+## Visual Template (Svelte)
 
-O componente renderiza automaticamente cada serviço como:
+The component automatically renders each service as:
 
 ```svelte
 <div class="solutions__card glass-panel">
@@ -31,20 +32,20 @@ O componente renderiza automaticamente cada serviço como:
 </div>
 ```
 
-## Escolha de Ícones
+## Icon Choices
 
-Use [Material Symbols](https://fonts.google.com/icons) — estilo Outlined:
-- Sistemas/Sites: `language`, `web`, `devices`
-- IA/Agentes: `smart_toy`, `psychology`, `robot`
-- Mídia/Conteúdo: `movie`, `palette`, `auto_awesome`
-- Automação: `settings_suggest`, `sync`, `bolt`
-- Dados/Analytics: `analytics`, `insights`, `bar_chart`
+Use [Material Symbols](https://fonts.google.com/icons) — Outlined style:
+- Systems/Websites: `language`, `web`, `devices`
+- AI/Agents: `smart_toy`, `psychology`, `robot`
+- Media/Content: `movie`, `palette`, `auto_awesome`
+- Automation: `settings_suggest`, `sync`, `bolt`
+- Data/Analytics: `analytics`, `insights`, `bar_chart`
 
-## Procedimento
+## Procedure
 
-1. Abra `src/lib/components/Solutions.svelte`
-2. Localize o array de serviços no `<script lang="ts">`
-3. Adicione o novo objeto seguindo a interface existente
-4. Escolha um ícone adequado do Material Symbols
-5. O grid se ajusta automaticamente (3 colunas desktop, 1 mobile)
-6. Execute `npm run dev` para verificar
+1. Open `src/lib/components/Solutions.svelte`
+2. Locate the services array in `<script lang="ts">`
+3. Add the new object following the existing interface
+4. Choose an appropriate Material Symbols icon
+5. The grid adjusts automatically (3 columns desktop, 1 mobile)
+6. Run `npm run dev` to verify
