@@ -1,0 +1,44 @@
+[
+	{
+		"stars": 5,
+		"text": "A Zan.IA transformou nossa operação. O que levava dias agora é feito em minutos com os agentes de IA. O ROI foi imediato.",
+		"initials": "RS",
+		"name": "Roberto S.",
+		"role": "CEO, TechFlow"
+	},
+	{
+		"stars": 5,
+		"text": "A qualidade da Fábrica de Mídia é impressionante. Conseguimos escalar nossa produção de conteúdo sem perder a essência da marca.",
+		"initials": "ML",
+		"name": "Marina L.",
+		"role": "Diretora de Marketing"
+	},
+	{
+		"stars": 5,
+		"text": "Sistemas robustos e suporte excepcional. A Zan.IA é o parceiro tecnológico que toda empresa moderna precisa ter ao seu lado.",
+		"initials": "AT",
+		"name": "André T.",
+		"role": "CTO, Nexus Corp"
+	},
+	{
+		"stars": 5,
+		"text": "Os agentes de IA da Zan.IA reduziram nosso tempo de resposta ao cliente em 80%.",
+		"initials": "CG",
+		"name": "Carla G.",
+		"role": "Head de CX, Vértice Digital"
+	},
+	{
+		"stars": 5,
+		"text": "Migrar nossa infraestrutura legada para a nuvem com a Zan.IA foi uma das melhores decisões que tomamos.",
+		"initials": "PF",
+		"name": "Paulo F.",
+		"role": "Diretor de TI, Construtora Nova Era"
+	},
+	{
+		"stars": 5,
+		"text": "A Fábrica de Mídia IA produziu 200 variações de criativos em 48 horas.",
+		"initials": "LB",
+		"name": "Luciana B.",
+		"role": "CMO, Ecom Brands"
+	}
+]
