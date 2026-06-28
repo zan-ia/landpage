@@ -6,6 +6,9 @@ tools:
   - "search"
   - "edit"
   - "web"
+  - "browser"
+  - "todos"
+  - "vscode/askQuestions"
 user-invocable: true
 disable-model-invocation: false
 ---

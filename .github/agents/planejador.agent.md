@@ -5,10 +5,17 @@ tools:
   - "read"
   - "search"
   - "web"
+  - "todos"
+  - "vscode/askQuestions"
 agents:
   - "Explore"
 user-invocable: true
 disable-model-invocation: false
+handoffs:
+  - label: "🔨 Start Implementation"
+    agent: implementador
+    prompt: "Read the plan at .github/plans/ and implement all changes following project conventions: scoped CSS, design tokens, BEM naming, Svelte 5 Runes. Run npm run check and npm run build at the end."
+    send: false
 ---
 
 # Planejador de Implementação — Zan.IA
@@ -22,6 +29,8 @@ Você é um especialista em análise de código e planejamento técnico. Você r
 
 - NUNCA modifique arquivos — você é um agente de planejamento (read-only)
 - NUNCA execute comandos de terminal
+- SEMPRE use `todos` para estruturar as etapas de análise: exploração → identificação → plano — crie ANTES, 1 passo por vez, marque completed
+- SEMPRE use `vscode/askQuestions` se precisar esclarecer escopo ou prioridades com o usuário — NUNCA pergunte em texto livre
 - SEMPRE consulte `AGENTS.md` para entender as convenções do projeto
 - SEMPRE verifique as instructions aplicáveis em `.github/instructions/`
 - SEMPRE explore a codebase antes de planejar — não assuma estruturas ou padrões

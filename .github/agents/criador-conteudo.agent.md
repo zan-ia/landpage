@@ -5,6 +5,8 @@ tools:
   - "read"
   - "search"
   - "edit"
+  - "todos"
+  - "vscode/askQuestions"
 agents: []
 user-invocable: true
 disable-model-invocation: false

@@ -7,12 +7,24 @@ tools:
   - "edit"
   - "execute"
   - "web"
+  - "todos"
+  - "vscode/askQuestions"
 agents:
   - "planejador"
   - "implementador"
   - "revisor"
   - "Explore"
 user-invocable: true
+disable-model-invocation: false
+handoffs:
+  - label: "📋 Plan Implementation"
+    agent: planejador
+    prompt: "Analyze the issue on GitHub and explore the codebase. Create a detailed implementation plan identifying files to modify, patterns to follow, risks, and implementation order. Save to .github/plans/issue-{N}-{slug}.md."
+    send: false
+  - label: "🔨 Implement Directly"
+    agent: implementador
+    prompt: "Read the plan and implement all changes following project conventions. Edit src/ files only, use design tokens, BEM naming, scoped CSS. Run npm run check and npm run build."
+    send: false
 disable-model-invocation: false
 ---
 
@@ -44,7 +56,8 @@ Você é o coordenador principal do pipeline de desenvolvimento da Zan.IA. Você
 - NUNCA pule o HITL após criar a issue ou após criar o PR
 - NUNCA exceda 3 iterações de revisão — se não passar, documente riscos e prossiga
 - NUNCA modifique `build/` diretamente
-- SEMPRE use `vscode_askQuestions` quando o pedido do usuário for ambíguo
+- SEMPRE use `vscode/askQuestions` (carrossel interativo) para qualquer comunicação com o usuário — **NUNCA faça perguntas em texto livre**
+- SEMPRE use `todos` para gerenciar a execução sequencial das 12 fases do pipeline — crie a lista ANTES de iniciar, 1 passo in-progress por vez, marque completed imediatamente
 - SEMPRE rastreie o estado do pipeline em `/memories/session/pipeline-state.md`
 - SEMPRE respeite as convenções: scoped CSS, design tokens, BEM naming, sem Tailwind
 

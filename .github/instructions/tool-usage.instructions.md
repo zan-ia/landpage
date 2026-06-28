@@ -52,35 +52,60 @@ Prompts (/iniciar-bugfix, /iniciar-feature, etc.) → Tarefas parametrizadas
 
 ---
 
-## 1. `vscode_askQuestions` — Perguntas ao Usuário
+## 1. `vscode/askQuestions` — Perguntas ao Usuário
 
-**REGRA DE OURO: Nunca assuma. Sempre pergunte.**
+**🚨 REGRA CRÍTICA: NUNCA faça perguntas em texto livre para o usuário. SEMPRE use a tool `vscode/askQuestions` (carrossel interativo). Perguntas em markdown comum são PROIBIDAS — o usuário não consegue respondê-las de forma estruturada e o fluxo de trabalho é interrompido.**
 
-Use `vscode_askQuestions` **obrigatoriamente** quando:
-- Houver ambiguidade no pedido do usuário que impacte o escopo da tarefa
+O `vscode/askQuestions` é uma tool nativa do VS Code que exibe um **carrossel interativo** de perguntas com opções clicáveis, selects, e campos de texto livre. O usuário responde com cliques/seleções e as respostas são mapeadas de volta para o agente.
+
+**Use `vscode/askQuestions` obrigatoriamente quando:**
+- Houver **qualquer** ambiguidade no pedido do usuário que impacte o escopo da tarefa
 - Existirem múltiplas abordagens válidas com trade-offs diferentes
 - O usuário não especificar preferência de design/estilo/ferramenta
 - For necessário confirmar uma decisão antes de prosseguir
+- Precisar de input do usuário para continuar o fluxo de trabalho
 
-**Regras:**
+**Regras do carrossel:**
 - Máximo **4 perguntas** por interação
-- Sempre ofereça opções pré-definidas (`options`) quando possível
-- Use `allowFreeformInput: true` para permitir respostas abertas
-- Header curto e descritivo (máx. 50 caracteres)
-- Question concisa (máx. 200 caracteres)
+- Sempre ofereça opções pré-definidas (`options`) quando possível — reduz atrito
+- Use `allowFreeformInput: true` para permitir respostas abertas (default)
+- `header`: curto e descritivo (máx. 50 caracteres)
+- `question`: concisa (máx. 200 caracteres)
+- `multiSelect: true` quando o usuário pode escolher múltiplas opções
+- Marque a opção recomendada com `recommended: true`
 
 ```yaml
-# ✅ Exemplo correto
-- header: "Component Location"
-  question: "Onde devo criar o novo componente?"
+# ✅ Exemplo correto — carrossel interativo
+- header: "Escopo da Feature"
+  question: "Quais são os limites desta funcionalidade?"
   options:
-    - label: "src/lib/components/"
-    - label: "src/routes/"
+    - label: "Apenas frontend"
+      description: "Somente componentes visuais"
+      recommended: true
+    - label: "Frontend + backend"
+      description: "Inclui endpoints e lógica de servidor"
+  allowFreeformInput: true
+
+# ✅ Exemplo — múltipla escolha
+- header: "Breakpoint Responsivo"
+  question: "Quais breakpoints devo usar?"
+  multiSelect: true
+  options:
+    - label: "Mobile (< 768px)"
+    - label: "Tablet (768px - 1024px)"
+    - label: "Desktop (> 1024px)"
 ```
 
-**NUNCA use `vscode_askQuestions` para:**
-- Senhas, tokens, API keys ou secrets (peça ao usuário para digitar diretamente)
-- Perguntas triviais cuja resposta está documentada no código ou em AGENTS.md
+**NUNCA use `vscode/askQuestions` para:**
+- Senhas, tokens, API keys ou secrets (peça ao usuário para digitar diretamente no terminal)
+- Perguntas triviais cuja resposta está documentada no código, em AGENTS.md, ou em docs/INSTITUCIONAL.md
+
+**Exemplo do que NÃO fazer:**
+```markdown
+<!-- ❌ PROIBIDO — pergunta em texto livre -->
+Você prefere que eu use flexbox ou grid para este layout?
+```
+O correto é usar `vscode/askQuestions` com opções clicáveis.
 
 ---
 
@@ -584,3 +609,102 @@ Tanto skills quanto prompts aparecem como slash commands (`/`) no chat:
 - Use paths relativos (`./scripts/test.js`) para referenciar recursos
 - Mantenha SKILL.md < 5000 tokens; use arquivos de referência para conteúdo extenso
 - O description deve usar o padrão "Use when: ..." com palavras-chave para descoberta semântica
+
+---
+
+## 10. `todos` — Lista de Tarefas e Execução Sequencial
+
+A tool `todos` (built-in do VS Code) é a ferramenta de **gerenciamento de execução sequencial** dentro de uma sessão de chat. Ela exibe uma lista de tarefas visível ao usuário, com status rastreável e atualização em tempo real.
+
+### 10.1 Por que Usar `todos`?
+
+Sem `todos`, o agente pode:
+- Executar passos fora de ordem
+- Pular verificações importantes (build, lint)
+- Perder o rastro do que já foi feito
+- Deixar o usuário sem visibilidade do progresso
+
+Com `todos`, o agente:
+- Planeja a execução ANTES de começar — estrutura visível
+- Executa UM passo por vez (só 1 `in-progress` simultâneo)
+- Marca cada passo como `completed` IMEDIATAMENTE após concluir
+- Dá visibilidade total ao usuário sobre o andamento
+
+### 10.2 Quando Usar — Regra de Ouro
+
+**Use `todos` obrigatoriamente para qualquer tarefa com 3+ passos distintos.** Se a tarefa tem um único passo, é opcional mas recomendado.
+
+Exemplos de quando usar:
+- Pipeline completo: 12 fases do orquestrador
+- Implementação: editar 3+ arquivos, verificar build
+- Revisão: verificar 10 dimensões de qualidade
+- Planejamento: explorar codebase → identificar arquivos → escrever plano
+- Criação de conteúdo: pesquisar → redigir → revisar → integrar
+
+### 10.3 Como Usar
+
+O agente invoca `manage_todo_list` com um array de todos, cada um com:
+- `id`: número sequencial (1, 2, 3...)
+- `title`: ação concisa (3-7 palavras)
+- `status`: `not-started` | `in-progress` | `completed`
+
+**Fluxo correto de uso:**
+
+```
+1. manage_todo_list(todos=[{id:1, title:"Ler arquivo X", status:"not-started"}, ...])
+2. manage_todo_list(todos=[{id:1, title:"Ler arquivo X", status:"in-progress"}, ...])
+3. [executa a tarefa — read_file, edit, etc.]
+4. manage_todo_list(todos=[{id:1, title:"Ler arquivo X", status:"completed"}, {id:2, ...}])
+5. manage_todo_list(todos=[{id:2, title:"Editar arquivo Y", status:"in-progress"}, ...])
+6. [executa...]
+7. ... (repete até todos completed)
+```
+
+**Regras estritas:**
+- **NUNCA** comece a trabalhar sem antes criar a lista de todos
+- **NUNCA** tenha mais de 1 todo `in-progress` simultaneamente
+- **SEMPRE** marque como `completed` IMEDIATAMENTE após terminar o passo
+- **SEMPRE** inclua TODOS os itens no array (existentes + novos) em cada chamada
+- **NUNCA** remova itens da lista — apenas mude o status
+
+### 10.4 Exemplo no Pipeline
+
+```
+# Orquestrador inicia pipeline
+manage_todo_list([
+  {id: 1, title: "Classificar solicitação", status: "in-progress"},
+  {id: 2, title: "Criar issue no GitHub", status: "not-started"},
+  {id: 3, title: "HITL: aprovação da issue", status: "not-started"},
+  {id: 4, title: "Criar branch", status: "not-started"},
+  {id: 5, title: "Planejamento (subagente)", status: "not-started"},
+  {id: 6, title: "Implementação (subagente)", status: "not-started"},
+  {id: 7, title: "Revisão (subagente)", status: "not-started"},
+  {id: 8, title: "Commit + Push", status: "not-started"},
+  {id: 9, title: "Criar PR", status: "not-started"},
+  {id: 10, title: "HITL: revisão do PR", status: "not-started"},
+  {id: 11, title: "Checkout main", status: "not-started"},
+])
+```
+
+### 10.5 Integração com o Harness
+
+A tool `todos` deve estar presente nas listas de `tools` de TODOS os agentes do pipeline:
+
+```yaml
+tools:
+  - "read"
+  - "search"
+  - "edit"
+  - "todos"            # ← Obrigatório para execução sequencial
+  - "vscode/askQuestions"  # ← Obrigatório para comunicar com o usuário
+```
+
+E nos corpos dos agentes, a regra deve ser explícita:
+
+```markdown
+## Workflow Rules
+- SEMPRE use a tool `todos` para criar e gerenciar a lista de tarefas
+- Planeje TODOS os passos ANTES de começar a executar
+- Apenas UM passo in-progress por vez
+- Marque completed IMEDIATAMENTE ao terminar cada passo
+```

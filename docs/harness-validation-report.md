@@ -164,17 +164,15 @@ Arquivo de instruções sempre ativas, reconhecido por múltiplos agentes de IA.
 
 ---
 
-### 2.6 `performance-auditor.agent.md` ⚠️
+### 2.6 `performance-auditor.agent.md` ✅ (corrigido)
 
 | Campo | Valor | Status |
 |-------|-------|--------|
-| `tools` | `["read","search","edit","browser"]` | ⚠️ |
-| `user-invocable` | ❌ Ausente | ⚠️ |
-| `disable-model-invocation` | ❌ Ausente | ⚠️ |
+| `tools` | `["read","search","edit","web","browser"]` | ✅ |
+| `user-invocable` | `true` | ✅ |
+| `disable-model-invocation` | `false` | ✅ |
 
-**Problemas:**
-- `"browser"` não é um tool set oficial documentado. O tool set correto para navegação web é `"web"`. O `browser` pode ser um tool de extensão diferente. **Risco: tool ignorada silenciosamente.**
-- Campos `user-invocable` e `disable-model-invocation` ausentes.
+**Nota:** `browser` é um tool set built-in oficial do VS Code (experimental, requer `workbench.browser.enableChatTools`). Oferece Playwright: navigate, screenshot, click, type, hover, drag. `web` oferece `fetch` (read-only). Ambos são complementares — `web` para análise de HTML/timing, `browser` para medição interativa de Core Web Vitals.
 
 ---
 
@@ -442,7 +440,7 @@ Os arquivos `.agent.md` e `.instructions.md` podem referenciar tools diretamente
 | # | Issue | Arquivo(s) | Ação |
 |---|-------|-----------|------|
 | 1 | `applyTo` com vírgulas em string — pode não funcionar | `css.instructions.md`, `html.instructions.md`, `pipeline-workflow.instructions.md`, `tool-usage.instructions.md` | Converter para array YAML |
-| 2 | `performance-auditor` usa tool `"browser"` (nome inválido) | `performance-auditor.agent.md` | Substituir `"browser"` por `"web"` |
+| 2 | `performance-auditor` usava `"browser"` — tool é válido mas experimental; complementar com `"web"` | `performance-auditor.agent.md` | Adicionado `"web"` + `"browser"` juntos ✅ |
 
 ### Prioridade Média (melhoria de qualidade)
 
