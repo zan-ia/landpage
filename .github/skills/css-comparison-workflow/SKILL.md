@@ -2,6 +2,8 @@
 name: css-comparison-workflow
 description: "Compara e corrige diferenças visuais entre o dev local (localhost:5173) e o site LIVE (www.zan.ia.br). Use quando: precisar verificar equivalência visual, depurar estilos que divergem entre DEV e LIVE, ou garantir que o build local está 100% idêntico ao site de produção."
 argument-hint: "Descreva qual elemento ou seção está diferente (ex: 'sombra do CTA WhatsApp', 'backdrop-filter dos cards')"
+user-invocable: true
+disable-model-invocation: false
 ---
 
 # Skill: CSS Comparison Workflow — DEV vs LIVE (SvelteKit)

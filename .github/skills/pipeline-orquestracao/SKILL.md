@@ -156,3 +156,15 @@ Planos são salvos em `.github/plans/issue-{N}-{slug}.md` com:
 - `criar-pagina-institucional` — criar páginas institucionais
 - `css-comparison-workflow` — comparar DEV vs LIVE
 - `otimizar-imagens` — otimizar imagens
+- `seo-otimization` — conhecimento técnico de SEO (meta tags, structured data)
+
+### Prompts de Entrada
+- `/iniciar-bugfix` — `.github/prompts/iniciar-bugfix.prompt.md`
+- `/iniciar-feature` — `.github/prompts/iniciar-feature.prompt.md`
+- `/iniciar-melhoria` — `.github/prompts/iniciar-melhoria.prompt.md`
+
+### Prompts de Ação Direta
+- `/adicionar-depoimento` — `.github/prompts/adicionar-depoimento.prompt.md`
+- `/adicionar-servico` — `.github/prompts/adicionar-servico.prompt.md`
+- `/otimizar-seo` — `.github/prompts/otimizar-seo.prompt.md`
+- `/revisar` — `.github/prompts/revisar.prompt.md`

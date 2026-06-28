@@ -1,7 +1,7 @@
 ---
 description: "Executa uma auditoria SEO completa na landing page Zan.IA (SvelteKit) e aplica correções. Verifica meta tags, structured data, Open Graph, performance e acessibilidade."
 argument-hint: "[opcional] Escopo da auditoria: 'completa', 'meta-tags', 'open-graph', 'structured-data'"
-agent: "agent"
+agent: "implementador"
 ---
 
 # Otimização SEO — Zan.IA (SvelteKit)
@@ -67,3 +67,11 @@ Relatório com:
 - Problemas encontrados (arquivo + linha)
 - Correções aplicadas
 - Itens que requerem ação manual
+
+---
+
+## Referências
+- Skill de conhecimento SEO: `seo-otimization` (templates de meta tags, Open Graph, JSON-LD)
+- Pipeline workflow: `.github/instructions/pipeline-workflow.instructions.md`
+- HTML conventions: `.github/instructions/html.instructions.md`
+- Convenções de código: `AGENTS.md`

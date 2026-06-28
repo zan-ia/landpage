@@ -2,6 +2,8 @@
 name: criar-pagina-institucional
 description: 'Cria novas páginas institucionais como componentes Svelte seguindo o padrão visual do site Zan.IA (SvelteKit). Use quando: precisar adicionar landing pages, páginas de serviço, páginas institucionais, ou seções que sigam o design system existente (glass panels, paleta Material Design 3, tipografia Space Grotesk/Geist/JetBrains Mono).'
 argument-hint: 'Descrição da página a criar (ex: "página de preços", "landing page do serviço de chatbots")'
+user-invocable: true
+disable-model-invocation: false
 ---
 
 # Criar Página Institucional — Zan.IA (SvelteKit)

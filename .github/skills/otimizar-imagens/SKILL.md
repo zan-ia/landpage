@@ -1,6 +1,9 @@
 ---
 name: otimizar-imagens
 description: "Otimiza imagens da landing page Zan.IA (SvelteKit). Converte para formatos modernos (WebP/AVIF), gera srcset com múltiplas resoluções, aplica lazy loading, e sugere compressão."
+argument-hint: "Caminho da imagem ou diretório a otimizar (ex: 'static/assets/images/hero.jpg', 'todas as imagens do projeto')"
+user-invocable: true
+disable-model-invocation: false
 ---
 
 # Skill: Otimização de Imagens (SvelteKit)

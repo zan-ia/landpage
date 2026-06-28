@@ -2,6 +2,8 @@
 name: criar-section
 description: "Cria uma nova seção como componente Svelte na landing page Zan.IA seguindo os padrões visuais existentes. Gera o .svelte completo com glass panels, gradientes, tipografia consistente e scoped CSS."
 argument-hint: "Nome da seção e descrição do conteúdo (ex: 'pricing - Seção de preços com 3 planos')"
+user-invocable: true
+disable-model-invocation: false
 ---
 
 # Skill: Criar Nova Seção (SvelteKit)
