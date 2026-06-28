@@ -48,6 +48,13 @@
 	--color-inverse-surface: #dce1fb;
 	--color-inverse-on-surface: #2a3043;
 	--color-surface-tint: #00daf8;
+	--color-whatsapp: #25D366;
+	--color-on-whatsapp: #ffffff;
+
+	/* Cores do Terminal */
+	--color-terminal-red: #ff5f56;
+	--color-terminal-yellow: #ffbd2e;
+	--color-terminal-green: #27c93f;
 
 	/* Tipografia */
 	--font-display: 'Space Grotesk', sans-serif;
