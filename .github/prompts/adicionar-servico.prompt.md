@@ -1,6 +1,7 @@
 ---
 description: "Adiciona um novo card de serviço na seção Solutions do site Zan.IA. Edita o array de serviços no componente Svelte."
 argument-hint: "Nome do serviço, ícone Material e descrição (ex: 'Desenvolvimento de Chatbots - smart_toy: Criamos chatbots inteligentes...')"
+agent: "criador-conteudo"
 ---
 
 # Adicionar Card de Serviço

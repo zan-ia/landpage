@@ -1,6 +1,8 @@
 ---
 description: "Use when: writing or reviewing CSS in Svelte components, creating new components with scoped styles, or modifying src/lib/app.css. Covers design tokens, scoped CSS conventions, BEM naming, responsive breakpoints, and animation best practices."
-applyTo: "src/**/*.svelte, src/lib/app.css"
+applyTo:
+  - "src/**/*.svelte"
+  - "src/lib/app.css"
 ---
 
 # Regras e Padrões de CSS — SvelteKit
@@ -180,6 +182,8 @@ Defina `@keyframes` globais em `src/lib/app.css`. Animações específicas no `<
   ```
 - Animar apenas `transform` e `opacity` (propriedades composited)
 - `will-change` usar com moderação, apenas durante interação ativa
+- `contain` para isolar subárvores visuais em grids/cards: `contain: layout style paint` (otimiza renderização)
+- `content-visibility: auto` para seções abaixo da dobra (acelera paint inicial)
 
 ## 7. Especificidade
 
@@ -192,6 +196,14 @@ Mantenha especificidade baixa. O scoped CSS do Svelte já adiciona um hash únic
 /* ❌ Evitar — aninhamento desnecessário */
 section .hero .hero__container .hero__cta { }
 ```
+
+### Proibições
+
+| ❌ Prática | Motivo | Alternativa |
+|-----------|--------|-------------|
+| **Tailwind CSS** | O projeto usa CSS vanilla com design tokens | Use classes BEM + `var(--color-*)`, `var(--spacing-*)` |
+| **`!important`** | Viola o cascade e dificulta manutenção | Aumente especificidade com seletores de classe. Única exceção: `prefers-reduced-motion` |
+| **Hex hardcoded** | Desalinha do tema MD3 e quebra dark mode | Use `var(--color-*)` sempre. Exceção: `rgba()` para opacidade em glass/overlays |
 
 ## 8. Ícones (Material Symbols)
 

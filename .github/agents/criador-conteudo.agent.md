@@ -5,6 +5,9 @@ tools:
   - "read"
   - "search"
   - "edit"
+agents: []
+user-invocable: true
+disable-model-invocation: false
 ---
 
 # Agente de Criação de Conteúdo — Zan.IA

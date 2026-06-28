@@ -1,6 +1,8 @@
 ---
 description: "Use when: creating or editing Svelte components, writing markup in .svelte files, adding ARIA attributes, ensuring semantic HTML5 structure, or updating src/app.html meta tags. Covers accessibility, headings hierarchy, images, and links."
-applyTo: "src/**/*.svelte, src/app.html"
+applyTo:
+  - "src/**/*.svelte"
+  - "src/app.html"
 ---
 
 # Regras e Padrões de HTML — SvelteKit
@@ -168,6 +170,23 @@ Ordem obrigatória no `<head>`:
 - `fetchpriority="high"` apenas na hero (1 por página)
 - `alt` descritivo para imagens funcionais, `alt=""` para decorativas
 - Assets em `static/assets/images/`, referenciados como `/assets/images/...`
+- `srcset` + `sizes` para art-direction ou resoluções múltiplas (quando aplicável):
+
+```svelte
+<img
+  src="/assets/images/solucoes.webp"
+  srcset="/assets/images/solucoes-400.webp 400w,
+          /assets/images/solucoes-800.webp 800w,
+          /assets/images/solucoes-1200.webp 1200w"
+  sizes="(max-width: 768px) 100vw, 800px"
+  alt=""
+  loading="lazy"
+  width="800"
+  height="600"
+  decoding="async"
+>
+```
+- Formatos modernos: WebP (padrão), AVIF (quando disponível, com `<picture>` e fallback)
 
 ## 6. Links e Navegação
 

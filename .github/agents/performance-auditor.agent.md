@@ -5,7 +5,9 @@ tools:
   - "read"
   - "search"
   - "edit"
-  - "browser"
+  - "web"
+user-invocable: true
+disable-model-invocation: false
 ---
 
 # Agente de Auditoria de Performance — Zan.IA

@@ -102,6 +102,20 @@ npm run check     # Type-check com svelte-check
 - Design tokens via `var(--color-*)`, `var(--font-*)`, `var(--spacing-*)`
 - Breakpoint único: 768px (`@media (min-width: 768px)`)
 
+### Regras de Dependência (Direção dos Imports)
+
+```
+src/lib/components/  ──import──▶  src/lib/  (app.css, index.ts)
+src/lib/components/  ──import──▶  $lib/components/  (outros componentes)
+src/routes/          ──import──▶  $lib/components/  (✅ permitido)
+src/lib/components/  ──import──▶  src/routes/       (❌ proibido)
+```
+
+- **Componentes em `src/lib/components/` NUNCA importam rotas (`src/routes/`)** — a dependência é unidirecional
+- **Rotas importam componentes**, nunca o inverso
+- `app.css` é importado pelo layout (`+layout.svelte`), não por componentes individuais
+- Componentes podem importar outros componentes via `$lib/components/Nome.svelte`
+
 ### Imports
 ```typescript
 import Header from '$lib/components/Header.svelte';

@@ -1,6 +1,7 @@
 ---
 description: "Adiciona um novo depoimento ao carrossel de testimonials da landing page Zan.IA. Edita o array testimonials[] no componente Svelte."
 argument-hint: "Nome do cliente, cargo/empresa e texto do depoimento (ex: 'Maria Silva, CEO TechCorp: A Zan.IA transformou nossa presença digital...')"
+agent: "criador-conteudo"
 ---
 
 # Adicionar Depoimento
