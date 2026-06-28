@@ -10,7 +10,7 @@
 O site atual é um HTML monolítico com dependências externas pesadas. Foram identificadas **3 áreas críticas** de melhoria:
 
 | # | Problema | Prioridade | Esforço |
-|---|----------|------------|---------|
+| --- | ---------- | ------------ | --------- |
 | 1 | Tailwind CSS via CDN | Alta | Médio |
 | 2 | HTML monolítico sem modularização | Alta | Alto |
 | 3 | Imagens externas não locais | Média | Baixo |
@@ -35,7 +35,7 @@ O projeto atual depende do Tailwind CSS via CDN, adicionando sobrecarga desneces
 
 ### Estrutura CSS proposta
 
-```
+```text
 css/
 ├── base/
 │   ├── reset.css          # Reset/normalize
@@ -105,13 +105,13 @@ css/
 **Título:** `Modularizar HTML com Web Components vanilla`  
 **Labels:** `enhancement`, `architecture`, `web-components`
 
-### Descrição
+### Descrição (Issue #2)
 
 O `index.html` atual tem ~350 linhas de HTML monolítico. Precisamos modularizar em componentes reutilizáveis usando Web Components vanilla.
 
 ### Estrutura de componentes proposta
 
-```
+```text
 src/
 ├── components/
 │   ├── zan-header/
@@ -233,7 +233,7 @@ customElements.define('zan-hero', ZanHero);
 </html>
 ```
 
-### Checklist
+### Checklist (Issue #2)
 
 - [ ] Criar estrutura `src/components/`
 - [ ] Implementar `ZanHeader` component
@@ -254,21 +254,21 @@ customElements.define('zan-hero', ZanHero);
 **Título:** `Baixar imagens externas e atualizar referências`  
 **Labels:** `enhancement`, `assets`, `images`
 
-### Descrição
+### Descrição (Issue #3)
 
 O HTML contém **2 imagens** referenciadas de URLs externas do Google (aida-public) que precisam ser baixadas para o repositório.
 
 ### Imagens identificadas
 
 | # | Descrição | URL | Destino |
-|---|-----------|-----|---------|
+| --- | ----------- | --- | --------- |
 | 1 | Hero background (atmosférico/sci-fi) | `https://lh3.googleusercontent.com/aida-public/AB6AXuCG...` | `assets/images/hero-bg.webp` |
 | 2 | Authority section (circuitos/neural) | `https://lh3.googleusercontent.com/aida-public/AB6AXuD7D...` | `assets/images/authority-circuit.webp` |
 
 ### Imagens já locais
 
 | Arquivo | Tamanho | Status |
-|---------|---------|--------|
+| --------- | --------- | -------- |
 | `cover.png` | 1.6 MB | ✅ Local |
 | `logo.png` | 1.4 MB | ✅ Local |
 | `favicon.ico` | 26 KB | ✅ Local |
@@ -289,7 +289,7 @@ curl -L -o "build/assets/images/authority-circuit.webp" \
 ### Referências externas restantes (não-imagens)
 
 | Recurso | Tipo | CDN |
-|---------|------|-----|
+| --------- | ------ | ----- |
 | Tailwind CSS | CSS Framework | `cdn.tailwindcss.com` |
 | Space Grotesk | Fonte | `fonts.googleapis.com` |
 | JetBrains Mono | Fonte | `fonts.googleapis.com` |
@@ -298,7 +298,7 @@ curl -L -o "build/assets/images/authority-circuit.webp" \
 
 > **Nota:** As fontes e ícones do Google Fonts podem permanecer via CDN (prática comum) ou serem baixados localmente para PWA/offline.
 
-### Checklist
+### Checklist (Issue #3)
 
 - [ ] Baixar hero background image
 - [ ] Baixar authority circuit image
@@ -311,7 +311,7 @@ curl -L -o "build/assets/images/authority-circuit.webp" \
 
 ## Plano de Execução Sugerido
 
-```
+```text
 Fase 1: Imagens (Issue #3) — 30 min
   └── Baixar e organizar assets
 

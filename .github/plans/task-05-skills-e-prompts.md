@@ -1,6 +1,7 @@
 # Tarefa 05 — Skills e Prompts (Commands)
 
 ## Objetivo
+
 Criar/validar skills (conhecimento especializado) e prompts (comandos customizados do usuário) que habilitam o pipeline de desenvolvimento com capacidades específicas e pontos de entrada para o usuário.
 
 ## Responsabilidades Específicas
@@ -67,14 +68,17 @@ Criar/validar skills (conhecimento especializado) e prompts (comandos customizad
    - `/revisar` — revisão manual de código?
 
 ## Artefato de Saída
+
 - 5+ skills em `.github/skills/*/SKILL.md` criados/atualizados
 - 6+ prompts em `.github/prompts/*.prompt.md` criados/atualizados
 
 ## Dependências
+
 - **Tarefa 01** (pesquisa) — formato correto de SKILL.md e .prompt.md
 - **Tarefa 02** (agentes) — agents que serão invocados pelos comandos
 
 ## Critérios de Aceitação
+
 - [ ] Skills com descrição clara de quando são ativados
 - [ ] Skills com conteúdo técnico preciso e acionável
 - [ ] Prompts acionam o fluxo correto do pipeline

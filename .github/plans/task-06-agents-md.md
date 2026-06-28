@@ -1,6 +1,7 @@
 # Tarefa 06 — Configuração do AGENTS.md
 
 ## Objetivo
+
 Criar/validar o arquivo `AGENTS.md` raiz do projeto — o ponto de entrada principal que o Copilot lê para entender o contexto do workspace, stack, convenções e fluxo de trabalho.
 
 ## Responsabilidades Específicas
@@ -55,12 +56,15 @@ Criar/validar o arquivo `AGENTS.md` raiz do projeto — o ponto de entrada princ
    - `.github/skills/*` — skills especializados
 
 ## Artefato de Saída
+
 - `AGENTS.md` criado/atualizado na raiz do projeto
 
 ## Dependências
+
 - **Todas as tarefas anteriores** — AGENTS.md sumariza e referencia tudo
 
 ## Critérios de Aceitação
+
 - [ ] Project overview claro e conciso
 - [ ] Tech stack completa e precisa
 - [ ] Arquitetura explicada (SvelteKit, static, scoped CSS, sem Tailwind)

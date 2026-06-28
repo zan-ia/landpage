@@ -9,7 +9,7 @@ Institutional landing page.
 ## Tech Stack
 
 | Layer | Technology |
-|--------|-----------|
+| -------- | ----------- |
 | **Framework** | SvelteKit 5 (Runes mode) |
 | **Build** | Vite + `@sveltejs/adapter-static` |
 | **Markup** | Svelte components with scoped CSS |
@@ -40,7 +40,7 @@ npm run preview  # Build preview locally
 
 ## File Structure
 
-```
+```text
 [project-name]/
 ├── src/
 │   ├── lib/
@@ -126,10 +126,12 @@ npm run preview  # Build preview locally
 ## GitHub Workflow (Issues & PRs)
 
 ### Auto-close Issues
+
 - Include `Closes #N` (or `Fixes`/`Resolves`) in the PR body — GitHub closes the issue automatically on merge.
 - **Verify** if the issue was closed after merge. If not, close manually with `state=closed`, `reason=completed`.
 
 ### Recommended Flow
+
 1. Create branch from `main` (`feat/descriptive-name`)
 2. Commit with descriptive message (imperative, < 72 chars)
 3. Include `Closes #N` in PR body
@@ -148,7 +150,7 @@ npm run preview  # Build preview locally
 The project uses a system of **5 pipeline agents + 3 support agents + 1 harness engineer** for automated quality-driven development:
 
 | Agent | Role | Archetype | Tools |
-|--------|-------|-----------|-------------|
+| -------- | ------- | ----------- | ------------- |
 | `orquestrador` | Coordinates the complete flow — issue → branch → plan → implement → review → commit → PR | Coordinator | All |
 | `planejador` | Analyzes issues and codebase, generates detailed plans in `.github/plans/` | Worker (read-only) | read, search, web |
 | `implementador` | Executes plans, makes surgical changes, verifies build | Worker | read, search, edit, execute |
@@ -158,13 +160,14 @@ The project uses a system of **5 pipeline agents + 3 support agents + 1 harness 
 ### Support Agents
 
 | Agent | Role | Archetype | Tools |
-|--------|-------|-----------|-------------|
+| -------- | ------- | ----------- | ------------- |
 | `criador-conteudo` | Generates and updates institutional content (texts, descriptions, testimonials) | Specialist | read, search |
 | `performance-auditor` | Audits Core Web Vitals, asset loading, blocking resources | Auditor | read, search, browser |
 | `refactor-css` | Refactors scoped CSS, extracts patterns to `app.css`, audits design tokens | Specialist | read, search, edit |
 
 ### Pipeline Flow
-```
+
+```text
 User → /iniciar-bugfix|feature|improvement
   → Orchestrator analyzes → Creates Issue → HITL
   → Creates Branch → Planner → Implementer → Reviewer
@@ -173,6 +176,7 @@ User → /iniciar-bugfix|feature|improvement
 ```
 
 ### How to Start
+
 - `/iniciar-bugfix` — for bug fixes
 - `/iniciar-feature` — for new features
 - `/iniciar-melhoria` — for improvements and refactoring
@@ -184,7 +188,7 @@ User → /iniciar-bugfix|feature|improvement
 Every agent in the Zan.IA harness fits exactly one archetype. This classification governs tool permissions, invocation patterns, and design constraints.
 
 | Archetype | Purpose | Tool Profile | Invocation | Examples |
-|-----------|---------|-------------|------------|----------|
+| ----------- | --------- | ------------- | ------------ | ---------- |
 | **Coordinator** | Orchestrates multi-agent workflows, manages HITL gates, tracks pipeline state | Full toolkit + `agent` | User-facing + subagent-invocable | `orquestrador` |
 | **Worker** | Executes a specific pipeline phase — structured input → structured output | Domain-specific | Subagent-invocable | `planejador`, `implementador` |
 | **Specialist** | Deep domain expertise, operates independently or on-demand | Domain-specific tools | User-invocable or on-demand | `criador-conteudo`, `refactor-css`, `engenheiro-de-harness` |
@@ -192,7 +196,9 @@ Every agent in the Zan.IA harness fits exactly one archetype. This classificatio
 | **Gatekeeper** | Enforces quality gates automatically | read, search, hooks | Automatic (hooks) | *(future)* |
 
 ### Agent Body Standards
+
 All `.agent.md` bodies follow the **7-Point Prompt Engineering Template**:
+
 1. **Role** — Identity, domain expertise, primary output
 2. **Constraints** — NEVER rules first, ALWAYS rules second
 3. **Context Sources** — Prioritized files/docs to consult before acting
@@ -204,8 +210,9 @@ All `.agent.md` bodies follow the **7-Point Prompt Engineering Template**:
 See `.github/skills/harness-engineering-reference/SKILL.md` for complete agent design reference.
 
 ### Harness Performance (KPIs)
+
 | KPI | Healthy Range |
-|-----|---------------|
+| --- | ------------- |
 | Pipeline Success Rate | > 80% |
 | First-Pass Quality | > 60% |
 | Review Loop Count | < 1.5 avg |
@@ -219,7 +226,7 @@ See `.github/skills/harness-engineering-reference/SKILL.md` for complete agent d
 
 After each issue→PR cycle, the `engenheiro-de-harness` agent performs a harness review:
 
-```
+```text
 Issue → Branch → Plan → Implement → Review → PR
                                                   │
                                                   ▼
@@ -237,7 +244,8 @@ Issue → Branch → Plan → Implement → Review → PR
                                          └──────────────────┘
 ```
 
-### Trigger conditions for separate harness PR:
+### Trigger conditions for separate harness PR
+
 - Anti-pattern detected in >= 2 sessions for the same agent
 - File thrashing detected (same file read >5 times across sessions)
 - Static analysis violation — broken handoff/agents references
@@ -247,6 +255,7 @@ Issue → Branch → Plan → Implement → Review → PR
 - Failure-side repetition — user frustration + same agent + same file in >= 2 sessions
 
 ### Separate Harness PR Convention
+
 - **Branch:** `harness/fix-description` or `harness/improve-agent-name`
 - **Commit:** `harness: fix tool permissions for agent X`
 - **PR title:** `🔧 Harness: <description>`
@@ -259,7 +268,7 @@ Issue → Branch → Plan → Implement → Review → PR
 Strict rules for using each Copilot tool (defined in `.github/instructions/tool-usage.instructions.md`):
 
 | Tool | Main Rule |
-|-----------|----------------|
+| ----------- | ---------------- |
 | **`vscode_askQuestions`** | MANDATORY for any ambiguity. Never assume user preferences. |
 | **Browser** | Use for official documentation, DEV vs LIVE comparison. Always validate URLs. |
 | **Terminal** | Non-destructive commands. Build and lint before concluding. |
@@ -277,7 +286,7 @@ VS Code offers **7 primitives** that form the complete harness. All project agen
 ### Primitives Table
 
 | Primitive | File | Location | Activation |
-|-----------|---------|------|----------|
+| ----------- | --------- | ------ | ---------- |
 | **Agent Instructions** | `AGENTS.md` | Root | Always-on (entire workspace) |
 | **File Instructions** | `*.instructions.md` | `.github/instructions/` | `applyTo` (glob) or `description` (semantic) |
 | **Custom Agents** | `*.agent.md` | `.github/agents/` | Agent selector or `runSubagent` |
@@ -288,21 +297,23 @@ VS Code offers **7 primitives** that form the complete harness. All project agen
 
 ### Loading Hierarchy and Priority
 
-```
+```text
 💡 Always-on: AGENTS.md → global guidelines
 📁 Per-file: *.instructions.md → specific rules (applyTo)
 🎯 On-demand: Skills, Prompts, Custom Agents, MCP
 🤖 Automatic: Hooks → lifecycle events
 ```
+
 **Priority (conflicts):** User profile > Workspace (`.github/`, `AGENTS.md`) > Organization.
 
 ### Pipeline Map on the Harness
 
-```
+```text
 AGENTS.md + tool-usage.instructions.md + pipeline-workflow.instructions.md
   → orquestrador.agent.md
     → planejador | implementador | revisor | Explore
 ```
+
 Skills and Prompts loaded on demand according to context.
 
 ### Agent Invocation Control
@@ -310,13 +321,14 @@ Skills and Prompts loaded on demand according to context.
 Each `.agent.md` controls how it can be invoked via frontmatter:
 
 | Field | Effect |
-|-------|--------|
+| ------- | -------- |
 | `user-invocable: false` | Hidden from agent selector, but still subagent-invocable |
 | `disable-model-invocation: true` | Prevents other agents from using as subagent |
 | `agents: ["name1", "name2"]` | Explicit list of allowed subagents |
 | `tools: ["read", "search"]` | Restricts agent tools |
 
 **Rules:**
+
 - Listing an agent in `agents` overrides `disable-model-invocation: true`.
 - When `agents` is specified (even if empty), the `"agent"` tool MUST be included in `tools`. This is the tool that enables subagent invocation (`runSubagent`).
 
@@ -342,13 +354,14 @@ Skills with `context: fork` execute in an isolated subagent — useful for tasks
 5. **Harness Review (Harness Engineer):** After PR creation, queries Chronicle for session patterns, runs static analysis, detects anti-patterns. If issues found → creates separate harness improvement PR.
 
 ### Human-in-the-Loop (HITL)
+
 - 🛑 **After issue creation** — user reviews and approves
 - 🛑 **After PR creation** — user reviews diff and merges
 
 ### Conventions
 
 | Convention | Standard |
-|-----------|--------|
+| ----------- | -------- |
 | **Branch** | `fix/`, `feat/`, `improve/` + lowercase slug |
 | **Commit** | [Conventional Commits](https://www.conventionalcommits.org/): `fix:`, `feat:`, `improve:` |
 | **PR** | Include `Closes #N` in body |
@@ -359,6 +372,7 @@ Skills with `context: fork` execute in an isolated subagent — useful for tasks
 | **Harness PR** | `harness/` prefix, separate from feature PR |
 
 ### Pipeline Files
+
 - `.github/instructions/pipeline-workflow.instructions.md` — complete flow
 - `.github/instructions/tool-usage.instructions.md` — tool rules
 - `.github/agents/orquestrador.agent.md` — coordinator agent
