@@ -1,0 +1,30 @@
+{
+	"site": {
+		"name": "ZAN.IA",
+		"description": "Deep Tech Systems",
+		"url": "https://zan-ia.com",
+		"version": "1.1.0"
+	},
+	"header": {
+		"navItems": [
+			{ "label": "INICIO", "ref": "/" },
+			{ "label": "SISTEMAS", "ref": "/sistemas" },
+			{ "label": "AGENTES", "ref": "/agentes" },
+			{ "label": "FÁBRICA", "ref": "/fabrica-midia" },
+			{ "label": "CONTATO", "ref": "/#contato" }
+		]
+	},
+	"footer": {
+		"navItems": [
+			{ "label": "SISTEMAS", "ref": "/sistemas" },
+			{ "label": "AGENTES", "ref": "/agentes" },
+			{ "label": "FÁBRICA", "ref": "/fabrica-midia" }
+		],
+		"copyright": "© 2026 ZAN.IA KINETIC CYBERNETICS. ALL SYSTEMS OPERATIONAL."
+	},
+	"whatsapp": {
+		"phone": "554591377811",
+		"message": "Olá! Gostaria de saber mais sobre as soluções ZAN.IA.",
+		"label": "Falar com Especialista no WhatsApp"
+	}
+}

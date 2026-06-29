@@ -1,0 +1,76 @@
+{
+	"hero": {
+		"badgeIcon": "deployed_code",
+		"badgeText": "Edge Infrastructure",
+		"title": "Sistemas & Sites de",
+		"highlight": "Alta Performance",
+		"subtitle": "Infraestrutura digital robusta para escala global. Construímos ecossistemas orientados a dados que processam, aprendem e evoluem em tempo real.",
+		"primaryCta": {
+			"label": "Falar com Especialista",
+			"icon": "chat"
+		},
+		"secondaryCta": {
+			"label": "Explorar Portfólio",
+			"href": "/#solucoes",
+			"icon": "arrow_forward"
+		},
+		"bgGradient": "right"
+	},
+	"engineering": {
+		"sectionTitle": "Excelência em Engenharia Digital",
+		"cards": [
+			{
+				"icon": "hub",
+				"title": "Arquitetura Escalável",
+				"description": "Desenvolvemos sistemas que crescem harmonicamente com o seu negócio. Nossas soluções de front-end e back-end são modularizadas, permitindo expansões rápidas e seguras sem comprometer a integridade do core.",
+				"tags": ["Microserviços", "Edge Computing", "Auto-scaling"]
+			},
+			{
+				"icon": "bolt",
+				"title": "Performance Extrema",
+				"description": "Carregamento instantâneo é o nosso padrão. Otimizamos cada byte para atingir notas máximas no Core Web Vitals, garantindo a melhor experiência de usuário e autoridade extrema nos motores de busca.",
+				"metrics": [
+					{ "value": "0.8", "unit": "s", "label": "LCP" },
+					{ "value": "15", "unit": "ms", "label": "TBT" },
+					{ "value": "0.01", "unit": "", "label": "CLS" }
+				],
+				"featured": true
+			}
+		]
+	},
+	"stack": {
+		"sectionTitle": "Stack Tecnológica Next-Gen",
+		"subtitle": "Utilizamos o estado da arte em desenvolvimento web. Nossa fundação repousa sobre frameworks de elite e infraestrutura resiliente.",
+		"cards": [
+			{ "icon": "rocket_launch", "title": "Next.js & Vercel", "description": "SSG e ISR para performance imbatível e latência global zero." },
+			{ "icon": "psychology", "title": "Integração Nativa de IA", "description": "LLMs e pipelines de dados integrados para personalização dinâmica." },
+			{ "icon": "api", "title": "API First Management", "description": "Sistemas desacoplados que permitem máxima flexibilidade de consumo." }
+		]
+	},
+	"terminal": {
+		"title": "zan-ia-core-engine.log",
+		"lines": [
+			{ "type": "success", "prompt": "✓", "text": "Optimization: Next.js Turbo Engine active" },
+			{ "type": "info", "prompt": "→", "text": "Connected to Vercel Edge Network: Global" },
+			{ "type": "warn", "prompt": "∞", "text": "Integrating AI-Personalization-Layer_v2.0" },
+			{ "type": "muted", "prompt": "_", "text": "Awaiting real-time data ingestion..." }
+		],
+		"status": "Kinetic Cybernetics Operational"
+	},
+	"process": {
+		"sectionTitle": "Processo de Desenvolvimento",
+		"subtitle": "Metodologia ágil e técnica para garantir precisão cirúrgica em cada entrega.",
+		"steps": [
+			{ "number": "01", "title": "Discovery", "description": "Mapeamento profundo de requisitos, análise de dados e definição de objetivos estratégicos." },
+			{ "number": "02", "title": "Arquitetura", "description": "Design de sistemas de baixa latência e estruturação de bancos de dados otimizados." },
+			{ "number": "03", "title": "Integração de IA", "description": "Implementação de modelos preditivos e camadas inteligentes de interface." },
+			{ "number": "04", "title": "Deployment", "description": "Lançamento em infraestrutura Edge com monitoramento contínuo e CI/CD robusto." }
+		]
+	},
+	"cta": {
+		"title": "Pronto para a Próxima Dimensão?",
+		"text": "Sua infraestrutura merece a precisão da Zan.IA. Vamos construir o futuro da sua presença digital juntos.",
+		"buttonIcon": "chat",
+		"responseTime": "Tempo médio de resposta: < 10 minutos"
+	}
+}

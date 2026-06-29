@@ -1,0 +1,73 @@
+{
+	"hero": {
+		"badgeIcon": "movie",
+		"badgeText": "AI Media Engine",
+		"title": "Fábrica de Mídia IA:",
+		"highlight": "Produção Cinematográfica Supervisionada",
+		"subtitle": "E-books, Audiobooks, Podcasts e Vídeos Dark gerados por IA com supervisão de especialistas veteranos.",
+		"primaryCta": {
+			"label": "Iniciar Produção",
+			"icon": "chat"
+		},
+		"secondaryCta": {
+			"label": "Ver Portfólio",
+			"href": "#servicos",
+			"icon": "visibility"
+		},
+		"scrollIndicator": true,
+		"bgGradient": "left"
+	},
+	"services": {
+		"sectionTitle": "Serviços Especializados",
+		"cards": [
+			{
+				"icon": "menu_book",
+				"title": "E-books",
+				"description": "Do roteiro à formatação final, cada página transmite autoridade e conhecimento curado.",
+				"tags": ["Design editorial", "Livros infantis", "Materiais didáticos", "Ilustrações profissionais"]
+			},
+			{
+				"icon": "spatial_audio_off",
+				"title": "Audiobooks",
+				"description": "Vozes neurais com expressividade humana. Narração natural que captura emoção e entonação com fidelidade impressionante.",
+				"tags": ["Clareza", "Voz Natural", "Narrativa Imersiva", "Tradução Automática"],
+				"featured": true
+			},
+			{
+				"icon": "mic_external_on",
+				"title": "Podcasts",
+				"description": "Roteirização e edição automatizada de alto impacto. Episódios e séries completas com qualidade profissional.",
+				"tags": ["Sua ideia", "Seu contexto", "Diálogos Coerentes", "Roteiro Automatizado"]
+			},
+			{
+				"icon": "movie_filter",
+				"title": "Vídeos Dark",
+				"description": "Estética cinematográfica para canais high-end. Conteúdo sem rosto, narrado por IA, com curadoria premium de B-roll e animações.",
+				"tags": ["Avatar virtual", "Voz Natural", "Cinematic 4K", "YouTube/TikTok"]
+			}
+		]
+	},
+	"fusion": {
+		"title": "A Fusão Perfeita: IA Generativa + Especialistas em Mídia",
+		"text": "Diferente das fábricas de conteúdo genérico, cada peça produzida pela Zan.IA passa por um rigoroso processo de curadoria. Nossa inteligência artificial processa milhões de pontos de dados para criar a base, enquanto veteranos da indústria refinam cada detalhe para garantir que sua marca ressoe com autoridade e emoção.",
+		"items": [
+			{ "icon": "verified", "label": "Revisão Humana de Qualidade (Q.A)" },
+			{ "icon": "palette", "label": "Ajuste de Tom de Voz & Branding" },
+			{ "icon": "bolt", "label": "Otimização para Algoritmos de Engajamento" }
+		]
+	},
+	"flux": {
+		"sectionTitle": "Fluxo de Alta Performance",
+		"subtitle": "Do conceito à entrega em tempo recorde.",
+		"steps": [
+			{ "number": "01", "title": "Briefing Neural", "description": "Nossa IA analisa sua marca e objetivos para extrair o DNA criativo necessário para o projeto." },
+			{ "number": "02", "title": "Geração Alpha", "description": "Modelos de linguagem e motores visuais avançados geram a primeira versão da mídia em escala." },
+			{ "number": "03", "title": "Refino Humano", "description": "Diretores de arte e editores especialistas lapidam o conteúdo para garantir excelência cinematográfica." }
+		]
+	},
+	"cta": {
+		"title": "Transforme sua ideia em Mídia de Elite.",
+		"text": "Agende uma demonstração com nossa equipe de especialistas e veja o poder da IA em ação.",
+		"buttonIcon": "rocket_launch"
+	}
+}
