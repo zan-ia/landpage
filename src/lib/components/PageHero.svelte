@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { base } from '$app/paths';
+
 	let {
 		badgeIcon = 'bolt',
 		badgeText = '',
@@ -36,6 +38,9 @@
 	};
 
 	const bg = $derived(gradientMap[bgGradient] ?? gradientMap.center);
+
+	/** Prefix internal paths (starting with '/') with SvelteKit base path. */
+	const resolveHref = (href: string) => href.startsWith('/') ? base + href : href;
 </script>
 
 <section class="page-hero">
@@ -64,7 +69,7 @@
 				</a>
 			{/if}
 			{#if secondaryCtaLabel && secondaryCtaHref}
-				<a class="page-hero__cta page-hero__cta--secondary" href={secondaryCtaHref}>
+				<a class="page-hero__cta page-hero__cta--secondary" href={resolveHref(secondaryCtaHref)}>
 					<span class="material-symbols-outlined">{secondaryCtaIcon}</span>
 					{secondaryCtaLabel}
 				</a>
