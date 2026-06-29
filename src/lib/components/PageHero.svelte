@@ -70,6 +70,7 @@
 			{/if}
 			{#if secondaryCtaLabel && secondaryCtaHref}
 				<a class="page-hero__cta page-hero__cta--secondary" href={resolveHref(secondaryCtaHref)}>
+				<a class="page-hero__cta page-hero__cta--secondary" href={secondaryCtaHref}>
 					<span class="material-symbols-outlined">{secondaryCtaIcon}</span>
 					{secondaryCtaLabel}
 				</a>
