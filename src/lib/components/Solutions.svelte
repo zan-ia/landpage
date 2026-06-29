@@ -1,3 +1,10 @@
+<script lang="ts">
+	import { base } from '$app/paths';
+
+	/** Prefix internal paths with SvelteKit base path. */
+	const resolveHref = (href: string) => href.startsWith('/') ? base + href : href;
+</script>
+
 <section class="solutions" id="solucoes">
 	<div class="solutions__inner">
 		<div class="solutions__header">
@@ -5,7 +12,7 @@
 			<p class="solutions__subtitle">Ecossistema completo de automação e inteligência.</p>
 		</div>
 		<div class="solutions__grid">
-			<div class="solutions__card glass-panel">
+			<a href={resolveHref('/sistemas')} class="solutions__card glass-panel">
 				<div class="solutions__card-icon-wrapper">
 					<span class="material-symbols-outlined solutions__card-icon">web_asset</span>
 				</div>
@@ -17,9 +24,9 @@
 					<span>Learn more</span>
 					<span class="material-symbols-outlined">arrow_forward_ios</span>
 				</div>
-			</div>
+			</a>
 
-			<div class="solutions__card glass-panel">
+			<a href={resolveHref('/agentes')} class="solutions__card glass-panel">
 				<div class="solutions__card-glow"></div>
 				<div class="solutions__card-icon-wrapper">
 					<span class="material-symbols-outlined solutions__card-icon">smart_toy</span>
@@ -35,9 +42,9 @@
 					</span>
 					<span class="material-symbols-outlined">arrow_forward_ios</span>
 				</div>
-			</div>
+			</a>
 
-			<div class="solutions__card glass-panel">
+			<a href={resolveHref('/fabrica-midia')} class="solutions__card glass-panel">
 				<div class="solutions__card-icon-wrapper">
 					<span class="material-symbols-outlined solutions__card-icon">video_settings</span>
 				</div>
@@ -49,7 +56,7 @@
 					<span>Automated Production</span>
 					<span class="material-symbols-outlined">arrow_forward_ios</span>
 				</div>
-			</div>
+			</a>
 		</div>
 	</div>
 </section>

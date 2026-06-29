@@ -1,4 +1,7 @@
 <script lang="ts">
+	import site from '$lib/data/site.json';
+	import { base } from '$app/paths';
+
 	let scrolled = $state(false);
 
 	function handleScroll() {
@@ -9,15 +12,22 @@
 		window.addEventListener('scroll', handleScroll);
 		return () => window.removeEventListener('scroll', handleScroll);
 	});
+
+	/** Prefix internal paths with SvelteKit base path. */
+	const resolveHref = (href: string) => href.startsWith('/') ? base + href : href;
 </script>
 
 <header class="header" class:header--scrolled={scrolled}>
 	<div class="header__inner">
-		<div class="header__brand">
+		<a href={resolveHref('/')} class="header__brand">
 			<span class="material-symbols-outlined header__icon">memory</span>
 			<span class="header__title">ZAN.IA</span>
-		</div>
-		<button class="header__cta">ACCESS CORE</button>
+		</a>
+		<nav class="header__nav">
+			{#each site.header.navItems as item}
+				<a href={resolveHref(item.ref)} class="header__link">{item.label}</a>
+			{/each}
+		</nav>
 	</div>
 </header>
 
@@ -63,6 +73,11 @@
 		display: flex;
 		align-items: center;
 		gap: 8px;
+		text-decoration: none;
+	}
+
+	.header__brand:hover {
+		opacity: 0.8;
 	}
 
 	.header__icon {
@@ -78,24 +93,27 @@
 		color: var(--color-primary);
 	}
 
-	.header__cta {
-		background: var(--color-primary);
-		color: var(--color-on-primary);
+	.header__nav {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+
+	.header__link {
 		font-family: var(--font-code);
 		font-size: var(--font-size-label-sm);
-		font-weight: 700;
-		letter-spacing: 0.1em;
-		padding: 8px 16px;
+		font-weight: 500;
+		letter-spacing: var(--letter-spacing-label-sm);
+		color: var(--color-on-surface);
+		opacity: 0.6;
+		padding: 8px 12px;
 		border-radius: var(--radius-full);
-		text-transform: uppercase;
-		transition: filter 0.2s, transform 0.15s;
+		text-decoration: none;
+		transition: opacity 0.2s, background 0.2s;
 	}
 
-	.header__cta:hover {
-		filter: brightness(1.1);
-	}
-
-	.header__cta:active {
-		transform: scale(0.95);
+	.header__link:hover {
+		opacity: 1;
+		background: rgba(0, 224, 255, 0.08);
 	}
 </style>

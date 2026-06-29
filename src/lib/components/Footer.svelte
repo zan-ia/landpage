@@ -1,3 +1,11 @@
+<script lang="ts">
+	import site from '$lib/data/site.json';
+	import { base } from '$app/paths';
+
+	/** Prefix internal paths with SvelteKit base path. */
+	const resolveHref = (href: string) => href.startsWith('/') ? base + href : href;
+</script>
+
 <footer class="footer">
 	<div class="footer__inner">
 		<div class="footer__brand">
@@ -5,22 +13,17 @@
 				<span class="material-symbols-outlined footer__icon">memory</span>
 				<span class="footer__title">ZAN.IA</span>
 			</div>
-			<p class="footer__copyright">&copy; 2024 ZAN.IA DEEP TECH SYSTEMS. ALL RIGHTS RESERVED.</p>
+			<p class="footer__copyright">{site.footer.copyright}</p>
 		</div>
 		<nav class="footer__nav">
-			<!-- svelte-ignore a11y_invalid_attribute -->
-			<a class="footer__link" href="#">SOLUTIONS</a>
-			<!-- svelte-ignore a11y_invalid_attribute -->
-			<a class="footer__link" href="#">NEURAL NETWORKS</a>
-			<!-- svelte-ignore a11y_invalid_attribute -->
-			<a class="footer__link" href="#">TERMINAL</a>
-			<!-- svelte-ignore a11y_invalid_attribute -->
-			<a class="footer__link" href="#">CONTACT</a>
+			{#each site.footer.navItems as item}
+				<a class="footer__link" href={resolveHref(item.ref)}>{item.label}</a>
+			{/each}
 		</nav>
 	</div>
 	<div>
 		<p class="footer__version">
-			version 1.0.0
+			version {site.site.version}
 		</p>
 	</div>
 </footer>
