@@ -239,7 +239,7 @@
 		if (!isDragging || !carouselEl) return;
 		e.preventDefault();
 		const dx = startX - e.clientX;
-		carouselEl.scrollLeft = scrollLeftStart + dx;
+		carouselEl.scrollLeft = scrollLeftStart - dx;
 		scrollLeft = carouselEl.scrollLeft;
 		lastMoveX = e.clientX;
 		lastMoveTime = performance.now();
@@ -257,7 +257,7 @@
 
 		// Calculate swipe velocity
 		const dt = performance.now() - lastMoveTime;
-		const velocity = dt > 0 && dt < 300 ? (startX - lastMoveX) / dt : 0;
+		const velocity = dt > 0 && dt < 300 ? (lastMoveX - startX) / dt : 0;
 		const absVelocity = Math.abs(velocity);
 
 		const currentScroll = carouselEl.scrollLeft;
